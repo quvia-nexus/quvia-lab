@@ -544,17 +544,6 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
     color:var(--muted) !important;
   }
   .lv-card-new.lv-open .lv-card-left::after{content:'▲' !important;}
-  .lv-card-right{
-    display:none !important;
-    width:100% !important;
-    max-width:100% !important;
-    flex:none !important;
-    padding-top:.8rem !important;
-    border-top:1px solid var(--border) !important;
-    margin-top:.6rem !important;
-    overflow:visible !important;
-  }
-  .lv-card-new.lv-open .lv-card-right{display:block !important;}
   .lv-name-new{font-size:clamp(1.8rem,7vw,2.4rem) !important;}
   .lv-num-new{font-size:0.9rem !important;}
   .lv-korean-new{font-size:0.85rem !important;margin-bottom:.5rem !important;}
@@ -2532,14 +2521,48 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderFilmPhotos&&renderFilmPhotos();
   alignHeroPanel();
 
-  // 탐구단계 카드 아코디언 - 클릭 시 체크
-  document.querySelectorAll('.lv-card-left').forEach(function(left) {
-    left.addEventListener('click', function() {
-      if(window.innerWidth >= 900) return;
-      var card = this.closest('.lv-card-new');
-      card.classList.toggle('lv-open');
+  // 탐구단계 카드 아코디언 (모바일 전용, JS inline style 방식)
+  function initMobileAccordion() {
+    if(window.innerWidth >= 900) return;
+
+    document.querySelectorAll('.lv-card-new').forEach(function(card) {
+      var right = card.querySelector('.lv-card-right');
+      var left  = card.querySelector('.lv-card-left');
+      var arrow = card.querySelector('.lv-card-left::after');
+      if(!right || !left) return;
+
+      // 설명 초기 숨김 (inline style로 강제)
+      right.style.cssText = 'display:none !important; visibility:hidden !important;';
+
+      left.style.cursor = 'pointer';
+      left.addEventListener('click', function() {
+        var isOpen = card.classList.contains('lv-open');
+        if(isOpen) {
+          card.classList.remove('lv-open');
+          right.style.cssText = 'display:none !important; visibility:hidden !important;';
+        } else {
+          card.classList.add('lv-open');
+          right.style.cssText = [
+            'display:block',
+            'visibility:visible',
+            'width:100%',
+            'max-width:100%',
+            'flex:none',
+            'padding-top:.8rem',
+            'border-top:1px solid #e0ddd7',
+            'margin-top:.6rem',
+            'overflow:visible'
+          ].join(' !important;') + ' !important;';
+          // p 태그도 강제
+          var p = right.querySelector('p');
+          if(p) {
+            p.style.cssText = 'display:block !important; width:100% !important; white-space:normal !important; word-break:keep-all !important; overflow-wrap:break-word !important; font-size:0.88rem !important; line-height:1.8 !important; margin:0 !important;';
+          }
+        }
+      });
     });
-  });
+  }
+  initMobileAccordion();
 
   // 모바일: 수상실적 패널을 히어로 아래로 이동
   function relocateAwardPanel() {

@@ -475,15 +475,12 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .hero-body{margin-bottom:1.4rem !important;}
   .hero-actions{flex-wrap:wrap !important;gap:.6rem !important;}
   .hero-right{
-    display:block !important;
-    opacity:1 !important;
-    animation:none !important;
-    padding:0 !important;
-    height:auto !important;
+    display:none !important;
   }
-  .hero-award-panel{height:auto !important;max-height:none !important;overflow:visible !important;flex:none !important;}
-  .hap-roll-outer{height:200px !important;min-height:0 !important;flex:none !important;}
-  #heroAwardPanel{height:auto !important;max-height:none !important;}
+  #award-panel-mobile .hero-right{display:block !important;opacity:1 !important;animation:none !important;padding:0 !important;height:auto !important;}
+  #award-panel-mobile .hero-award-panel{height:auto !important;max-height:none !important;overflow:visible !important;flex:none !important;}
+  #award-panel-mobile .hap-roll-outer{height:200px !important;min-height:0 !important;flex:none !important;}
+  #award-panel-mobile #heroAwardPanel{height:auto !important;max-height:none !important;}
 
   /* ─── BRAND ─── */
   .brand{padding:44px 5% !important;}
@@ -2535,17 +2532,35 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderFilmPhotos&&renderFilmPhotos();
   alignHeroPanel();
 
-  // 모바일 탐구단계 카드 아코디언
-  function initLvAccordion() {
-    if(window.innerWidth >= 900) return;
-    document.querySelectorAll('.lv-card-left').forEach(function(left) {
-      left.addEventListener('click', function() {
-        var card = this.closest('.lv-card-new');
-        card.classList.toggle('lv-open');
-      });
+  // 탐구단계 카드 아코디언 - 클릭 시 체크
+  document.querySelectorAll('.lv-card-left').forEach(function(left) {
+    left.addEventListener('click', function() {
+      if(window.innerWidth >= 900) return;
+      var card = this.closest('.lv-card-new');
+      card.classList.toggle('lv-open');
     });
+  });
+
+  // 모바일: 수상실적 패널을 히어로 아래로 이동
+  function relocateAwardPanel() {
+    if(window.innerWidth >= 900) return;
+    var panel = document.getElementById('heroRight');
+    var brand = document.querySelector('.brand');
+    if(!panel || !brand) return;
+    if(document.getElementById('award-panel-mobile')) return;
+    // 수상실적을 히어로 바로 아래(브랜드 앞)로 이동
+    var wrapper = document.createElement('div');
+    wrapper.id = 'award-panel-mobile';
+    wrapper.style.cssText = 'background:var(--bg,#f7f4ef);padding:0 5% 24px;';
+    // cloneNode 대신 직접 이동
+    panel.parentNode.removeChild(panel);
+    panel.style.display = '';
+    panel.style.padding = '0';
+    panel.style.height = 'auto';
+    wrapper.appendChild(panel);
+    brand.parentNode.insertBefore(wrapper, brand);
   }
-  initLvAccordion();
+  relocateAwardPanel();
 });
 
 function alignHeroPanel(){

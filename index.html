@@ -373,8 +373,8 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 .lv-card-new:hover .lv-char-corner{opacity:1;}
 .lv-card-inner{display:flex;flex-direction:row;gap:2rem;align-items:center;padding-right:70px;}
 .lv-card-left{flex:0 0 clamp(160px,30%,220px);min-width:0;display:flex;flex-direction:column;}
-.lv-card-right{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;}
-.lv-card-right p{font-size:0.97rem;color:var(--ink2);line-height:1.9;word-break:keep-all;margin:0;word-wrap:break-word;overflow-wrap:break-word;}
+.lv-card-right{flex:1;min-width:0;display:flex;align-items:center;}
+.lv-card-right p{font-size:0.97rem;color:var(--ink2);line-height:1.9;word-break:keep-all;margin:0;overflow-wrap:break-word;}
 .lv-num-new{font-family:var(--mono);font-size:1.2rem;color:var(--muted);letter-spacing:0.12em;margin-bottom:.3rem;}
 .lv-name-new{font-family:var(--serif);font-size:clamp(2.4rem,3.5vw,3.6rem);font-weight:700;font-style:italic;color:var(--ink);line-height:1;margin-bottom:4px;}
 .lv-korean-new{font-family:var(--mono);font-size:1.1rem;color:var(--muted);letter-spacing:0.08em;margin-bottom:.8rem;}
@@ -443,7 +443,8 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .levels-grid-new{grid-template-columns:1fr 1fr !important;}
   .slam-grid{grid-template-columns:1fr 1fr !important;}
   .brand-grid{grid-template-columns:1fr !important;}
-  .bchar-grid{grid-template-columns:repeat(3,1fr) !important;}
+  .bchar-grid{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;grid-template-columns:unset !important;gap:8px !important;padding-bottom:4px !important;}
+  .bchar{flex:0 0 130px !important;min-width:130px !important;max-width:130px !important;}
   .contact-grid{grid-template-columns:1fr !important;}
   .footer-top{grid-template-columns:1fr 1fr !important;}
 }
@@ -454,7 +455,6 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 
   /* ─── 전체 ─── */
   html,body{overflow-x:hidden !important;}
-  *{max-width:100% !important;box-sizing:border-box !important;}
 
   /* ─── NAV ─── */
   nav{padding:0 4% !important;min-height:52px !important;gap:4px !important;}
@@ -489,7 +489,8 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .brand{padding:44px 5% !important;}
   .brand-grid{grid-template-columns:1fr !important;gap:2rem !important;}
   .brand-quote{font-size:1rem !important;white-space:normal !important;word-break:keep-all !important;}
-  .bchar-grid{grid-template-columns:repeat(3,1fr) !important;}
+  .bchar-grid{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;grid-template-columns:unset !important;gap:8px !important;padding-bottom:4px !important;}
+  .bchar{flex:0 0 130px !important;min-width:130px !important;max-width:130px !important;}
   .pillar{flex-direction:column !important;align-items:flex-start !important;padding:14px !important;}
   .pl-desc{white-space:normal !important;overflow:visible !important;text-overflow:clip !important;font-size:0.82rem !important;word-break:keep-all !important;line-height:1.6 !important;}
 
@@ -545,15 +546,18 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .lv-card-right{
     display:none !important;
     width:100% !important;
+    max-width:100% !important;
+    flex:none !important;
     padding-top:.8rem !important;
     border-top:1px solid var(--border) !important;
     margin-top:.6rem !important;
+    overflow:visible !important;
   }
   .lv-card-new.lv-open .lv-card-right{display:block !important;}
   .lv-name-new{font-size:clamp(1.8rem,7vw,2.4rem) !important;}
   .lv-num-new{font-size:0.9rem !important;}
   .lv-korean-new{font-size:0.85rem !important;margin-bottom:.5rem !important;}
-  .lv-card-right p{font-size:0.88rem !important;line-height:1.8 !important;word-break:keep-all !important;white-space:normal !important;display:block !important;width:100% !important;}
+  .lv-card-right p{font-size:0.88rem !important;line-height:1.8 !important;word-break:keep-all !important;white-space:normal !important;display:block !important;width:100% !important;max-width:100% !important;overflow-wrap:break-word !important;}
 
   /* ─── 그랜드슬램 ─── */
   .grand-slam{padding:44px 5% !important;}
@@ -656,7 +660,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   </div>
 
   <!-- 히어로 오른쪽: 수상 패널 -->
-  <div class="hero-right" id="heroRight" style="opacity:0;animation:fadeUp .8s .55s forwards;">
+  <div class="hero-right" id="heroRight">
     <div class="hero-award-panel" id="heroAwardPanel">
 
       <!-- 대표 자랑 수상 (관리자 편집) -->

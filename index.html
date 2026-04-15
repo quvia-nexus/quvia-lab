@@ -108,6 +108,7 @@ section{padding:96px 5%;}
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
   background:rgba(255,255,255,0.2);
+  justify-content:center;
 }
 .bchar-grid::-webkit-scrollbar{height:3px;}
 .bchar-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.25);border-radius:2px;}
@@ -442,7 +443,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .levels-grid-new{grid-template-columns:1fr 1fr !important;}
   .slam-grid{grid-template-columns:1fr 1fr !important;}
   .brand-grid{grid-template-columns:1fr !important;}
-  .bchar-grid{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;grid-template-columns:unset !important;gap:8px !important;padding-bottom:4px !important;}
+  .bchar-grid{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;grid-template-columns:unset !important;gap:8px !important;padding-bottom:4px !important;justify-content:flex-start !important;}
   .bchar{flex:0 0 130px !important;min-width:130px !important;max-width:130px !important;}
   .contact-grid{grid-template-columns:1fr !important;}
   .footer-top{grid-template-columns:1fr 1fr !important;}
@@ -486,7 +487,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .brand{padding:44px 5% !important;}
   .brand-grid{grid-template-columns:1fr !important;gap:2rem !important;}
   .brand-quote{font-size:1rem !important;white-space:normal !important;word-break:keep-all !important;}
-  .bchar-grid{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;grid-template-columns:unset !important;gap:8px !important;padding-bottom:4px !important;}
+  .bchar-grid{display:flex !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;grid-template-columns:unset !important;gap:8px !important;padding-bottom:4px !important;justify-content:flex-start !important;}
   .bchar{flex:0 0 130px !important;min-width:130px !important;max-width:130px !important;}
   .pillar{flex-direction:column !important;align-items:flex-start !important;padding:14px !important;}
   .pl-desc{white-space:normal !important;overflow:visible !important;text-overflow:clip !important;font-size:0.82rem !important;word-break:keep-all !important;line-height:1.6 !important;}
@@ -2531,33 +2532,23 @@ document.addEventListener('DOMContentLoaded',()=>{
       var arrow = card.querySelector('.lv-card-left::after');
       if(!right || !left) return;
 
-      // 설명 초기 숨김 (inline style로 강제)
-      right.style.cssText = 'display:none !important; visibility:hidden !important;';
+      var inner = card.querySelector('.lv-card-inner');
+
+      // 초기: inner를 block으로, right 숨김
+      if(inner) inner.style.cssText = 'display:block !important; width:100% !important; padding:0 !important;';
+      right.style.cssText = 'display:none !important;';
 
       left.style.cursor = 'pointer';
       left.addEventListener('click', function() {
         var isOpen = card.classList.contains('lv-open');
         if(isOpen) {
           card.classList.remove('lv-open');
-          right.style.cssText = 'display:none !important; visibility:hidden !important;';
+          right.style.cssText = 'display:none !important;';
         } else {
           card.classList.add('lv-open');
-          right.style.cssText = [
-            'display:block',
-            'visibility:visible',
-            'width:100%',
-            'max-width:100%',
-            'flex:none',
-            'padding-top:.8rem',
-            'border-top:1px solid #e0ddd7',
-            'margin-top:.6rem',
-            'overflow:visible'
-          ].join(' !important;') + ' !important;';
-          // p 태그도 강제
+          right.style.cssText = 'display:block !important; width:100% !important; padding-top:.8rem !important; border-top:1px solid #e0ddd7 !important; margin-top:.6rem !important;';
           var p = right.querySelector('p');
-          if(p) {
-            p.style.cssText = 'display:block !important; width:100% !important; white-space:normal !important; word-break:keep-all !important; overflow-wrap:break-word !important; font-size:0.88rem !important; line-height:1.8 !important; margin:0 !important;';
-          }
+          if(p) p.style.cssText = 'display:block !important; width:100% !important; white-space:normal !important; word-break:keep-all !important; overflow-wrap:break-word !important; font-size:0.88rem !important; line-height:1.8 !important; margin:0 !important;';
         }
       });
     });

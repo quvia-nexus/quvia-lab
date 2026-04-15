@@ -371,7 +371,9 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   flex-shrink:0;
 }
 .lv-card-new:hover .lv-char-corner{opacity:1;}
-.lv-card-inner{display:grid;grid-template-columns:minmax(160px,220px) 1fr;gap:2rem;align-items:center;padding-right:70px;}
+.lv-card-inner{display:flex;flex-direction:row;gap:2rem;align-items:center;padding-right:70px;overflow:hidden;}
+.lv-card-left{flex:0 0 200px;min-width:0;}
+.lv-card-right{flex:1;min-width:0;}
 .lv-card-left{display:flex;flex-direction:column;}
 .lv-num-new{font-family:var(--mono);font-size:1.2rem;color:var(--muted);letter-spacing:0.12em;margin-bottom:.3rem;}
 .lv-name-new{font-family:var(--serif);font-size:clamp(2.4rem,3.5vw,3.6rem);font-weight:700;font-style:italic;color:var(--ink);line-height:1;margin-bottom:4px;}
@@ -2546,8 +2548,8 @@ function alignHeroPanel(){
 
     // 모바일이면 모든 인라인 스타일 완전 초기화
     if(window.innerWidth < 768) {
-      right.style.cssText = '';
-      panel.style.cssText = '';
+      right.removeAttribute('style');
+      panel.removeAttribute('style');
       return;
     }
 

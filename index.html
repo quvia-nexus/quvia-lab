@@ -98,7 +98,7 @@ section{padding:96px 5%;}
 .pillar:hover{background:rgba(0,0,0,0.3);}
 .pl-let{font-family:var(--mono);font-size:2rem;font-weight:600;color:rgba(255,255,255,0.2);line-height:1;width:40px;flex-shrink:0;}
 .pl-word{font-family:var(--serif);font-size:1.2rem;font-weight:600;font-style:italic;color:white;margin-bottom:2px;}
-.pl-desc{font-size:0.82rem;color:rgba(255,255,255,0.65);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pl-desc{font-size:0.82rem;color:rgba(255,255,255,0.65);line-height:1.5;word-break:keep-all;}
 .brand-chars{margin-top:3rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:2.5rem;}
 .brand-chars-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.5rem;}
 .bchar-grid{
@@ -371,7 +371,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   flex-shrink:0;
 }
 .lv-card-new:hover .lv-char-corner{opacity:1;}
-.lv-card-inner{display:grid;grid-template-columns:220px 1fr;gap:2rem;align-items:center;padding-right:70px;}
+.lv-card-inner{display:grid;grid-template-columns:minmax(160px,220px) 1fr;gap:2rem;align-items:center;padding-right:70px;}
 .lv-card-left{display:flex;flex-direction:column;}
 .lv-num-new{font-family:var(--mono);font-size:1.2rem;color:var(--muted);letter-spacing:0.12em;margin-bottom:.3rem;}
 .lv-name-new{font-family:var(--serif);font-size:clamp(2.4rem,3.5vw,3.6rem);font-weight:700;font-style:italic;color:var(--ink);line-height:1;margin-bottom:4px;}
@@ -452,6 +452,14 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 /* ════ 모바일 반응형 ════ */
 @media(max-width:640px){
 
+  /* 전체 가로 넘침 완전 차단 */
+  html, body{overflow-x:hidden !important;max-width:100vw !important;}
+  section, .brand, .grand-slam, .levels-bg, .contact-section, .awards-section{
+    max-width:100vw !important;
+    box-sizing:border-box !important;
+    overflow-x:hidden !important;
+  }
+
   /* NAV */
   nav{padding:0 3%;height:auto;min-height:52px;flex-wrap:nowrap;gap:4px;}
   .nav-logo{flex-shrink:0;}
@@ -485,14 +493,15 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .hap-roll-outer{height:160px;}
 
   /* BRAND STORY - 텍스트 잘림 방지 */
-  .brand{padding:44px 5% !important;overflow:visible !important;}
+  .brand{padding:44px 5% !important;overflow:hidden !important;}
   .brand-grid{grid-template-columns:1fr !important;gap:2rem !important;}
-  .brand-quote{font-size:1rem !important;white-space:normal !important;}
+  .brand-quote{font-size:1rem !important;white-space:normal !important;word-break:keep-all;}
   .bchar-grid{grid-template-columns:repeat(3,1fr) !important;}
-  /* pillar 텍스트 잘림 방지 */
-  .pillar{flex-direction:row !important;align-items:flex-start !important;gap:.8rem !important;width:100% !important;box-sizing:border-box !important;}
-  .pillar > div{flex:1;min-width:0;overflow:visible !important;}
-  .pl-desc{white-space:normal !important;overflow:visible !important;text-overflow:unset !important;font-size:0.82rem;word-break:keep-all;}
+  /* pillar: 고정 너비 제거, 텍스트 줄바꿈 허용 */
+  .pillar{display:flex !important;flex-direction:row !important;align-items:flex-start !important;gap:.8rem !important;width:100% !important;box-sizing:border-box !important;overflow:hidden !important;}
+  .pillar > div{flex:1 1 0;min-width:0 !important;overflow:hidden !important;}
+  .pl-let{flex-shrink:0 !important;font-size:1.6rem !important;}
+  .pl-desc{white-space:normal !important;overflow:visible !important;text-overflow:unset !important;font-size:0.82rem;word-break:keep-all;line-height:1.6;}
 
   /* 교재 선반 */
   .textbook-shelf{padding:1.2rem 4% 0;}
@@ -547,6 +556,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .slam-card2{
     flex:none !important;
     width:100% !important;
+    box-sizing:border-box !important;
     border-right:none !important;
     border-bottom:1px solid rgba(255,255,255,0.08) !important;
     padding:20px 16px !important;

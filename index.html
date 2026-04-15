@@ -452,57 +452,45 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 /* ════ 모바일 반응형 ════ */
 @media(max-width:640px){
 
-  /* NAV - 버튼 압축 */
+  /* NAV */
   nav{padding:0 3%;height:auto;min-height:52px;flex-wrap:nowrap;gap:4px;}
   .nav-logo{flex-shrink:0;}
   .nl-brand{font-size:1rem;}
   .nl-sep,.nl-kr,.nav-links{display:none;}
-  .nav-portal-btn{
-    font-size:0.6rem;padding:5px 7px;
-    white-space:nowrap;flex-shrink:0;
-    border-radius:0;
-  }
-  .nav-cta{
-    font-size:0.72rem;padding:7px 12px;
-    white-space:nowrap;flex-shrink:0;
-  }
+  .nav-portal-btn{font-size:0.6rem;padding:5px 7px;white-space:nowrap;flex-shrink:0;border-radius:0;}
+  .nav-cta{font-size:0.72rem;padding:7px 12px;white-space:nowrap;flex-shrink:0;}
 
-  /* HERO - 1컬럼 */
+  /* HERO - 여백 대폭 축소 */
   .hero{
     grid-template-columns:1fr !important;
-    padding:72px 5% 40px !important;
-    gap:1.5rem !important;
+    padding:56px 5% 32px !important;
+    gap:1.2rem !important;
     min-height:auto !important;
   }
   .hero-bg-q{display:none;}
-  .hero-eyebrow{margin-bottom:0.8rem;font-size:0.6rem;}
-  .hero-logo{
-    font-size:clamp(2.8rem,13vw,4.5rem) !important;
-    white-space:nowrap !important;
-  }
-  .hero-tagline{font-size:1rem !important;line-height:1.5;}
-  .hero-slogan{font-size:0.72rem !important;}
-  .hero-body{font-size:0.88rem !important;line-height:1.8;}
+  .hero-left{padding:0 !important;}
+  .hero-eyebrow{margin-bottom:0.5rem;font-size:0.9rem;}
+  .hero-logo{font-size:clamp(2.8rem,13vw,4.5rem) !important;white-space:nowrap !important;margin-bottom:.8rem !important;}
+  .hero-tagline{font-size:1rem !important;line-height:1.5;margin-bottom:.4rem !important;}
+  .hero-slogan{font-size:0.72rem !important;margin-bottom:.6rem !important;}
+  .hero-body{font-size:0.88rem !important;line-height:1.8;margin-bottom:1.5rem !important;}
   .hero-actions{flex-wrap:wrap;gap:.6rem;}
   .btn-primary,.btn-outline{padding:11px 20px;font-size:.85rem;}
-
-  /* 히어로 오른쪽: 수상 패널 - 모바일에서 아래로 */
-  .hero-right{
-    display:block !important;
-    opacity:1 !important;
-    animation:none !important;
-  }
-  .hero-award-panel{gap:.5rem;}
+  .hero-right{display:block !important;opacity:1 !important;animation:none !important;padding-top:0 !important;}
+  .hero-award-panel{gap:.5rem;height:auto !important;max-height:none !important;}
   .hap-featured{padding:12px 14px;}
   .hap-feat-title{font-size:0.88rem !important;}
   .hap-feat-desc{font-size:0.78rem !important;}
-  .hap-roll-outer{height:100px;}
+  .hap-roll-outer{height:160px;}
 
-  /* BRAND */
-  .brand{padding:50px 5%;}
+  /* BRAND STORY - 텍스트 잘림 방지 */
+  .brand{padding:44px 5% !important;overflow:hidden;}
   .brand-grid{grid-template-columns:1fr !important;gap:2rem !important;}
-  .brand-quote{font-size:1.1rem !important;}
+  .brand-quote{font-size:1rem !important;white-space:normal !important;}
   .bchar-grid{grid-template-columns:repeat(3,1fr) !important;}
+  /* pillar 텍스트 잘림 방지 */
+  .pillar{flex-direction:column;align-items:flex-start !important;gap:.5rem;}
+  .pl-desc{white-space:normal !important;overflow:visible !important;text-overflow:unset !important;font-size:0.8rem;}
 
   /* 교재 선반 */
   .textbook-shelf{padding:1.2rem 4% 0;}
@@ -513,8 +501,8 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .tb-lv{font-size:0.45rem !important;}
   .tb-icon-img{display:none;}
 
-  /* 탐구 5단계 */
-  .levels-bg{padding:50px 0;}
+  /* 탐구 5단계 - 가로 스와이프 카드 */
+  .levels-bg{padding:44px 0 !important;}
   .levels-bg .s-label,.levels-bg .s-title,.levels-bg .s-desc{padding:0 5%;}
   .levels-grid-new{
     display:flex !important;
@@ -524,48 +512,67 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
     -webkit-overflow-scrolling:touch;
     border:none !important;
     background:none !important;
+    padding-bottom:8px;
   }
+  .levels-grid-new::-webkit-scrollbar{height:3px;}
+  .levels-grid-new::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
   .lv-card-new{
-    flex:0 0 85vw !important;
+    flex:0 0 88vw !important;
     scroll-snap-align:start;
     border:1px solid var(--border) !important;
-    margin-right:8px !important;
+    margin-right:10px !important;
+    padding:1.4rem 5% !important;
   }
-  .lv-card-new{padding:1.2rem 5% !important;}
-  .lv-card-inner{grid-template-columns:1fr !important;gap:1rem !important;}
+  /* 모바일: 레벨카드 세로 스택 (좌=이름, 우=텍스트 해제) */
+  .lv-card-inner{display:flex !important;flex-direction:column !important;gap:.8rem !important;padding-right:0 !important;}
+  .lv-char-corner{top:.8rem !important;right:.8rem !important;transform:none !important;}
   .lv-name-new{font-size:clamp(1.8rem,6vw,2.4rem) !important;}
   .lv-num-new{font-size:0.9rem !important;}
   .lv-korean-new{font-size:0.85rem !important;}
-  .lv-char-corner{top:.8rem !important;right:.8rem !important;}
+  .lv-card-right p{font-size:0.88rem !important;line-height:1.8;}
+  /* 스와이프 힌트 텍스트 */
+  .levels-swipe-hint{display:block !important;}
 
-  /* 그랜드슬램 */
-  .grand-slam{padding:50px 5%;}
-  .slam-grid{grid-template-columns:1fr !important;}
-  .slam-card2{padding:20px 16px !important;}
+  /* 그랜드슬램 - 세로 스크롤 카드 */
+  .grand-slam{padding:44px 5% !important;}
+  .slam-grid{
+    display:flex !important;
+    flex-direction:column !important;
+    overflow-x:visible !important;
+    gap:12px !important;
+  }
+  .slam-card2{
+    flex:none !important;
+    width:100% !important;
+    border-right:none !important;
+    border-bottom:1px solid rgba(255,255,255,0.08) !important;
+    padding:20px 16px !important;
+  }
+  .slam-desc2{font-size:0.85rem !important;line-height:1.7 !important;}
 
   /* 학생 갤러리 */
   .film-frame{width:140px !important;height:105px !important;}
+
+  /* 학생 작품 */
   .work-slide{min-width:88% !important;}
   .ws-thumb{height:80px !important;}
-  .ws-arrow{display:none;}
+  .ws-arrow{display:flex !important;}
 
   /* 수상실적 */
-  .awards-section{padding:50px 5%;}
+  .awards-section{padding:44px 5% !important;}
 
   /* 공지소식 */
   .news-item{grid-template-columns:auto 1fr !important;gap:.5rem .8rem !important;padding:12px 0 !important;}
   .ni-badge{display:none;}
 
   /* 상담 */
-  .contact-section{padding:50px 5%;}
+  .contact-section{padding:44px 5% !important;}
   .contact-grid{grid-template-columns:1fr !important;gap:2rem !important;}
-  .c-hl-item{font-size:.95rem !important;}
 
   /* 푸터 */
   .footer-top{grid-template-columns:1fr !important;gap:1.5rem !important;}
 
   /* 공통 섹션 */
-  section{padding:50px 5% !important;}
   .s-title{font-size:clamp(1.5rem,6vw,2.2rem) !important;}
 }
 
@@ -741,6 +748,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   <div class="s-label">프로그램</div>
   <h2 class="s-title">탐구 <span style="font-family:var(--mono);font-weight:600;color:var(--Q);font-size:0.9em;vertical-align:middle;">5</span>단계</h2>
   <p class="s-desc">감지에서 통달까지 — 학생의 성장 단계에 맞게 설계된 Quvia-Lab만의 탐구 여정</p>
+  <p class="levels-swipe-hint" style="display:none;padding:0 5%;font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:.8rem;">← 옆으로 밀어서 단계 확인</p>
 
 
   <!-- 교재 & 설계노트 전시 -->

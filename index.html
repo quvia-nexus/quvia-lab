@@ -27,29 +27,29 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow-x:hi
 .page{display:none;}.page.active{display:block;}
 
 /* NAV */
-nav{position:fixed;top:0;width:100%;z-index:300;height:64px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(247,244,239,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
-.nav-logo{text-decoration:none;display:flex;align-items:center;gap:10px;}
+nav{position:fixed;top:0;width:100%;z-index:300;height:56px;padding:0 3%;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;overflow:hidden;background:rgba(247,244,239,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{text-decoration:none;display:flex;align-items:center;flex-shrink:0;gap:10px;}
 .nl-brand{font-family:var(--logo);font-weight:800;font-size:1.25rem;color:var(--ink);letter-spacing:0.03em;}
 .nl-brand span{color:var(--Q);}
 .nl-sep{width:1px;height:14px;background:var(--border2);}
 .nl-kr{font-size:0.72rem;color:var(--muted);letter-spacing:0.02em;}
-.nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center;}
-.nav-links a{font-family:var(--mono);font-size:0.75rem;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;}
+.nav-links{display:flex;gap:1rem;list-style:none;align-items:center;flex-shrink:1;}
+.nav-links a{font-family:var(--mono);font-size:0.72rem;white-space:nowrap;color:var(--muted);text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;}
 .nav-links a:hover{color:var(--Q);}
-.nav-portal-btn{font-family:var(--mono);font-size:0.72rem;padding:7px 14px;border:1px solid var(--border);color:var(--muted);background:none;text-decoration:none;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
+.nav-portal-btn{font-family:var(--mono);font-size:0.68rem;padding:6px 10px;white-space:nowrap;flex-shrink:0;border:1px solid var(--border);color:var(--muted);background:none;text-decoration:none;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
 .nav-portal-btn:hover{border-color:var(--Q);color:var(--Q);}
 .nav-portal-btn.teacher{border-color:var(--probe);color:var(--probe);}
 .nav-portal-btn.admin{border-color:var(--gold);color:var(--gold);}
-.nav-cta{font-family:var(--sans);font-size:0.82rem;font-weight:500;padding:9px 22px;background:var(--ink);color:white;text-decoration:none;transition:background 0.2s;border:none;cursor:pointer;}
+.nav-cta{font-family:var(--sans);font-size:0.78rem;font-weight:500;padding:8px 16px;white-space:nowrap;flex-shrink:0;background:var(--ink);color:white;text-decoration:none;transition:background 0.2s;border:none;cursor:pointer;}
 .nav-cta:hover{background:var(--Q);}
 
 /* HERO */
-.hero{min-height:100vh;padding:64px 5% 80px;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;position:relative;overflow:hidden;background:var(--bg);}
+.hero{min-height:100vh;padding:64px 5% 80px;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:stretch;position:relative;overflow:hidden;background:var(--bg);}
 .hero-bg-q{position:absolute;right:-5%;top:50%;transform:translateY(-50%);font-family:var(--logo);font-size:55vw;font-weight:800;color:transparent;-webkit-text-stroke:1px rgba(107,92,231,0.05);pointer-events:none;letter-spacing:-0.06em;line-height:1;z-index:0;}
-.hero-left{position:relative;z-index:1;}
-.hero-eyebrow{font-family:var(--mono);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--Q);display:flex;align-items:center;gap:10px;margin-bottom:1.8rem;opacity:0;animation:fadeUp .6s .1s forwards;}
-.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--Q-mid);}
-.hero-logo{font-family:var(--logo);font-weight:800;font-size:clamp(2.8rem,6.5vw,6rem);line-height:0.9;letter-spacing:-0.04em;margin-bottom:1.4rem;opacity:0;animation:fadeUp .7s .18s forwards;white-space:nowrap;transform:scaleX(0.72);transform-origin:left;}
+.hero-left{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;padding:2rem 0;}
+.hero-eyebrow{font-family:var(--serif-kr);font-size:1.1rem;letter-spacing:0.08em;text-transform:none;color:var(--ink2);font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:1.8rem;opacity:0;animation:fadeUp .6s .1s forwards;}
+.hero-eyebrow::before{display:none;}
+.hero-logo{font-family:var(--logo);font-weight:800;font-size:clamp(2.2rem,4.8vw,4.4rem);line-height:0.9;letter-spacing:-0.04em;margin-bottom:1.4rem;opacity:0;animation:fadeUp .7s .18s forwards;white-space:nowrap;transform:scaleX(0.72);transform-origin:left;}
 .hero-logo .hl-q{color:var(--ink);}
 .hero-logo .hl-lab{color:var(--Q);}
 .hero-tagline{font-family:var(--serif-kr);font-size:clamp(1rem,1.8vw,1.25rem);color:var(--ink2);line-height:1.8;margin-bottom:0.5rem;opacity:0;animation:fadeUp .6s .3s forwards;}
@@ -62,7 +62,7 @@ nav{position:fixed;top:0;width:100%;z-index:300;height:64px;padding:0 5%;display
 .btn-outline:hover{border-color:var(--Q);color:var(--Q);}
 
 /* Hero right: slam card */
-.hero-right{position:relative;z-index:1;opacity:0;animation:fadeUp .8s .6s forwards;}
+.hero-right{position:relative;z-index:1;opacity:0;animation:fadeUp .8s .6s forwards;display:flex;flex-direction:column;justify-content:flex-start;align-self:start;}
 .slam-card{background:var(--white);border:1px solid var(--border);padding:28px 32px;box-shadow:0 20px 60px rgba(107,92,231,0.10);}
 .slam-card-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;}
 .slam-badge{background:var(--Q);color:white;font-size:0.6rem;padding:3px 8px;letter-spacing:0.08em;}
@@ -101,8 +101,18 @@ section{padding:96px 5%;}
 .pl-desc{font-size:0.82rem;color:rgba(255,255,255,0.65);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .brand-chars{margin-top:3rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:2.5rem;}
 .brand-chars-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.5rem;}
-.bchar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.2);overflow:visible;}
-.bchar{display:flex;flex-direction:column;align-items:center;gap:5px;padding:1rem 0.8rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);transition:background 0.25s;text-align:center;overflow:visible;}
+.bchar-grid{
+  display:flex;
+  gap:1px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  background:rgba(255,255,255,0.2);
+  justify-content:center;
+}
+.bchar-grid::-webkit-scrollbar{height:3px;}
+.bchar-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.25);border-radius:2px;}
+.bchar{flex:0 0 clamp(150px,20vw,220px);scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:5px;padding:1rem 0.8rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);transition:background 0.25s;text-align:center;overflow:visible;}
 .bchar:hover{background:rgba(255,255,255,0.22);}
 .bchar-name{font-family:var(--serif);font-size:1rem;font-weight:600;color:white;margin-top:0;}
 .bchar-lv{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
@@ -126,12 +136,23 @@ section{padding:96px 5%;}
 .lv-tool{font-size:0.6rem;padding:2px 8px;border:1px solid var(--border);color:var(--muted);font-family:var(--mono);white-space:nowrap;}
 
 /* GRAND SLAM */
-.grand-slam{background:#13111f;}
+.grand-slam{background:linear-gradient(160deg,#1a2318 0%,#253322 50%,#2d3d28 100%);}
 .grand-slam .s-label{color:rgba(255,255,255,0.3);}.grand-slam .s-label::after{background:rgba(255,255,255,0.12);}
 .grand-slam .s-title{color:white;}.grand-slam .s-desc{color:rgba(255,255,255,0.5);}
-.slam-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);overflow:hidden;margin-top:3rem;}
-.slam-card2{background:#1e1a35;padding:32px 24px;transition:background 0.3s;position:relative;}
-.slam-card2:hover{background:#261e42;}
+.slam-grid{
+  display:flex;
+  gap:0;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  margin-top:3rem;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.slam-grid::-webkit-scrollbar{height:4px;}
+.slam-grid::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);}
+.slam-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:2px;}
+.slam-card2{flex:0 0 clamp(200px,22vw,260px);scroll-snap-align:start;border-right:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.22);padding:32px 24px;transition:background 0.3s;position:relative;}
+.slam-card2:hover{background:rgba(0,0,0,0.35);}
 .slam-q{font-family:var(--serif);font-size:3.5rem;font-weight:700;color:rgba(255,255,255,0.06);line-height:1;margin-bottom:1rem;letter-spacing:-0.05em;}
 .slam-icon2{font-size:1.8rem;margin-bottom:1rem;display:block;}
 .slam-name{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;}
@@ -190,6 +211,26 @@ section{padding:96px 5%;}
 
 .c-perks{padding:20px;background:var(--Q-lt);border:1px solid rgba(107,92,231,0.2);}
 .c-perks div{font-size:0.82rem;color:var(--Q);line-height:2.2;}
+
+.sns-preview-box{margin-bottom:1.2rem;}
+.sns-preview-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem;}
+.sns-links{display:flex;flex-direction:column;gap:.7rem;}
+.sns-card{display:block;border:1px solid var(--border);background:var(--white);text-decoration:none;color:inherit;transition:box-shadow .2s,border-color .2s;overflow:hidden;}
+.sns-card:hover{border-color:var(--Q);box-shadow:0 4px 20px rgba(107,92,231,0.10);}
+.sns-card-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.sns-insta{background:linear-gradient(135deg,#fdf0f8,#f0f4ff);}
+.sns-naver{background:linear-gradient(135deg,#f0fdf4,#f0f8ff);}
+.sns-icon-img{font-size:1rem;flex-shrink:0;}
+.sns-platform{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.sns-handle{font-size:0.78rem;font-weight:600;color:var(--ink);margin-top:1px;}
+.sns-arrow{margin-left:auto;font-size:0.85rem;color:var(--muted);}
+.sns-thumb-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:6px;}
+.sns-thumb-ph{aspect-ratio:1;background:var(--bg2);border-radius:2px;}
+.sns-blog-list{padding:8px 14px;display:flex;flex-direction:column;gap:4px;}
+.sns-blog-item{display:flex;align-items:flex-start;gap:8px;font-size:0.8rem;color:var(--ink2);line-height:1.5;}
+.sns-blog-dot{width:4px;height:4px;border-radius:50%;background:var(--Q);flex-shrink:0;margin-top:6px;}
+.sns-card-footer{padding:7px 14px;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;color:var(--Q);border-top:1px solid var(--border);background:var(--bg);}
+
 .contact-form{display:flex;flex-direction:column;gap:1rem;}
 .f-label{font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:5px;}
 .f-input,.f-select,.f-textarea{padding:12px 14px;background:var(--white);border:1px solid var(--border);font-family:var(--sans);font-size:0.9rem;color:var(--ink);outline:none;transition:border-color 0.2s;width:100%;font-weight:300;}
@@ -316,7 +357,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 }
 
 
-.lv-card-new{background:var(--white);padding:1.6rem 1.2rem 1.2rem;position:relative;overflow:visible;transition:background 0.3s;}
+.lv-card-new{background:var(--white);padding:1.6rem 1.8rem 1.4rem;position:relative;overflow:hidden;transition:background 0.3s;}
 .lv-card-new::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
 .lv1.lv-card-new::before{background:var(--Q);}
 .lv2.lv-card-new::before{background:var(--spark);}
@@ -325,34 +366,39 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 .lv5.lv-card-new::before{background:var(--master);}
 .lv-card-new:hover{background:var(--bg);}
 .lv-char-corner{
-  position:absolute;top:10px;right:10px;
+  position:absolute;top:50%;right:1.4rem;transform:translateY(-50%);
   opacity:0.85;transition:opacity 0.3s;overflow:visible;
+  flex-shrink:0;
 }
 .lv-card-new:hover .lv-char-corner{opacity:1;}
-.lv-num-new{font-family:var(--mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.12em;margin-bottom:.5rem;padding-right:55px;}
-.lv-name-new{font-family:var(--serif);font-size:clamp(1.4rem,2.2vw,2rem);font-weight:700;font-style:italic;color:var(--ink);line-height:1;margin-bottom:3px;}
-.lv-korean-new{font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;margin-bottom:.8rem;}
+.lv-card-inner{display:grid;grid-template-columns:220px 1fr;gap:2rem;align-items:center;padding-right:70px;}
+.lv-card-left{display:flex;flex-direction:column;}
+.lv-num-new{font-family:var(--mono);font-size:1.2rem;color:var(--muted);letter-spacing:0.12em;margin-bottom:.3rem;}
+.lv-name-new{font-family:var(--serif);font-size:clamp(2.4rem,3.5vw,3.6rem);font-weight:700;font-style:italic;color:var(--ink);line-height:1;margin-bottom:4px;}
+.lv-korean-new{font-family:var(--mono);font-size:1.1rem;color:var(--muted);letter-spacing:0.08em;margin-bottom:.8rem;}
+.lv-card-right{display:flex;align-items:center;}
+.lv-card-right p{font-size:0.97rem;color:var(--ink2);line-height:1.9;word-break:keep-all;margin:0;}
 
 .lv-detail{
   max-height:0;overflow:hidden;
   transition:max-height 0.4s ease,opacity 0.3s;opacity:0;
 }
 
-.lv-detail p{font-size:0.82rem;color:var(--ink2);line-height:1.8;padding-top:.8rem;word-break:keep-all;}
+.lv-detail p{font-size:0.97rem;color:var(--ink2);line-height:1.9;padding-top:.8rem;word-break:keep-all;}
 @media(max-width:960px){.levels-grid-new{grid-template-columns:1fr 1fr;}}
 @media(max-width:640px){.levels-grid-new{grid-template-columns:1fr;}}
 
 
 
 
-.hero-award-panel{display:flex;flex-direction:column;gap:.6rem;}
+.hero-award-panel{display:flex;flex-direction:column;gap:.6rem;height:100%;}
 
 .hap-featured{background:var(--Q-lt);border:1px solid var(--Q-mid);padding:20px 22px;position:relative;}
 .hap-feat-badge{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--Q);margin-bottom:5px;}
 .hap-feat-title{font-weight:600;font-size:1.1rem;color:var(--ink);line-height:1.5;margin-bottom:8px;font-family:var(--serif-kr);}
 .hap-feat-desc{font-size:0.88rem;color:var(--ink2);line-height:1.8;}
 .hap-roll-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);}
-.hap-roll-outer{background:var(--white);border:1px solid var(--border);overflow:hidden;height:160px;position:relative;}
+.hap-roll-outer{background:var(--white);border:1px solid var(--border);overflow:hidden;flex:1;min-height:0;position:relative;}
 .hap-roll-track{display:flex;flex-direction:column;}
 .hap-roll-item{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--bg2);flex-shrink:0;}
 .hap-roll-icon{font-size:12px;width:18px;text-align:center;}
@@ -391,10 +437,9 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 .modal-body{padding:24px;}
 .modal-title{font-family:var(--serif-kr);font-size:1.4rem;font-weight:600;margin-bottom:1rem;color:var(--ink);}
 
-@media(max-width:960px){.hero{grid-template-columns:1fr;}.hero-right{display:none;}.levels-grid,.slam-grid{grid-template-columns:1fr 1fr;}.brand-grid{grid-template-columns:1fr;}.contact-grid{grid-template-columns:1fr;gap:2.5rem;}.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}.dash-grid{grid-template-columns:1fr 1fr;}.bchar-grid{grid-template-columns:repeat(3,1fr);}.awards-grid{grid-template-columns:1fr;}}
+@media(max-width:960px){.hero{grid-template-columns:1fr 1fr;}.levels-grid,.slam-grid{grid-template-columns:1fr 1fr;}.brand-grid{grid-template-columns:1fr;}.contact-grid{grid-template-columns:1fr;gap:2.5rem;}.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}.dash-grid{grid-template-columns:1fr 1fr;}.bchar-grid{grid-template-columns:repeat(3,1fr);}.awards-grid{grid-template-columns:1fr;}}
 @media(max-width:640px){nav .nav-links{display:none;}.levels-grid,.slam-grid{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}.dash-grid{grid-template-columns:1fr;}.bchar-grid{grid-template-columns:repeat(2,1fr);}.awards-summary{grid-template-columns:1fr 1fr;}}
 
-  .hero-right{display:none !important;}
   .levels-grid-new{grid-template-columns:1fr 1fr !important;}
   .slam-grid{grid-template-columns:1fr 1fr !important;}
   .brand-grid{grid-template-columns:1fr !important;}
@@ -405,7 +450,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 
 
 /* ════ 모바일 반응형 ════ */
-@media(max-width:768px){
+@media(max-width:640px){
 
   /* NAV - 버튼 압축 */
   nav{padding:0 3%;height:auto;min-height:52px;flex-wrap:nowrap;gap:4px;}
@@ -487,7 +532,11 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
     margin-right:8px !important;
   }
   .lv-card-new{padding:1.2rem 5% !important;}
-  .lv-name-new{font-size:1.5rem !important;}
+  .lv-card-inner{grid-template-columns:1fr !important;gap:1rem !important;}
+  .lv-name-new{font-size:clamp(1.8rem,6vw,2.4rem) !important;}
+  .lv-num-new{font-size:0.9rem !important;}
+  .lv-korean-new{font-size:0.85rem !important;}
+  .lv-char-corner{top:.8rem !important;right:.8rem !important;}
 
   /* 그랜드슬램 */
   .grand-slam{padding:50px 5%;}
@@ -526,6 +575,27 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .nav-portal-btn{font-size:0.55rem;padding:4px 6px;}
 }
 
+
+.bchar-slam{
+  background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.25) !important;
+  border-right:none !important;
+  transition:background 0.3s, transform 0.25s;
+}
+.bchar-slam:hover{
+  background:rgba(255,215,0,0.15) !important;
+  transform:translateY(-4px);
+}
+.bchar-slam-badge{
+  font-family:var(--mono);font-size:0.55rem;
+  letter-spacing:0.08em;
+  color:rgba(255,215,0,0.4);
+  border:1px dashed rgba(255,215,0,0.25);
+  padding:3px 8px;
+  margin-top:2px;
+  text-align:center;
+}
+
 </style>
 </head>
 <body>
@@ -558,23 +628,24 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg-q">Q</div>
+
+  <!-- 왼쪽: eyebrow만 별도 행 -->
   <div class="hero-left">
-    <div class="hero-eyebrow">큐비아 탐구학원 · Quvia-Lab</div>
+    <div class="hero-eyebrow">큐비아 탐구학원</div>
     <div class="hero-logo"><span class="hl-q">QUVIA&nbsp;</span><span class="hl-lab">LAB</span></div>
     <div class="hero-tagline">질문이 탐구가 되고, 탐구가 결과가 되는 곳</div>
     <div class="hero-slogan">"Question carefully, Explore deeply, Prove boldly."</div>
     <p class="hero-body">모든 위대한 혁신은 작은 질문에서 시작됩니다.<br>큐비아 랩은 학생이 스스로 질문하고, 탐구하고,<br>실제 결과물로 증명하는 교육을 설계합니다.</p>
-    <div class="hero-actions">
+    <div class="hero-actions" id="heroActions">
       <a href="#contact" class="btn-primary">상담 신청 →</a>
       <a href="#levels" class="btn-outline">프로그램 보기</a>
     </div>
   </div>
 
   <!-- 히어로 오른쪽: 수상 패널 -->
-  <div class="hero-right" style="opacity:0;animation:fadeUp .8s .55s forwards;">
-    <div class="hero-award-panel">
+  <div class="hero-right" id="heroRight" style="opacity:0;animation:fadeUp .8s .55s forwards;">
+    <div class="hero-award-panel" id="heroAwardPanel">
 
-      
       <!-- 대표 자랑 수상 (관리자 편집) -->
       <div class="hap-featured" id="featuredAward">
         <div class="hap-feat-title" id="featTitle">2025 대구 청소년 SW 경진대회 — 금상</div>
@@ -615,6 +686,52 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
       <div class="bchar" style="padding-top:16px;"><svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sh2"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#EF9F27"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#EF9F27"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh2)"/><circle cx="0" cy="-16" r="25" fill="#2C1A06"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#EF9F27" stroke-width="2.4"/><circle cx="0" cy="-16" r="8" fill="none" stroke="#EF9F27" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#EF9F27"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#1A0A04"/><circle cx="8.5" cy="-21" r="4" fill="#1A0A04"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><ellipse cx="0" cy="-5" rx="4.5" ry="4.2" fill="#1A1A1A" stroke="white" stroke-width="2"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg><div class="bchar-name">큐브</div><div class="bchar-lv">LV.3 Probe</div><div class="bchar-line">"왜 그럴까?"</div></div>
       <div class="bchar" style="padding-top:16px;"><svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sh3"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#D85A30"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#D85A30"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh3)"/><circle cx="0" cy="-16" r="25" fill="#2A1010"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#D85A30" stroke-width="2.4"/><circle cx="0" cy="-16" r="9" fill="none" stroke="#D85A30" stroke-width="2.4"/><circle cx="0" cy="-16" r="5" fill="none" stroke="#D85A30" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#D85A30"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#100404"/><circle cx="8.5" cy="-21" r="4" fill="#100404"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-8 -4 Q0 4 8 -4" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><path d="M-5 -3 Q0 1 5 -3" fill="#1A1A1A"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg><div class="bchar-name">큐온</div><div class="bchar-lv">LV.4 Build</div><div class="bchar-line">"내가 만들겠어."</div></div>
       <div class="bchar"><svg width="64" height="90" viewBox="-42 -88 84 118" xmlns="http://www.w3.org/2000/svg" overflow="visible"><defs><filter id="sh4"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh4)"/><circle cx="0" cy="-16" r="25" fill="#1A1030"/><circle cx="0" cy="-16" r="15" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="10" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="5.5" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="2" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#7F77DD"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A0620"/><circle cx="8.5" cy="-21" r="4" fill="#0A0620"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-10 -5 Q0 8 10 -5 Z" fill="rgba(255,255,255,0.9)"/><path d="M-10 -5 Q0 8 10 -5" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/><circle cx="-7" cy="-53" r="6" fill="#534AB7"/><circle cx="0" cy="-55" r="6" fill="#534AB7"/><circle cx="7" cy="-53" r="6" fill="#534AB7"/><rect x="-11" y="-54" width="22" height="9" fill="#534AB7"/><rect x="-11" y="-50" width="22" height="5" rx="2" fill="#3C3489"/><circle cx="-7" cy="-58" r="1.8" fill="#CECBF6"/><circle cx="0" cy="-60" r="2.2" fill="#EEEDFE"/><circle cx="7" cy="-58" r="1.8" fill="#CECBF6"/></svg><div class="bchar-name">큐비아</div><div class="bchar-lv">LV.5 Master</div><div class="bchar-line">"내가 증명한다."</div></div>
+      <!-- 6번째: Q-Grand Slam 졸업 카드 -->
+      <div class="bchar bchar-slam" style="padding-top:16px;cursor:pointer;" onclick="document.getElementById('grandslam')?.scrollIntoView({behavior:'smooth'})">
+        <div class="bchar-slam-icon">
+          <svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg">
+            <defs><filter id="sh-slam"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs>
+            <!-- 왕관 -->
+            <path d="M-18 -62 L-18 -74 Q-12 -82 -6 -74 Q0 -66 0 -78 Q6 -66 12 -74 Q18 -82 18 -74 L18 -62 Z" fill="#EEA800" opacity="0.9"/>
+            <rect x="-20" y="-64" width="40" height="7" rx="3" fill="#CC8800"/>
+            <circle cx="0" cy="-75" r="4" fill="#FFD700"/>
+            <circle cx="-13" cy="-69" r="3" fill="#FFD700"/>
+            <circle cx="13" cy="-69" r="3" fill="#FFD700"/>
+            <!-- 얼굴 테두리 -->
+            <circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh-slam)"/>
+            <!-- 몸 (골드) -->
+            <circle cx="0" cy="-16" r="25" fill="#4A3F8A"/>
+            <!-- 내부 링 (별 느낌) -->
+            <circle cx="0" cy="-16" r="18" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="2"/>
+            <circle cx="0" cy="-16" r="11" fill="none" stroke="rgba(255,215,0,0.25)" stroke-width="1.5"/>
+            <circle cx="0" cy="-16" r="5" fill="rgba(255,215,0,0.5)"/>
+            <!-- 귀 -->
+            <circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/>
+            <circle cx="-14" cy="-42" r="5" fill="#7F77DD"/>
+            <circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/>
+            <circle cx="14" cy="-42" r="5" fill="#7F77DD"/>
+            <!-- 눈 -->
+            <circle cx="-8" cy="-20" r="6" fill="white"/>
+            <circle cx="8" cy="-20" r="6" fill="white"/>
+            <circle cx="-7" cy="-19" r="3.5" fill="#1A0A40"/>
+            <circle cx="9" cy="-19" r="3.5" fill="#1A0A40"/>
+            <circle cx="-9" cy="-21" r="1.4" fill="white"/>
+            <circle cx="7" cy="-21" r="1.4" fill="white"/>
+            <!-- 웃음 (활짝) -->
+            <path d="M-10 -5 Q0 8 10 -5 Z" fill="rgba(255,255,255,0.9)"/>
+            <path d="M-10 -5 Q0 8 10 -5" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- 꼬리 -->
+            <rect x="20" y="-4" width="16" height="7" rx="3.5" fill="#7F77DD" transform="rotate(40 20 -4)"/>
+            <!-- 별 장식 -->
+            <text x="-5" y="-12" font-size="7" fill="rgba(255,215,0,0.9)" font-family="sans-serif">★</text>
+          </svg>
+        </div>
+        <div class="bchar-name" style="color:#FFD700;text-shadow:0 0 12px rgba(255,215,0,0.3);">졸업생</div>
+        <div class="bchar-lv" style="color:rgba(255,215,0,0.6);">Q-Grand Slam</div>
+        <div class="bchar-line" style="color:rgba(255,215,0,0.55);font-size:0.68rem;">"5단계 완주 · 졸업 인증"</div>
+        <div class="bchar-slam-badge">당신의 이름이 여기에</div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -671,71 +788,105 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
     <!-- LV1 -->
     <div class="lv-card-new lv1">
       <div class="lv-char-corner"><svg width="52" height="68" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="shm0"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#378ADD"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#378ADD"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#shm0)"/><circle cx="0" cy="-16" r="25" fill="#1B2E4A"/><circle cx="0" cy="-16" r="5" fill="#378ADD"/><circle cx="-17" cy="-12" r="5" fill="#F4AABC"/><circle cx="17" cy="-12" r="5" fill="#F4AABC"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A1A30"/><circle cx="8.5" cy="-21" r="4" fill="#0A1A30"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-8 -6 Q0 2 8 -6" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg></div>
-      <div class="lv-num-new">LV.1</div>
-      <div class="lv-name-new">Sense</div>
-      <div class="lv-korean-new">감지 단계</div>
-      <span class="lv-target">유아~초등 1-2학년</span>
-      <div class="lv-detail open" style="max-height:none;opacity:1;">
-        <p>교과 연계 스토리텔링으로 코딩을 처음 만나는 단계. ScratchJr를 활용해 수학·국어·과학 교과 주제를 직접 움직이는 작품으로 표현하고, 로봇 코딩으로 명령어가 현실에서 작동하는 원리를 몸으로 익힙니다.</p>
+      <div class="lv-card-inner">
+        <div class="lv-card-left">
+          <div class="lv-num-new">LV.1</div>
+          <div class="lv-name-new">Sense</div>
+          <div class="lv-korean-new">감지 단계</div>
+          <span class="lv-target">유아~초등 1-2학년</span>
+        </div>
+        <div class="lv-card-right">
+          <p>코딩과의 첫 만남을 놀이와 탐구로 설계한 입문 단계입니다. 누리과정·교과 주제와 연계된 스토리텔링 기반 ScratchJr 프로젝트를 통해 컴퓨팅 사고력의 기초를 형성하고, 로봇 코딩으로 명령의 순서와 흐름을 익힙니다.</p>
+        </div>
       </div>
     </div>
 
     <!-- LV2 -->
     <div class="lv-card-new lv2">
       <div class="lv-char-corner"><svg width="52" height="68" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="shm1"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#1D9E75"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#1D9E75"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#shm1)"/><circle cx="0" cy="-16" r="25" fill="#14332A"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#1D9E75" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#1D9E75"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A1E14"/><circle cx="8.5" cy="-21" r="4" fill="#0A1E14"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-5 -6 Q0 -2 5 -6" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg></div>
-      <div class="lv-num-new">LV.2</div>
-      <div class="lv-name-new">Spark</div>
-      <div class="lv-korean-new">점화 단계</div>
-      <span class="lv-target">초등 2-4학년</span>
-      <div class="lv-detail open" style="max-height:none;opacity:1;">
-        <p>엔트리로 나만의 첫 번째 프로그램을 완성하는 단계. 변수·조건·반복의 핵심 개념을 배우고, 로봇 코딩으로 알고리즘을 구현하며, 메타버스 환경에서 디지털 공간 설계까지 경험합니다.</p>
+      <div class="lv-card-inner">
+        <div class="lv-card-left">
+          <div class="lv-num-new">LV.2</div>
+          <div class="lv-name-new">Spark</div>
+          <div class="lv-korean-new">점화 단계</div>
+          <span class="lv-target">초등 2-4학년</span>
+        </div>
+        <div class="lv-card-right">
+          <p>알고리즘적 사고를 실제 프로그램으로 구현하는 단계입니다. 엔트리 기반 프로젝트에서 변수·조건·반복 구조를 체득하고, 로봇 코딩으로 알고리즘의 물리적 작동을 검증하며, 메타버스 플랫폼에서 학생 주도의 디지털 공간을 직접 설계·발표합니다.</p>
+        </div>
       </div>
     </div>
 
     <!-- LV3 -->
     <div class="lv-card-new lv3">
       <div class="lv-char-corner"><svg width="52" height="68" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="shm2"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#EF9F27"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#EF9F27"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#shm2)"/><circle cx="0" cy="-16" r="25" fill="#2C1A06"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#EF9F27" stroke-width="2.4"/><circle cx="0" cy="-16" r="8" fill="none" stroke="#EF9F27" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#EF9F27"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#1A0A04"/><circle cx="8.5" cy="-21" r="4" fill="#1A0A04"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><ellipse cx="0" cy="-5" rx="4.5" ry="4.2" fill="#1A1A1A" stroke="white" stroke-width="2"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg></div>
-      <div class="lv-num-new">LV.3</div>
-      <div class="lv-name-new">Probe</div>
-      <div class="lv-korean-new">탐구 단계</div>
-      <span class="lv-target">초등 4-6학년</span>
-      <div class="lv-detail open" style="max-height:none;opacity:1;">
-        <p>디지털과 물리 세계를 연결하는 피지컬 컴퓨팅 단계. 엔트리 기반 응용 프로그램 개발과 함께, 센서·모터를 활용한 피지컬 코딩, 앱인벤터로 나만의 스마트폰 앱을 직접 제작합니다.</p>
+      <div class="lv-card-inner">
+        <div class="lv-card-left">
+          <div class="lv-num-new">LV.3</div>
+          <div class="lv-name-new">Probe</div>
+          <div class="lv-korean-new">탐구 단계</div>
+          <span class="lv-target">초등 4-6학년</span>
+        </div>
+        <div class="lv-card-right">
+          <p>소프트웨어와 하드웨어의 융합 설계를 경험하는 탐구 단계입니다. 엔트리 심화 프로젝트로 응용 프로그래밍 역량을 키우고, 센서·액추에이터를 제어하는 피지컬 컴퓨팅 실습으로 IoT 개념을 습득하며, 앱인벤터로 실제 배포 가능한 모바일 애플리케이션을 완성합니다.</p>
+        </div>
       </div>
     </div>
 
     <!-- LV4 -->
     <div class="lv-card-new lv4">
       <div class="lv-char-corner"><svg width="52" height="68" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="shm3"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#D85A30"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#D85A30"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#shm3)"/><circle cx="0" cy="-16" r="25" fill="#2A1010"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#D85A30" stroke-width="2.4"/><circle cx="0" cy="-16" r="9" fill="none" stroke="#D85A30" stroke-width="2.4"/><circle cx="0" cy="-16" r="5" fill="none" stroke="#D85A30" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#D85A30"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#100404"/><circle cx="8.5" cy="-21" r="4" fill="#100404"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-8 -4 Q0 4 8 -4" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><path d="M-5 -3 Q0 1 5 -3" fill="#1A1A1A"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg></div>
-      <div class="lv-num-new">LV.4</div>
-      <div class="lv-name-new">Build</div>
-      <div class="lv-korean-new">제작 단계</div>
-      <span class="lv-target">초등 6학년~중등 1학년</span>
-      <div class="lv-detail open" style="max-height:none;opacity:1;">
-        <p>AI가 어떻게 학습하는지 원리부터 이해하는 단계. 스크래치 기반 머신러닝 도구로 인공지능 모델을 직접 훈련시키고, 피지컬 디바이스와 융합해 AI가 실제로 작동하는 결과물을 제작합니다.</p>
+      <div class="lv-card-inner">
+        <div class="lv-card-left">
+          <div class="lv-num-new">LV.4</div>
+          <div class="lv-name-new">Build</div>
+          <div class="lv-korean-new">제작 단계</div>
+          <span class="lv-target">초등 6학년~중등 1학년</span>
+        </div>
+        <div class="lv-card-right">
+          <p>인공지능의 학습 원리를 직접 실험하고 제작물로 증명하는 단계입니다. 머신러닝 플랫폼으로 데이터 수집·모델 훈련·성능 평가의 AI 개발 사이클을 경험하고, 피지컬 디바이스와 연동해 실생활 문제를 해결하는 AI 융합 결과물을 설계·구현합니다.</p>
+        </div>
       </div>
     </div>
 
     <!-- LV5 -->
     <div class="lv-card-new lv5">
       <div class="lv-char-corner" style="overflow:visible;"><svg width="52" height="77" viewBox="-42 -95 84 125" xmlns="http://www.w3.org/2000/svg" overflow="visible"><defs><filter id="shm4"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#shm4)"/><circle cx="0" cy="-16" r="25" fill="#1A1030"/><circle cx="0" cy="-16" r="15" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="10" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="5.5" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="2" fill="none" stroke="#7F77DD" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#7F77DD"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A0620"/><circle cx="8.5" cy="-21" r="4" fill="#0A0620"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-10 -5 Q0 8 10 -5 Z" fill="rgba(255,255,255,0.9)"/><path d="M-10 -5 Q0 8 10 -5" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/><circle cx="-7" cy="-53" r="6" fill="#534AB7"/><circle cx="0" cy="-55" r="6" fill="#534AB7"/><circle cx="7" cy="-53" r="6" fill="#534AB7"/><rect x="-11" y="-54" width="22" height="9" fill="#534AB7"/><rect x="-11" y="-50" width="22" height="5" rx="2" fill="#3C3489"/><circle cx="-7" cy="-58" r="1.8" fill="#CECBF6"/><circle cx="0" cy="-60" r="2.2" fill="#EEEDFE"/><circle cx="7" cy="-58" r="1.8" fill="#CECBF6"/></svg></div>
-      <div class="lv-num-new">LV.5</div>
-      <div class="lv-name-new">Master</div>
-      <div class="lv-korean-new">통달 단계</div>
-      <span class="lv-target">중등~</span>
-      <div class="lv-detail open" style="max-height:none;opacity:1;">
-        <p>실전 언어로 문제를 해결하는 최종 단계. Python을 활용한 교과 융합 프로젝트, 정렬·탐색 알고리즘 설계, 데이터 분석 및 인공지능 모델 구현까지 — 소프트웨어 역량을 종합적으로 완성합니다.</p>
+      <div class="lv-card-inner">
+        <div class="lv-card-left">
+          <div class="lv-num-new">LV.5</div>
+          <div class="lv-name-new">Master</div>
+          <div class="lv-korean-new">통달 단계</div>
+          <span class="lv-target">중등~</span>
+        </div>
+        <div class="lv-card-right">
+          <p>Python을 기반으로 소프트웨어 개발 역량을 종합적으로 완성하는 단계입니다. 정렬·탐색 알고리즘 설계, 데이터 수집·시각화·분석, 머신러닝 모델 구현까지 — 실세계 문제를 스스로 정의하고 해결하는 전 과정을 수행하며, 탐구보고서와 포트폴리오로 결과를 정리해 활용할 수 있습니다.</p>
+        </div>
       </div>
     </div>
 
   </div>
 </section>
+<!-- GRAND SLAM -->
+<section id="grandslam" class="grand-slam">
+  <div class="s-label">Graduation</div>
+  <h2 class="s-title">Q-Grand Slam</h2>
+  <p class="s-desc">큐비아 랩의 졸업은 단순한 기간 이수가 아닙니다. 탐구·창작·발표·실행의 다섯 영역에서 균형 있는 성취를 증명해야 완성됩니다.</p>
+  <div class="slam-grid reveal">
+    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">📜</span><div class="slam-name">Qualification</div><div class="slam-title2">Q1 · 자격 인증</div><p class="slam-desc2">코딩 자격증, SW 관련 공인 시험 등 객관적인 기준으로 실력을 증명하는 단계입니다. 단순 학습을 넘어, 성취를 눈에 보이는 결과로 확인할 수 있습니다. 초등·중등 시기부터 준비한 자격은 고등학교 진학과 이후 진로 선택에서 신뢰도 높은 기반이 됩니다.</p><div class="slam-no">01/05</div></div>
+    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">🏅</span><div class="slam-name">Quest Award</div><div class="slam-title2">Q2 · 대회 수상</div><p class="slam-desc2">SW·발명·과학·수학 분야의 외부 공인 대회 입상을 통해 실력을 검증하는 단계입니다. 준비 과정에서 문제 해결력과 창의적 사고를 함께 기를 수 있습니다. 이러한 수상 경험은 고등학교에서 중요한 활동 이력으로 이어집니다.</p><div class="slam-no">02/05</div></div>
+    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">💻</span><div class="slam-name">Quirious Build</div><div class="slam-title2">Q3 · 디지털 빌드</div><p class="slam-desc2">앱, 웹사이트, 게임, 자동화 프로그램 등 실제로 작동하는 결과물을 직접 기획하고 제작하는 단계입니다. 아이디어를 구현하는 과정을 통해 실전형 문제 해결 능력을 기릅니다. 완성된 결과물은 나만의 포트폴리오가 됩니다.</p><div class="slam-no">03/05</div></div>
+    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">📄</span><div class="slam-name">Query Report</div><div class="slam-title2">Q4 · 탐구보고서</div><p class="slam-desc2">문제 제기부터 실험, 데이터 분석, 결론 도출까지의 전 과정을 스스로 수행하는 탐구형 보고서입니다. 단순한 지식 암기를 넘어, 질문하고 검증하는 사고력을 기릅니다. 초등·중등 시기부터 탐구보고서를 꾸준히 작성한 경험은, 고등학교에서 큰 강점으로 이어집니다.</p><div class="slam-no">04/05</div></div>
+    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">⚙️</span><div class="slam-name">Quantum Make</div><div class="slam-title2">Q5 · 융합 설계</div><p class="slam-desc2">3D프린팅, 전자회로, 아두이노 등으로 실물 결과물을 직접 설계하고 제작하는 단계입니다. 소프트웨어와 하드웨어를 연결하며 융합적 사고를 확장합니다. 화면 속 코드가 현실에서 작동하는 경험은, 메이커·엔지니어링 계열 진로를 탐색하는 데 가장 강력한 차별점이 됩니다.</p><div class="slam-no">05/05</div></div>
+  </div>
+</section>
+
 <!-- FILM STRIP GALLERY -->
-<section id="gallery" style="padding:80px 0;background:#1a1a2e;overflow:hidden;position:relative;">
+<section id="gallery" style="padding:80px 0;background:#ffffff;overflow:hidden;position:relative;">
   <div style="padding:0 5%;margin-bottom:2rem;">
-    <div class="s-label" style="color:rgba(255,255,255,0.35);">Gallery</div>
-    <h2 class="s-title" style="color:white;">학생 활동 사진</h2>
-    <p style="font-size:0.9rem;color:rgba(255,255,255,0.45);line-height:1.8;">큐비아 랩의 생생한 수업 현장을 만나보세요.</p>
+    <div class="s-label" style="color:rgba(0,0,0,0.35);">Gallery</div>
+    <h2 class="s-title" style="color:var(--ink);">학생 활동 사진</h2>
+    <p style="font-size:0.9rem;color:var(--ink2);line-height:1.8;">큐비아 랩의 생생한 수업 현장을 만나보세요.</p>
   </div>
 
   <!-- 필름 스트립 레일 -->
@@ -761,7 +912,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   </div>
 
   <!-- photoInput removed: 관리자 전용 -->
-  <p style="text-align:center;font-family:var(--mono);font-size:0.65rem;color:rgba(255,255,255,0.3);letter-spacing:0.15em;margin-top:1.5rem;">관리자 페이지에서 사진을 등록할 수 있어요 · 자동 재생</p>
+  <p style="text-align:center;font-family:var(--mono);font-size:0.65rem;color:rgba(0,0,0,0.3);letter-spacing:0.15em;margin-top:1.5rem;">관리자 페이지에서 사진을 등록할 수 있어요 · 자동 재생</p>
 </section>
 
 <style>
@@ -769,8 +920,8 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 .film-strip-wrap::before,.film-strip-wrap::after{
   content:'';position:absolute;top:0;bottom:0;width:80px;z-index:10;
 }
-.film-strip-wrap::before{left:0;background:linear-gradient(90deg,#1a1a2e,transparent);}
-.film-strip-wrap::after{right:0;background:linear-gradient(-90deg,#1a1a2e,transparent);}
+.film-strip-wrap::before{left:0;background:linear-gradient(90deg,#ffffff,transparent);}
+.film-strip-wrap::after{right:0;background:linear-gradient(-90deg,#ffffff,transparent);}
 .film-strip{
   display:flex;gap:8px;
   width:max-content;
@@ -810,20 +961,6 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 }
 </style>
 
-<!-- GRAND SLAM -->
-<section id="grandslam" class="grand-slam">
-  <div class="s-label">Graduation</div>
-  <h2 class="s-title">Q-Grand Slam</h2>
-  <p class="s-desc">큐비아 랩의 졸업은 단순한 기간 이수가 아닙니다. 탐구·창작·발표·실행의 다섯 영역에서 균형 있는 성취를 증명해야 완성됩니다.</p>
-  <div class="slam-grid reveal">
-    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">📜</span><div class="slam-name">Qualification</div><div class="slam-title2">Q1 · 자격 인증</div><p class="slam-desc2">공인 자격증 취득 또는 검정형 성취 인증. 코딩자격증, 정보처리기능사, SW 관련 공인 시험 등을 통해 실력을 객관적으로 증명합니다.</p><div class="slam-no">01/05</div></div>
-    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">🏅</span><div class="slam-name">Quest Award</div><div class="slam-title2">Q2 · 대회 수상</div><p class="slam-desc2">SW 경진대회, 발명대회, 과학탐구올림피아드, 수학경시대회 등 외부 공인 대회에서 수상하여 역량을 입증합니다.</p><div class="slam-no">02/05</div></div>
-    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">💻</span><div class="slam-name">Quirious Build</div><div class="slam-title2">Q3 · 디지털 빌드</div><p class="slam-desc2">직접 기획·개발·배포한 실제 작동하는 서비스나 프로그램을 포트폴리오로 제출합니다.</p><div class="slam-no">03/05</div></div>
-    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">📄</span><div class="slam-name">Query Report</div><div class="slam-title2">Q4 · 탐구보고서</div><p class="slam-desc2">가설 설정, 실험, 데이터 수집, 결론 도출의 과학적 탐구 절차를 완전히 수행한 보고서를 제출합니다.</p><div class="slam-no">04/05</div></div>
-    <div class="slam-card2"><div class="slam-q">Q</div><span class="slam-icon2">⚙️</span><div class="slam-name">Quantum Make</div><div class="slam-title2">Q5 · 융합 설계</div><p class="slam-desc2">다양한 분야의 지식을 융합하여 독창적인 결과물을 설계·제작합니다. 발명품, 3D 출력물, 전자회로, 메이커 작품 등 물리적 산출물을 완성합니다.</p><div class="slam-no">05/05</div></div>
-  </div>
-</section>
-
 <!-- STUDENT WORKS -->
 <section id="works" class="awards-section">
   <div class="s-label">Student Works</div>
@@ -857,15 +994,51 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 <section id="contact" class="contact-section">
   <div class="s-label">Contact</div>
   <h2 class="s-title">상담 & 수업 신청</h2>
-  <p class="s-desc">무료 레벨 진단 후 우리 아이에게 맞는 과정을 안내해 드립니다.</p>
+  <p class="s-desc">상담 및 레벨 진단 후 학생에게 맞는 과정을 안내해 드립니다.</p>
   <div class="contact-grid reveal">
     <div class="c-info">
-      <!-- 포인트 박스 상단 이동 + 크게 -->
-      <div class="c-highlight-box">
-        <div class="c-hl-item">✓ 무료 레벨 진단</div>
-        <div class="c-hl-item">✓ 체험 수업 제공</div>
-        <div class="c-hl-item">✓ 학생 포털 계정 발급</div>
+
+      <!-- SNS 미리보기 -->
+      <div class="sns-preview-box">
+        <div class="sns-preview-label">큐비아 랩 소식 보기</div>
+        <div class="sns-links">
+          <a class="sns-card" href="https://www.instagram.com/quvia_lab" target="_blank" rel="noopener">
+            <div class="sns-card-header sns-insta">
+              <span class="sns-icon-img">📷</span>
+              <div>
+                <div class="sns-platform">Instagram</div>
+                <div class="sns-handle">@quvia_lab</div>
+              </div>
+              <span class="sns-arrow">↗</span>
+            </div>
+            <div class="sns-thumb-grid">
+              <div class="sns-thumb-ph"></div>
+              <div class="sns-thumb-ph"></div>
+              <div class="sns-thumb-ph"></div>
+              <div class="sns-thumb-ph"></div>
+              <div class="sns-thumb-ph"></div>
+              <div class="sns-thumb-ph"></div>
+            </div>
+            <div class="sns-card-footer">수업 현장 사진 보기 →</div>
+          </a>
+
+          <a class="sns-card" href="https://blog.naver.com/quvia_lab" target="_blank" rel="noopener">
+            <div class="sns-card-header sns-naver">
+              <span class="sns-icon-img">📝</span>
+              <div>
+                <div class="sns-platform">Naver Blog</div>
+                <div class="sns-handle">큐비아 탐구학원</div>
+              </div>
+              <span class="sns-arrow">↗</span>
+            </div>
+            <div class="sns-blog-list">
+              <div class="sns-blog-item"><span class="sns-blog-dot"></span><span>실제 수업과 결과가 궁금하시다면, 블로그에서 확인해보세요</span></div>
+            </div>
+            <div class="sns-card-footer">블로그에서 자세히 보기 →</div>
+          </a>
+        </div>
       </div>
+
       <div class="c-row"><div class="c-icon">📍</div><div><div class="c-label">Location</div><div class="c-val" id="contact-addr">경산시 압독 2로 2길 36, 4층</div></div></div>
       <div class="c-row"><div class="c-icon">📞</div><div><div class="c-label">Phone</div><div class="c-val" id="contact-phone">010-8029-9770</div></div></div>
       <div class="c-row"><div class="c-icon">📷</div><div><div class="c-label">Instagram</div><div class="c-val" id="contact-insta">@quvia_lab (주소 업데이트 예정)</div></div></div>
@@ -2338,7 +2511,50 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderFeatured();
   renderWorksSlider();
   renderFilmPhotos&&renderFilmPhotos();
+  alignHeroPanel();
 });
+
+function alignHeroPanel(){
+  function doAlign(){
+    const hero    = document.querySelector('.hero');
+    const logo    = document.querySelector('.hero-logo');
+    const actions = document.querySelector('#heroActions');
+    const right   = document.querySelector('#heroRight');
+    const panel   = document.querySelector('#heroAwardPanel');
+    if(!hero||!logo||!actions||!right||!panel) return;
+
+    // 모바일이면 스킵
+    if(window.innerWidth < 768) {
+      right.style.paddingTop = '';
+      panel.style.height = '';
+      panel.style.maxHeight = '';
+      return;
+    }
+
+    const heroTop     = hero.getBoundingClientRect().top + window.scrollY;
+    const eyebrow     = document.querySelector('.hero-eyebrow');
+    const eyebrowTop  = (eyebrow ? eyebrow : logo).getBoundingClientRect().top + window.scrollY;
+    const logoTop     = logo.getBoundingClientRect().top  + window.scrollY;
+    const actionsBot  = actions.getBoundingClientRect().bottom + window.scrollY;
+
+    const panelTop    = eyebrowTop - heroTop;        // eyebrow 상단 기준
+    const panelHeight = actionsBot - eyebrowTop;     // eyebrow 상단 ~ 버튼 하단 높이
+
+    right.style.paddingTop    = panelTop + 'px';
+    right.style.paddingBottom = '0';
+    right.style.alignItems    = 'stretch';
+    panel.style.height        = panelHeight + 'px';
+    panel.style.maxHeight     = panelHeight + 'px';
+    panel.style.overflow      = 'hidden';
+  }
+
+  // 애니메이션(fadeUp) 완료 후 실행 + 폰트 로드 후 재실행
+  setTimeout(doAlign, 100);
+  setTimeout(doAlign, 500);
+  setTimeout(doAlign, 1200);
+  window.addEventListener('resize', doAlign);
+  document.fonts && document.fonts.ready.then(doAlign);
+}
 
 
 // ════════════════════════════════

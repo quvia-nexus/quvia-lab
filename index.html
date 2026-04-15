@@ -372,14 +372,12 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 }
 .lv-card-new:hover .lv-char-corner{opacity:1;}
 .lv-card-inner{display:flex;flex-direction:row;gap:2rem;align-items:center;padding-right:70px;overflow:hidden;}
-.lv-card-left{flex:0 0 200px;min-width:0;}
-.lv-card-right{flex:1;min-width:0;}
-.lv-card-left{display:flex;flex-direction:column;}
+.lv-card-left{flex:0 0 clamp(160px,30%,220px);min-width:0;display:flex;flex-direction:column;}
+.lv-card-right{flex:1;min-width:0;display:flex;align-items:center;}
+.lv-card-right p{font-size:0.97rem;color:var(--ink2);line-height:1.9;word-break:keep-all;margin:0;}
 .lv-num-new{font-family:var(--mono);font-size:1.2rem;color:var(--muted);letter-spacing:0.12em;margin-bottom:.3rem;}
 .lv-name-new{font-family:var(--serif);font-size:clamp(2.4rem,3.5vw,3.6rem);font-weight:700;font-style:italic;color:var(--ink);line-height:1;margin-bottom:4px;}
 .lv-korean-new{font-family:var(--mono);font-size:1.1rem;color:var(--muted);letter-spacing:0.08em;margin-bottom:.8rem;}
-.lv-card-right{display:flex;align-items:center;}
-.lv-card-right p{font-size:0.97rem;color:var(--ink2);line-height:1.9;word-break:keep-all;margin:0;}
 
 .lv-detail{
   max-height:0;overflow:hidden;
@@ -487,7 +485,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
   .hero-body{font-size:0.88rem !important;line-height:1.8;margin-bottom:1.5rem !important;}
   .hero-actions{flex-wrap:wrap;gap:.6rem;}
   .btn-primary,.btn-outline{padding:11px 20px;font-size:.85rem;}
-  .hero-right{display:block !important;opacity:1 !important;animation:none !important;padding-top:0 !important;}
+  .hero-right{display:block !important;opacity:1 !important;animation:none !important;padding:0 !important;}
   .hero-award-panel{gap:.5rem;height:auto !important;max-height:none !important;}
   .hap-featured{padding:12px 14px;}
   .hap-feat-title{font-size:0.88rem !important;}
@@ -2546,7 +2544,7 @@ function alignHeroPanel(){
     const panel   = document.querySelector('#heroAwardPanel');
     if(!hero||!logo||!actions||!right||!panel) return;
 
-    // 모바일이면 모든 인라인 스타일 완전 초기화
+    // 모바일이면 인라인 스타일 제거하고 종료
     if(window.innerWidth < 768) {
       right.removeAttribute('style');
       panel.removeAttribute('style');
@@ -2556,11 +2554,10 @@ function alignHeroPanel(){
     const heroTop     = hero.getBoundingClientRect().top + window.scrollY;
     const eyebrow     = document.querySelector('.hero-eyebrow');
     const eyebrowTop  = (eyebrow ? eyebrow : logo).getBoundingClientRect().top + window.scrollY;
-    const logoTop     = logo.getBoundingClientRect().top  + window.scrollY;
     const actionsBot  = actions.getBoundingClientRect().bottom + window.scrollY;
 
-    const panelTop    = eyebrowTop - heroTop;        // eyebrow 상단 기준
-    const panelHeight = actionsBot - eyebrowTop;     // eyebrow 상단 ~ 버튼 하단 높이
+    const panelTop    = eyebrowTop - heroTop;
+    const panelHeight = actionsBot - eyebrowTop;
 
     right.style.paddingTop    = panelTop + 'px';
     right.style.paddingBottom = '0';
@@ -2570,12 +2567,14 @@ function alignHeroPanel(){
     panel.style.overflow      = 'hidden';
   }
 
-  // 애니메이션(fadeUp) 완료 후 실행 + 폰트 로드 후 재실행
-  setTimeout(doAlign, 100);
-  setTimeout(doAlign, 500);
-  setTimeout(doAlign, 1200);
+  // PC에서만 실행 (모바일은 이미 내부에서 차단됨)
+  if(window.innerWidth >= 768) {
+    setTimeout(doAlign, 100);
+    setTimeout(doAlign, 500);
+    setTimeout(doAlign, 1200);
+    document.fonts && document.fonts.ready.then(doAlign);
+  }
   window.addEventListener('resize', doAlign);
-  document.fonts && document.fonts.ready.then(doAlign);
 }
 
 

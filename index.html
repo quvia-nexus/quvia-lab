@@ -81,6 +81,7 @@ nav{position:fixed;top:0;width:100%;z-index:300;height:56px;padding:0 3%;display
 
 /* SECTION COMMON */
 section{padding:96px 5%;}
+section#bchar-section{padding:0 !important;}
 .s-label{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
 .s-label::after{content:'';width:32px;height:1px;background:var(--border2);}
 .s-title{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);line-height:1.12;letter-spacing:-0.02em;margin-bottom:1rem;}
@@ -101,19 +102,24 @@ section{padding:96px 5%;}
 .pl-desc{font-size:0.82rem;color:rgba(255,255,255,0.65);line-height:1.5;word-break:keep-all;}
 .brand-chars{margin-top:3rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:2.5rem;}
 .brand-chars-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.5rem;}
+#bchar-section{padding-left:0 !important;padding-right:0 !important;padding-top:2.5rem !important;padding-bottom:0 !important;}
 .bchar-grid{
   display:flex;
-  gap:1px;
+  gap:0;
   overflow-x:auto;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
-  background:rgba(255,255,255,0.2);
-  justify-content:center;
+  background:#e8ede6;
+  margin-top:1.5rem;
 }
 .bchar-grid::-webkit-scrollbar{height:3px;}
-.bchar-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.25);border-radius:2px;}
-.bchar{flex:0 0 clamp(150px,20vw,220px);scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:5px;padding:1rem 0.8rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);transition:background 0.25s;text-align:center;overflow:visible;}
-.bchar:hover{background:rgba(255,255,255,0.22);}
+.bchar-grid::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px;}
+.bchar{flex:1 1 16.666vw;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:8px;padding:2.5rem 1rem;background:#2d3d28;border-right:1px solid rgba(255,255,255,0.1);transition:background 0.25s;text-align:center;overflow:visible;box-sizing:border-box;}
+.bchar:last-child{border-right:none;}
+.bchar:hover{background:#3a4f34;}
+.bchar-name{font-family:var(--serif);font-size:1.1rem;font-weight:600;color:white;margin-top:0;}
+.bchar-lv{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+.bchar-line{font-family:var(--serif);font-size:0.82rem;font-style:italic;color:rgba(255,255,255,0.7);line-height:1.5;margin-top:2px;}
 .bchar-name{font-family:var(--serif);font-size:1rem;font-weight:600;color:white;margin-top:0;}
 .bchar-lv{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
 .bchar-line{font-family:var(--serif);font-size:0.78rem;font-style:italic;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:2px;}
@@ -437,8 +443,8 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 .modal-body{padding:24px;}
 .modal-title{font-family:var(--serif-kr);font-size:1.4rem;font-weight:600;margin-bottom:1rem;color:var(--ink);}
 
-@media(max-width:960px){.hero{grid-template-columns:1fr 1fr;}.levels-grid,.slam-grid{grid-template-columns:1fr 1fr;}.brand-grid{grid-template-columns:1fr;}.contact-grid{grid-template-columns:1fr;gap:2.5rem;}.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}.dash-grid{grid-template-columns:1fr 1fr;}.bchar-grid{grid-template-columns:repeat(3,1fr);}.awards-grid{grid-template-columns:1fr;}}
-@media(max-width:640px){nav .nav-links{display:none;}.levels-grid,.slam-grid{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}.dash-grid{grid-template-columns:1fr;}.bchar-grid{grid-template-columns:repeat(2,1fr);}.awards-summary{grid-template-columns:1fr 1fr;}}
+@media(max-width:960px){.hero{grid-template-columns:1fr 1fr;}.levels-grid,.slam-grid{grid-template-columns:1fr 1fr;}.brand-grid{grid-template-columns:1fr;}.contact-grid{grid-template-columns:1fr;gap:2.5rem;}.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}.dash-grid{grid-template-columns:1fr 1fr;}.awards-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){nav .nav-links{display:none;}.levels-grid,.slam-grid{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}.dash-grid{grid-template-columns:1fr;}.awards-summary{grid-template-columns:1fr 1fr;}}
 
   .levels-grid-new{grid-template-columns:1fr 1fr !important;}
   .slam-grid{grid-template-columns:1fr 1fr !important;}
@@ -585,13 +591,12 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 
 
 .bchar-slam{
-  background:rgba(255,215,0,0.08);
-  border:1px solid rgba(255,215,0,0.25) !important;
-  border-right:none !important;
+  background:#3b2f6e !important;
+  border-right:1px solid rgba(255,255,255,0.1) !important;
   transition:background 0.3s, transform 0.25s;
 }
 .bchar-slam:hover{
-  background:rgba(255,215,0,0.15) !important;
+  background:#4e3d8e !important;
   transform:translateY(-4px);
 }
 .bchar-slam-badge{
@@ -686,9 +691,14 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
       <div class="pillar"><div class="pl-let">P</div><div><div class="pl-word">Prove</div><div class="pl-desc">결과물로 실력을 입증하라. 대담하게 증명하라. 탐구는 결과물로 완성된다.</div></div></div>
     </div>
   </div>
-  <div class="brand-chars reveal">
-    <div class="brand-chars-label">탐구자의 5단계 캐릭터</div>
-    <div class="bchar-grid">
+</section>
+
+<!-- 탐구자의 5단계 캐릭터 - 별도 섹션 -->
+<section id="bchar-section" style="background:#e8ede6;padding:0;overflow:hidden;">
+  <div style="padding:2.5rem 5% 1.5rem;">
+    <div class="brand-chars-label" style="color:var(--muted);">탐구자의 5단계 캐릭터</div>
+  </div>
+  <div class="bchar-grid">
       <div class="bchar" style="padding-top:16px;"><svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sh0"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#378ADD"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#378ADD"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh0)"/><circle cx="0" cy="-16" r="25" fill="#1B2E4A"/><circle cx="0" cy="-16" r="5" fill="#378ADD"/><circle cx="-17" cy="-12" r="5" fill="#F4AABC"/><circle cx="17" cy="-12" r="5" fill="#F4AABC"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A1A30"/><circle cx="8.5" cy="-21" r="4" fill="#0A1A30"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-8 -6 Q0 2 8 -6" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg><div class="bchar-name">큐리</div><div class="bchar-lv">LV.1 Sense</div><div class="bchar-line">"뭐가 있을까?"</div></div>
       <div class="bchar" style="padding-top:16px;"><svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sh1"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#1D9E75"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#1D9E75"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh1)"/><circle cx="0" cy="-16" r="25" fill="#14332A"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#1D9E75" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#1D9E75"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A1E14"/><circle cx="8.5" cy="-21" r="4" fill="#0A1E14"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-5 -6 Q0 -2 5 -6" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg><div class="bchar-name">큐로</div><div class="bchar-lv">LV.2 Spark</div><div class="bchar-line">"내가 해볼게."</div></div>
       <div class="bchar" style="padding-top:16px;"><svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sh2"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#EF9F27"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#EF9F27"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh2)"/><circle cx="0" cy="-16" r="25" fill="#2C1A06"/><circle cx="0" cy="-16" r="14" fill="none" stroke="#EF9F27" stroke-width="2.4"/><circle cx="0" cy="-16" r="8" fill="none" stroke="#EF9F27" stroke-width="2.4"/><circle cx="0" cy="-16" r="3" fill="#EF9F27"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#1A0A04"/><circle cx="8.5" cy="-21" r="4" fill="#1A0A04"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><ellipse cx="0" cy="-5" rx="4.5" ry="4.2" fill="#1A1A1A" stroke="white" stroke-width="2"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg><div class="bchar-name">큐브</div><div class="bchar-lv">LV.3 Probe</div><div class="bchar-line">"왜 그럴까?"</div></div>
@@ -2600,7 +2610,7 @@ function alignHeroPanel(){
     const eyebrowTop  = (eyebrow ? eyebrow : logo).getBoundingClientRect().top + window.scrollY;
     const actionsBot  = actions.getBoundingClientRect().bottom + window.scrollY;
 
-    const panelTop    = eyebrowTop - heroTop;
+    const panelTop    = Math.max(0, eyebrowTop - heroTop - 40);
     const panelHeight = actionsBot - eyebrowTop;
 
     right.style.paddingTop    = panelTop + 'px';

@@ -102,19 +102,15 @@ section#bchar-section{padding:0 !important;}
 .pl-desc{font-size:0.82rem;color:rgba(255,255,255,0.65);line-height:1.5;word-break:keep-all;}
 .brand-chars{margin-top:3rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:2.5rem;}
 .brand-chars-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.5rem;}
-#bchar-section{padding-left:0 !important;padding-right:0 !important;padding-top:2.5rem !important;padding-bottom:0 !important;}
+#bchar-section{padding:0 !important;}
 .bchar-grid{
-  display:flex;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
   gap:0;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
+  width:100%;
   background:#e8ede6;
-  margin-top:1.5rem;
 }
-.bchar-grid::-webkit-scrollbar{height:3px;}
-.bchar-grid::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px;}
-.bchar{flex:1 1 16.666vw;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:8px;padding:2.5rem 1rem;background:#2d3d28;border-right:1px solid rgba(255,255,255,0.1);transition:background 0.25s;text-align:center;overflow:visible;box-sizing:border-box;}
+.bchar{display:flex;flex-direction:column;align-items:center;gap:8px;padding:3rem 1rem;background:#2d3d28;border-right:1px solid rgba(255,255,255,0.1);transition:background 0.25s;text-align:center;overflow:visible;box-sizing:border-box;}
 .bchar:last-child{border-right:none;}
 .bchar:hover{background:#3a4f34;}
 .bchar-name{font-family:var(--serif);font-size:1.1rem;font-weight:600;color:white;margin-top:0;}
@@ -696,7 +692,7 @@ footer{background:var(--ink);color:white;padding:60px 5% 40px;}
 <!-- 탐구자의 5단계 캐릭터 - 별도 섹션 -->
 <section id="bchar-section" style="background:#e8ede6;padding:0;overflow:hidden;">
   <div style="padding:2.5rem 5% 1.5rem;">
-    <div class="brand-chars-label" style="color:var(--muted);">탐구자의 5단계 캐릭터</div>
+    <div class="brand-chars-label" style="color:#1a1a1a;font-size:1.1rem;letter-spacing:0.15em;font-weight:700;">탐구자의 5단계 캐릭터</div>
   </div>
   <div class="bchar-grid">
       <div class="bchar" style="padding-top:16px;"><svg width="64" height="83" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sh0"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.10)"/></filter></defs><circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="-14" cy="-42" r="5" fill="#378ADD"/><circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/><circle cx="14" cy="-42" r="5" fill="#378ADD"/><circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh0)"/><circle cx="0" cy="-16" r="25" fill="#1B2E4A"/><circle cx="0" cy="-16" r="5" fill="#378ADD"/><circle cx="-17" cy="-12" r="5" fill="#F4AABC"/><circle cx="17" cy="-12" r="5" fill="#F4AABC"/><circle cx="-8" cy="-22" r="6.5" fill="white"/><circle cx="8" cy="-22" r="6.5" fill="white"/><circle cx="-7.5" cy="-21" r="4" fill="#0A1A30"/><circle cx="8.5" cy="-21" r="4" fill="#0A1A30"/><circle cx="-9.5" cy="-23" r="1.6" fill="white"/><circle cx="6.5" cy="-23" r="1.6" fill="white"/><path d="M-8 -6 Q0 2 8 -6" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"/><rect x="22" y="-1" width="22" height="9" rx="4.5" fill="#534AB7" transform="rotate(40 22 -1)"/></svg><div class="bchar-name">큐리</div><div class="bchar-lv">LV.1 Sense</div><div class="bchar-line">"뭐가 있을까?"</div></div>
@@ -1578,6 +1574,58 @@ const DB = {
   get:(k,def={})=>{try{return JSON.parse(localStorage.getItem('quvia_'+k))||def;}catch{return def;}},
   set:(k,v)=>localStorage.setItem('quvia_'+k,JSON.stringify(v))
 };
+
+// 수상실적 버전 강제 업데이트 (v2025)
+(function forceUpdateAwards(){
+  var AWARDS_VERSION = 'v2025_04';
+  if(localStorage.getItem('quvia_awards_version') !== AWARDS_VERSION){
+    var newAwards = [
+      {icon:'🥇',name:'2025년 과학기술정보통신부 장관상_AI융합',sub:'장관상',cat:'SW'},
+      {icon:'🏅',name:'2025 과학,정보 영재교육원 합격_DGIST, 경북대,대구교대, 교육청',sub:'영재교육원',cat:'과학'},
+      {icon:'🥉',name:'제 7회 전국학생 코딩 경진대회_동상2, 장려상5',sub:'동상,장려상',cat:'SW'},
+      {icon:'🥉',name:'2025 초중고 sw경진대회_중등부_3위',sub:'3위',cat:'SW'},
+      {icon:'🥉',name:'2025 초중고 sw경진대회_초등부_동상, 장려상,인기상2',sub:'동상,장려상,인기상',cat:'SW'},
+      {icon:'🏅',name:'2025 초중고 sw경진대회_초등부_대상',sub:'대상',cat:'SW'},
+      {icon:'🥈',name:'2025년 청소년 과학탐구대회_AI융합부문_은상, 동상',sub:'은상,동상',cat:'SW'},
+      {icon:'🏅',name:'2024 초중고 sw경진대회_초등부_대상',sub:'대상',cat:'SW'},
+      {icon:'🥈',name:'2024년 청소년 과학탐구대회_AI융합부문_은상',sub:'은상',cat:'SW'},
+      {icon:'🏅',name:'제 11회 sw 사고력 올림피아드 대회_특별상_4명',sub:'특별상',cat:'SW사고력'},
+      {icon:'🏅',name:'제 11회 sw 사고력 올림피아드 대회_본상_장려상2',sub:'장려상2',cat:'SW사고력'},
+      {icon:'🥇',name:'제 4회 spring 코딩 페스티벌_로봇센서부문_중고등부 1위, 3위',sub:'1위,3위',cat:'SW'},
+      {icon:'🥉',name:'제 4회 spring 코딩 페스티벌_로봇센서부문_초등고_3위',sub:'3위',cat:'SW'},
+      {icon:'🥉',name:'제 4회 spring 코딩 페스티벌_로봇센서부문_초등저_2위',sub:'2위',cat:'SW'},
+      {icon:'🏅',name:'충북 SDGS 이노베이터 대회_큐브로이드_최우수상1, 우수상1',sub:'최우수상,우수상',cat:'SW'},
+      {icon:'🏅',name:'충북 SDGS 이노베이터 대회_코드위즈_최우수상1, 우수상1',sub:'최우수,우수',cat:'SW'},
+      {icon:'🏅',name:'2025 4회 Wonderchild AI발명대회_과학혁신상',sub:'혁신상',cat:'발명'},
+      {icon:'🥈',name:'2024 국제 로봇콘테스트_중고등부_2위',sub:'2위',cat:'SW'},
+      {icon:'🥇',name:'2024 국제 로봇콘테스트_AI자원전쟁_금상1, 은상2, 동상2',sub:'금상,은상,동상',cat:'SW'},
+      {icon:'🏅',name:'2024 국제 로봇콘테스트_AI자원전쟁_산업통상자원부 장관상',sub:'장관상',cat:'SW'},
+      {icon:'🥉',name:'2024 spring 코딩 페스티벌 AIot_동상2',sub:'동상',cat:'SW'},
+      {icon:'🥇',name:'2024 spring 코딩 페스티벌_로봇_금상1,은상2, 동상2',sub:'금상,은상,동상',cat:'SW'},
+      {icon:'🥈',name:'2023 국제로봇콘테스트_축구 AI 은상',sub:'은상',cat:'SW'},
+      {icon:'🥇',name:'2023 국제로봇콘테스트_유치부_금상',sub:'금상',cat:'SW'},
+      {icon:'🏅',name:'2023 국제로봇콘테스트_산업통상자원부 장관상',sub:'장관상',cat:'SW'},
+      {icon:'🏅',name:'2023 spring 코딩 페스티벌_ 게임개발_장려상1',sub:'장려상',cat:'SW'},
+      {icon:'🏅',name:'2023 spring 코딩 페스티벌_AIot_최우수상',sub:'최우수상',cat:'SW'},
+      {icon:'🥇',name:'2022 국제 로봇콘테스트_AI_ 유치부 금상',sub:'금상',cat:'SW'},
+      {icon:'🥇',name:'2022 국제 로봇콘테스트_AI_초등부 금상1, 은상2, 동상2',sub:'금상,은상,동상',cat:'SW'},
+      {icon:'🥈',name:'2022 국제 로봇콘테스트_AI_초등부 은상',sub:'은상',cat:'SW'},
+      {icon:'🏅',name:'4회 전국 학생코딩대회_장려상',sub:'장려상',cat:'SW'},
+      {icon:'🥇',name:'spring 코딩 페스티벌_게임개발_로봇 금상2, 은상1',sub:'금상,은상',cat:'SW'},
+      {icon:'🥈',name:'spring 코딩 페스티벌_게임개발_주니어 은상1',sub:'은상',cat:'SW'},
+      {icon:'🏅',name:'spring 코딩 페스티벌 로봇_최우수상1, 장려상1',sub:'최우수상,장려상',cat:'SW'},
+      {icon:'🏅',name:'원더리그 코리아 입상',sub:'입상',cat:'SW'},
+      {icon:'🥈',name:'K-edu 인공지능 창작부문 은상',sub:'은상',cat:'SW'},
+    ];
+    localStorage.setItem('quvia_awards_data', JSON.stringify(newAwards));
+    localStorage.setItem('quvia_featured_award', JSON.stringify({
+      badge:'🏆 주요 실적',
+      title:'Quvia-lab ! 큐비아 탐구학원으로 새롭게 시작합니다.',
+      desc:'질문에서 시작해, 탐구로 문제를 발견하고 해결합니다. 코딩으로 아이디어를 구현하고 결과물을 만들어냅니다. 모든 과정과 성과는 기록되어 Q-gland slam 달성하면 나만의 포트폴리오로 완성됩니다.'
+    }));
+    localStorage.setItem('quvia_awards_version', AWARDS_VERSION);
+  }
+})();
 
 function initDefaults(){
   if(!localStorage.getItem('quvia_students')){

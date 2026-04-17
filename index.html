@@ -1667,6 +1667,49 @@ input, textarea, select { font-family: var(--sans); }
   .mobile-section-title { display: block; }
   .hero-bottom-panels { display: block; }
 }
+
+/* 탐구현장 마퀴 슬라이드 */
+.gallery-marquee-wrap {
+  width: 100%;
+  overflow: hidden;
+  padding: 32px 0;
+  background: var(--cream);
+}
+.gallery-marquee-track {
+  display: flex;
+  gap: 16px;
+  animation: galleryScroll 40s linear infinite;
+  width: max-content;
+}
+.gallery-marquee-track:hover { animation-play-state: paused; }
+.gallery-marquee-item {
+  width: 280px;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--g5);
+  position: relative;
+}
+.gallery-marquee-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.3s;
+}
+.gallery-marquee-item:hover img { transform: scale(1.05); }
+.gallery-marquee-desc {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.45);
+  color: white; font-size: 0.75rem; padding: 6px 10px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.gallery-marquee-item:hover .gallery-marquee-desc { opacity: 1; }
+@keyframes galleryScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@media (max-width: 768px) {
+  .gallery-marquee-item { width: 200px; height: 150px; }
+}
 </style>
 </head>
 <body>
@@ -2142,13 +2185,8 @@ input, textarea, select { font-family: var(--sans); }
       <div class="s-title" style="color:white">탐구현장</div>
     </div>
   </div>
-  <div class="container section-sm">
-    <div class="slider-wrap" style="padding:0 24px">
-      <button class="slider-btn prev" id="galleryPrev" onclick="slideGallery(-1)">←</button>
-      <div class="gallery-grid" id="galleryGrid"></div>
-      <button class="slider-btn next" id="galleryNext" onclick="slideGallery(1)">→</button>
-    </div>
-    <div style="text-align:center;margin-top:16px;font-size:0.82rem;color:var(--ink4)" id="galleryPageInfo"></div>
+  <div class="gallery-marquee-wrap">
+    <div class="gallery-marquee-track" id="galleryGrid"></div>
   </div>
 </div>
 
@@ -2565,7 +2603,7 @@ input, textarea, select { font-family: var(--sans); }
       <div id="admin-tab-classes" class="portal-tab">
         <button class="table-action-btn primary" style="margin-bottom:12px" onclick="addClassRow()">+ 클래스 추가</button>
         <table class="admin-table">
-          <thead><tr><th>클래스명</th><th>담당 강사</th><th>설명</th><th>관리</th></tr></thead>
+          <thead><tr><th>요일</th><th>레벨</th><th>시간</th><th>기타</th><th>관리</th></tr></thead>
           <tbody id="classesBody"></tbody>
         </table>
       </div>
@@ -3004,25 +3042,22 @@ const GALLERY_PER = 4;
 function renderGallery(){
   const photos=DB.get('gallery',[]);
   const el=document.getElementById('galleryGrid');
-  const prevBtn=document.getElementById('galleryPrev');
-  const nextBtn=document.getElementById('galleryNext');
-  const info=document.getElementById('galleryPageInfo');
   if(!el) return;
   if(!photos.length){
-    el.innerHTML='<div style="color:var(--ink4);text-align:center;padding:3rem;grid-column:1/-1">등록된 사진이 없습니다.</div>';
-    if(prevBtn) prevBtn.disabled=true;
-    if(nextBtn) nextBtn.disabled=true;
+    el.innerHTML='<div style="color:var(--ink4);padding:3rem;font-size:0.9rem">등록된 사진이 없습니다.</div>';
     return;
   }
-  const slice=photos.slice(galleryPage*GALLERY_PER,(galleryPage+1)*GALLERY_PER);
-  el.innerHTML=slice.map(p=>`
-    <div class="gallery-item">
-      <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}" onerror="this.parentElement.classList.add('gallery-empty');this.remove()">
+  // 마퀴: 사진 2배 복사해서 끊김 없이 반복
+  const validPhotos=photos.filter(p=>p.url);
+  const doubled=[...validPhotos,...validPhotos];
+  el.innerHTML=doubled.map(p=>`
+    <div class="gallery-marquee-item">
+      <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}" onerror="this.style.display='none'">
+      ${p.desc?`<div class="gallery-marquee-desc">${p.desc}</div>`:''}
     </div>`).join('');
-  const total=Math.ceil(photos.length/GALLERY_PER);
-  if(prevBtn) prevBtn.disabled=galleryPage===0;
-  if(nextBtn) nextBtn.disabled=(galleryPage+1)>=total;
-  if(info) info.textContent=`${galleryPage+1} / ${total} 페이지`;
+  // 사진 수에 따라 속도 조절 (많을수록 천천히)
+  const speed=Math.max(20, validPhotos.length*5);
+  el.style.animationDuration=speed+'s';
 }
 function slideGallery(dir){
   const photos=DB.get('gallery',[]);
@@ -3351,7 +3386,10 @@ function renderAdminStudents(){
     <td><input value="${s.school||''}" onchange="updateStudent(${i},'school',this.value)"></td>
     <td><input value="${s.grade||''}" onchange="updateStudent(${i},'grade',this.value)"></td>
     <td><input value="${s.birth||''}" onchange="updateStudent(${i},'birth',this.value)"></td>
-    <td><input value="${s.cls||''}" onchange="updateStudent(${i},'cls',this.value)"></td>
+    <td><select onchange="updateStudent(${i},'cls',this.value)">
+      <option value="">미배정</option>
+      ${DB.get('classes',[]).map(c=>{const nm=getClassName(c);return `<option value="${nm}" ${s.cls===nm?'selected':''}>${nm||'(미설정)'}</option>`;}).join('')}
+    </select></td>
     <td><input value="${s.id||''}" onchange="updateStudent(${i},'id',this.value)"></td>
     <td><input type="password" value="${s.pw||''}" onchange="updateStudent(${i},'pw',this.value)"></td>
     <td><select onchange="updateStudent(${i},'level',this.value)">
@@ -3401,13 +3439,19 @@ function importStudentsExcel(input){alert('엑셀 업로드: CSV 형식(이름,�
 /* 강사 관리 */
 function renderAdminTeachers(){
   const teachers=DB.get('teachers',[]);
+  const classes=DB.get('classes',[]);
   const tb=document.getElementById('teachersBody');
   if(!tb) return;
+  const clsOptions='<option value="">미배정</option>'+classes.map(c=>{
+    const nm=getClassName(c); return `<option value="${nm}">${nm||'(미설정)'}</option>`;
+  }).join('');
   tb.innerHTML=teachers.map((t,i)=>`<tr>
     <td><input value="${t.name||''}" onchange="updateTeacher(${i},'name',this.value)"></td>
     <td><input value="${t.id||''}" onchange="updateTeacher(${i},'id',this.value)"></td>
     <td><input type="password" value="${t.pw||''}" onchange="updateTeacher(${i},'pw',this.value)"></td>
-    <td><input value="${t.cls||''}" onchange="updateTeacher(${i},'cls',this.value)"></td>
+    <td><select onchange="updateTeacher(${i},'cls',this.value)">
+      ${clsOptions.replace(`value="${t.cls||''}"`,`value="${t.cls||''}" selected`)}
+    </select></td>
     <td><button class="table-action-btn" onclick="saveTeacherRow(${i})">저장</button>
     <button class="table-action-btn danger" onclick="deleteTeacher(${i})">삭제</button></td>
   </tr>`).join('');
@@ -3516,9 +3560,11 @@ function deleteGalleryItem(i){if(!confirm('삭제?'))return;const a=DB.get('gall
 function addGalleryRow(){
   const a=DB.get('gallery',[]);
   if(a.length>=30){alert('최대 30개까지 등록 가능합니다.');return;}
-  a.push({url:'',desc:''});
+  a.unshift({url:'',desc:''});
   DB.set('gallery',a);
   renderAdminGallery();
+  const tb=document.getElementById('galleryBody');
+  if(tb) tb.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* 포트폴리오 */
@@ -3667,22 +3713,50 @@ function renderAwards(){
 function setAwardYear(y){currentAwardYear=y;renderAwards();}
 
 /* ═══ 클래스 관리 ═══ */
+function getClassName(c){
+  const day=c.day||'';
+  const lv=c.level||'';
+  const time=(c.hour&&c.min!==undefined)?c.hour+'시 '+String(c.min).padStart(2,'0')+'분':'';
+  const extra=c.extra||'';
+  return [day,lv,time,extra].filter(Boolean).join(' / ');
+}
 function renderAdminClasses(){
   const classes=DB.get('classes',[]);
   const tb=document.getElementById('classesBody');
   if(!tb) return;
+  const days=['월','화','수','목','금','토','일'];
+  const levels=['LV.1 Sense','LV.2 Spark','LV.3 Probe','LV.4 Build','LV.5 Master'];
+  const hours=Array.from({length:12},(_,i)=>i+9); // 9~20시
+  const mins=[0,10,20,30,40,50];
   tb.innerHTML=classes.map((c,i)=>`<tr>
-    <td><input value="${c.name||''}" onchange="updateClass(${i},'name',this.value)"></td>
-    <td><input value="${c.teacher||''}" onchange="updateClass(${i},'teacher',this.value)"></td>
-    <td><input value="${c.desc||''}" onchange="updateClass(${i},'desc',this.value)"></td>
-    <td><button class="table-action-btn" onclick="saveClassRow(${i})">저장</button>
-    <button class="table-action-btn danger" onclick="deleteClass(${i})">삭제</button></td>
+    <td><select onchange="updateClass(${i},'day',this.value)">
+      <option value="">요일</option>
+      ${days.map(d=>`<option ${c.day===d?'selected':''}>${d}</option>`).join('')}
+    </select></td>
+    <td><select onchange="updateClass(${i},'level',this.value)">
+      <option value="">레벨</option>
+      ${levels.map(l=>`<option ${c.level===l?'selected':''}>${l}</option>`).join('')}
+    </select></td>
+    <td style="white-space:nowrap">
+      <select onchange="updateClass(${i},'hour',this.value)" style="width:60px">
+        <option value="">시</option>
+        ${hours.map(h=>`<option ${String(c.hour)===String(h)?'selected':''}>${h}</option>`).join('')}
+      </select>:
+      <select onchange="updateClass(${i},'min',this.value)" style="width:55px">
+        ${mins.map(m=>`<option ${String(c.min)===String(m)?'selected':''}>${String(m).padStart(2,'0')}</option>`).join('')}
+      </select>
+    </td>
+    <td><input value="${c.extra||''}" placeholder="기타" onchange="updateClass(${i},'extra',this.value)" style="width:90px"></td>
+    <td style="white-space:nowrap">
+      <button class="table-action-btn" onclick="saveClassRow(${i})">저장</button>
+      <button class="table-action-btn danger" onclick="deleteClass(${i})">삭제</button>
+    </td>
   </tr>`).join('');
 }
 function updateClass(i,k,v){const a=DB.get('classes',[]);if(a[i])a[i][k]=v;DB.set('classes',a);}
 function saveClassRow(i){renderAdminClasses();alert('저장됨');}
 function deleteClass(i){if(!confirm('삭제?'))return;const a=DB.get('classes',[]);a.splice(i,1);DB.set('classes',a);renderAdminClasses();}
-function addClassRow(){const a=DB.get('classes',[]);a.push({name:'',teacher:'',desc:''});DB.set('classes',a);renderAdminClasses();}
+function addClassRow(){const a=DB.get('classes',[]);a.unshift({day:'',level:'',hour:'',min:0,extra:''});DB.set('classes',a);renderAdminClasses();}
 
 // renderAdminTab에 classes 추가
 const _origRenderAdminTab = renderAdminTab;

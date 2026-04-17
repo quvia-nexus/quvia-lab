@@ -1661,10 +1661,11 @@ input, textarea, select { font-family: var(--sans); }
   border-bottom: 1px solid var(--border);
 }
 @media (max-width: 768px) {
-  .hero-panel-award-pc { display: none !important; }
+  /* ID 선택자로 최고 우선순위 확보 */
+  #mPane_award { display: none !important; }
+  #mPane_notice { display: block !important; border: none; min-height: auto; }
   .mobile-section-title { display: block; }
   .hero-bottom-panels { display: block; }
-  .hero-panel { display: block !important; border: none; min-height: auto; }
 }
 </style>
 </head>

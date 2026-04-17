@@ -1324,6 +1324,116 @@ input, textarea, select { font-family: var(--sans); }
   .admin-table { font-size: 0.78rem; }
   .admin-table th, .admin-table td { padding: 8px 10px; }
 }
+
+/* ═══ 모바일 추가 수정 ═══ */
+@media (max-width: 768px) {
+
+  /* 1) 홈 제목 줄바꿈 허용 + 크기 조정 */
+  .hero-main-title {
+    font-size: clamp(1.6rem, 7vw, 2.2rem) !important;
+    white-space: normal !important;
+    word-break: keep-all;
+    text-align: center;
+  }
+  .hero-slogan {
+    white-space: normal !important;
+    font-size: 0.88rem;
+    text-align: center;
+  }
+  .hero-logo-top {
+    font-size: clamp(1.2rem, 5vw, 1.6rem) !important;
+  }
+  .logo-quvia, .logo-lab {
+    font-size: clamp(1.2rem, 5vw, 1.6rem) !important;
+  }
+  .hero-top-full {
+    padding: 28px 5% 20px !important;
+  }
+  .hero-desc {
+    font-size: 0.88rem !important;
+    text-align: center !important;
+    word-break: keep-all;
+  }
+
+  /* 2) 공지/수상실적 - 탭 버튼 방식 */
+  .hero-bottom-panels {
+    display: block !important;
+    height: auto !important;
+    margin-top: 20px !important;
+  }
+  .mobile-panel-tabs {
+    display: flex !important;
+    border-bottom: 2px solid var(--border);
+  }
+  .mobile-panel-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--ink3);
+    cursor: pointer;
+    background: var(--g6);
+    border: none;
+    transition: all 0.2s;
+  }
+  .mobile-panel-tab.active {
+    color: var(--g1);
+    background: #e8f2e8;
+    border-bottom: 2px solid var(--g2);
+    margin-bottom: -2px;
+    font-weight: 600;
+  }
+  .hero-panel {
+    display: none !important;
+    min-height: 200px !important;
+    border: none !important;
+  }
+  .hero-panel.mobile-active {
+    display: flex !important;
+  }
+
+  /* 3) 교육철학 pillars 한줄 표시 */
+  .philosophy-pillar {
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+  .pillar-desc {
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+  .pillar-word { flex-shrink: 0; }
+
+  /* 4) brand-quote 길 한줄 */
+  .brand-quote {
+    word-break: keep-all;
+    white-space: normal;
+  }
+
+  /* 6) 탐구단계 레이아웃: 이미지 먼저, 텍스트 아래 */
+  .level-header {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .level-header > div:last-child {
+    order: 1;
+    align-self: center;
+  }
+  .level-badge-wrap {
+    order: 2;
+  }
+  .level-num {
+    order: 0;
+    font-size: 3rem !important;
+  }
+}
+
+/* 모바일 탭 기본 숨김 (PC에서는 안보임) */
+.mobile-panel-tabs { display: none; }
+
 @media (max-width: 768px) {
   .slam-cards {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -1575,14 +1685,19 @@ input, textarea, select { font-family: var(--sans); }
     </div>
     <!-- 하단: 공지 | 수상실적 2열 -->
     <div class="hero-bottom-panels">
-      <div class="hero-panel">
+      <!-- 모바일 탭 버튼 -->
+      <div class="mobile-panel-tabs">
+        <button class="mobile-panel-tab active" onclick="switchMobilePanel('notice',this)">공지 / 소식</button>
+        <button class="mobile-panel-tab" onclick="switchMobilePanel('award',this)">수상 실적</button>
+      </div>
+      <div class="hero-panel mobile-active" id="mobilePanel_notice">
         <div class="hero-panel-header">
           <div class="hero-panel-title">공지 / 소식</div>
 
         </div>
         <div class="hero-notice-list" id="heroNoticeList"></div>
       </div>
-      <div class="hero-panel">
+      <div class="hero-panel" id="mobilePanel_award">
         <div class="hero-panel-header">
           <div class="hero-panel-title">수상 실적</div>
 
@@ -1732,6 +1847,13 @@ input, textarea, select { font-family: var(--sans); }
           <div class="slam-name">Qualia Maker</div>
           <div class="slam-title">Q5 · 발명/하드웨어</div>
           <div class="slam-desc">3D프린팅, 전자회로, 아두이노 등으로 실물 결과물을 직접 설계하고 제작하는 단계입니다.</div>
+        </div>
+        <div class="slam-card" style="background:linear-gradient(135deg,#3b2f6e,#6b5ca5);cursor:pointer;" onclick="showPage('consult')">
+          <div class="slam-q" style="color:#c4b5f4">Q</div>
+          <span class="slam-icon">🏆</span>
+          <div class="slam-name" style="color:white">Q-Grand Slam</div>
+          <div class="slam-title" style="color:#c4b5f4">졸업 · 최종 달성</div>
+          <div class="slam-desc" style="color:rgba(255,255,255,0.75)">Q1~Q5를 모두 달성한 학생에게 주어지는 큐비아 랩 최고 영예. 입회상담으로 도전하세요!</div>
         </div>
       </div>
     </div>
@@ -1967,11 +2089,11 @@ input, textarea, select { font-family: var(--sans); }
     <div class="consult-grid">
       <div class="consult-form">
         <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1.5rem;color:var(--ink)">상담 신청서</h3>
-        <div class="form-group"><label class="form-label">학생 이름</label><input class="form-input" type="text" placeholder="이름을 입력하세요"></div>
-        <div class="form-group"><label class="form-label">학교 / 학년</label><input class="form-input" type="text" placeholder="예: 대구초등학교 5학년"></div>
-        <div class="form-group"><label class="form-label">학부모 연락처</label><input class="form-input" type="tel" placeholder="010-0000-0000"></div>
-        <div class="form-group"><label class="form-label">상담 내용</label><textarea class="form-input form-textarea" placeholder="궁금한 점이나 상담 내용을 입력해주세요"></textarea></div>
-        <button class="form-submit" onclick="window.open('http://pf.kakao.com/_vDLtG/chat','_blank')">카카오톡으로 상담 신청 →</button>
+        <div class="form-group"><label class="form-label">학생 이름</label><input class="form-input" id="consult_name" type="text" placeholder="이름을 입력하세요"></div>
+        <div class="form-group"><label class="form-label">학교 / 학년</label><input class="form-input" id="consult_school" type="text" placeholder="예: 대구초등학교 5학년"></div>
+        <div class="form-group"><label class="form-label">학부모 연락처</label><input class="form-input" id="consult_tel" type="tel" placeholder="010-0000-0000"></div>
+        <div class="form-group"><label class="form-label">상담 내용</label><textarea class="form-input form-textarea" id="consult_msg" placeholder="궁금한 점이나 상담 내용을 입력해주세요"></textarea></div>
+        <button class="form-submit" onclick="sendKakaoConsult()">카카오톡으로 상담 신청 →</button>
       </div>
       <div>
         <div class="card" style="margin-bottom:16px">
@@ -3773,6 +3895,34 @@ function renderAdminWorks(){
 /* ═══════════════════════════════════
    초기화
 ═══════════════════════════════════ */
+
+/* 모바일 패널 탭 전환 */
+function switchMobilePanel(type, el) {
+  document.querySelectorAll('.mobile-panel-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.hero-panel').forEach(p => p.classList.remove('mobile-active'));
+  el.classList.add('active');
+  const target = document.getElementById('mobilePanel_' + type);
+  if (target) target.classList.add('mobile-active');
+}
+
+/* 카카오 상담 - 입력 정보 포함해서 전송 */
+function sendKakaoConsult() {
+  const name = document.getElementById('consult_name').value.trim();
+  const school = document.getElementById('consult_school').value.trim();
+  const tel = document.getElementById('consult_tel').value.trim();
+  const msg = document.getElementById('consult_msg').value.trim();
+  if (!name) { alert('학생 이름을 입력해주세요.'); return; }
+  const text = encodeURIComponent(
+    '[큐비아 랩 상담 신청]\n' +
+    '학생 이름: ' + name + '\n' +
+    '학교/학년: ' + (school || '미입력') + '\n' +
+    '연락처: ' + (tel || '미입력') + '\n' +
+    '상담 내용: ' + (msg || '미입력')
+  );
+  // 카카오톡 채널 채팅 + 메시지 pre-fill (지원 환경에서 동작)
+  window.open('http://pf.kakao.com/_vDLtG/chat?msg=' + text, '_blank');
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   initData();
   renderMain();

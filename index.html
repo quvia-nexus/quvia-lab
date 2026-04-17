@@ -1646,6 +1646,26 @@ input, textarea, select { font-family: var(--sans); }
   .m-pane-body { display: block !important; }
   .m-pane { display: flex !important; flex-direction: column; flex: 1; overflow: hidden; }
 }
+
+/* 모바일: 수상실적 숨김, 공지만 표시 */
+.mobile-section-title {
+  display: none;
+  padding: 12px 20px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--g2);
+  font-weight: 600;
+  background: #e8f2e8;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 768px) {
+  .hero-panel-award-pc { display: none !important; }
+  .mobile-section-title { display: block; }
+  .hero-bottom-panels { display: block; }
+  .hero-panel { display: block !important; border: none; min-height: auto; }
+}
 </style>
 </head>
 <body>
@@ -1760,28 +1780,22 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-slogan">"Question carefully, Explore deeply, Prove boldly."</div>
       <div class="hero-desc">모든 위대한 혁신은 작은 질문에서 시작됩니다.<br>큐비아 랩은 학생이 스스로 질문하고, 탐구하고, 실제 결과물로 증명하는 교육을 설계합니다.</div>
     </div>
-    <!-- 하단: 공지 | 수상실적 -->
+    <!-- 하단: 공지/소식 + 수상실적(PC전용) -->
     <div class="hero-bottom-panels">
-      <!-- 공지/소식 패널 -->
-      <div class="m-pane m-pane-show" id="mPane_notice">
-        <div class="m-accordion-btn" onclick="mAccordion('notice',this)">
+      <div class="hero-panel" id="mPane_notice">
+        <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">공지 / 소식</div>
-          <span class="m-accordion-arrow">▲</span>
         </div>
-        <div class="m-pane-body" id="mBody_notice">
-          <div class="hero-notice-list" id="heroNoticeList"></div>
-        </div>
+        <!-- 모바일 전용 심플 헤더 -->
+        <div class="mobile-section-title">공지 / 소식</div>
+        <div class="hero-notice-list" id="heroNoticeList"></div>
       </div>
-      <!-- 수상실적 패널 -->
-      <div class="m-pane" id="mPane_award">
-        <div class="m-accordion-btn" onclick="mAccordion('award',this)">
+      <div class="hero-panel hero-panel-award-pc" id="mPane_award">
+        <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">수상 실적</div>
-          <span class="m-accordion-arrow">▼</span>
         </div>
-        <div class="m-pane-body" style="display:none" id="mBody_award">
-          <div class="award-roll-track-wrap" style="height:200px">
-            <div class="award-roll-track" id="awardRollTrack"></div>
-          </div>
+        <div class="award-roll-track-wrap">
+          <div class="award-roll-track" id="awardRollTrack"></div>
         </div>
       </div>
     </div>

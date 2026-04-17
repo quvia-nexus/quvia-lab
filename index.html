@@ -1278,7 +1278,7 @@ input, textarea, select { font-family: var(--sans); }
   /* 히어로 */
   #hero { min-height: auto; }
   .hero-top-full { padding: 40px 5% 32px; }
-  .hero-bottom-panels { grid-template-columns: 1fr; }
+  .hero-bottom-panels { display: flex; flex-direction: column; }
   /* hero-panel 모바일: 탭 CSS에서 제어 */
   .hero-btns { flex-direction: column; }
   .btn-primary, .btn-outline-dark { width: 100%; text-align: center; }
@@ -1611,6 +1611,21 @@ input, textarea, select { font-family: var(--sans); }
   .m-pane { display: none !important; }
   .m-pane.m-pane-show { display: flex !important; flex-direction: column; min-height: 200px; }
 }
+
+/* 모바일 아코디언 */
+.m-accordion-btn { cursor: pointer; user-select: none; }
+.m-accordion-arrow { font-size: 0.6rem; color: var(--g3); }
+.m-pane-body { overflow: hidden; }
+@media (max-width: 768px) {
+  .m-pane { display: flex !important; flex-direction: column; border-bottom: 1px solid var(--border); }
+  .m-pane-body { min-height: 0; }
+  .m-tabs { display: none !important; }
+}
+@media (min-width: 769px) {
+  .m-accordion-btn .m-accordion-arrow { display: none; }
+  .m-pane-body { display: block !important; }
+  .m-pane { display: flex !important; flex-direction: column; flex: 1; overflow: hidden; }
+}
 </style>
 </head>
 <body>
@@ -1725,25 +1740,28 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-slogan">"Question carefully, Explore deeply, Prove boldly."</div>
       <div class="hero-desc">모든 위대한 혁신은 작은 질문에서 시작됩니다.<br>큐비아 랩은 학생이 스스로 질문하고, 탐구하고, 실제 결과물로 증명하는 교육을 설계합니다.</div>
     </div>
-    <!-- 하단: 공지 | 수상실적 2열 -->
+    <!-- 하단: 공지 | 수상실적 -->
     <div class="hero-bottom-panels">
-      <!-- 모바일 탭 버튼 -->
-      <div class="m-tabs">
-        <button class="m-tab m-tab-on" onclick="mTab('notice',this)">공지 / 소식</button>
-        <button class="m-tab" onclick="mTab('award',this)">수상 실적</button>
-      </div>
+      <!-- 공지/소식 패널 -->
       <div class="m-pane m-pane-show" id="mPane_notice">
-        <div class="hero-panel-header pc-only-header">
+        <div class="hero-panel-header m-accordion-btn" onclick="mAccordion('notice',this)">
           <div class="hero-panel-title">공지 / 소식</div>
+          <span class="m-accordion-arrow">▲</span>
         </div>
-        <div class="hero-notice-list" id="heroNoticeList"></div>
+        <div class="m-pane-body" id="mBody_notice">
+          <div class="hero-notice-list" id="heroNoticeList"></div>
+        </div>
       </div>
+      <!-- 수상실적 패널 -->
       <div class="m-pane" id="mPane_award">
-        <div class="hero-panel-header pc-only-header">
+        <div class="hero-panel-header m-accordion-btn" onclick="mAccordion('award',this)">
           <div class="hero-panel-title">수상 실적</div>
+          <span class="m-accordion-arrow">▼</span>
         </div>
-        <div class="award-roll-track-wrap">
-          <div class="award-roll-track" id="awardRollTrack"></div>
+        <div class="m-pane-body" style="display:none" id="mBody_award">
+          <div class="award-roll-track-wrap" style="height:200px">
+            <div class="award-roll-track" id="awardRollTrack"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -2591,7 +2609,7 @@ input, textarea, select { font-family: var(--sans); }
     <div class="footer-grid">
       <div>
         <div class="footer-brand-name">QUVIA LAB</div>
-        <div class="footer-brand-desc">큐비아 탐구학원<br>질문에서 시작해, 탐구로 완성하는 교육<br><br>📍 경산시 압독2로2길 36, 4층<br>📞 010-8029-9770<br>🕐 평일 13:00–19:00 · 토 09:00–13:00</div>
+        <div class="footer-brand-desc">큐비아 탐구학원<br>질문에서 시작해, 탐구로 완성하는 교육<br><br>📍 경산시 압독2로2길 36, 4층<br>📞 010-8029-9770<br>🕐 평일 13:00–19:00<br>&nbsp;&nbsp;&nbsp;&nbsp;토 09:00–13:00</div>
       </div>
       <div>
         <div class="footer-col-title">브랜드 소개</div>
@@ -2621,7 +2639,7 @@ input, textarea, select { font-family: var(--sans); }
     </div>
     <div class="footer-bottom">
       <span>© 2025 QUVIA LAB 큐비아 탐구학원. All rights reserved.</span>
-      <span>경산시 압독2로2길 36, 4층 · 010-8029-9770</span>
+      <span style="white-space:nowrap">경산시 압독2로2길 36, 4층 · 010-8029-9770</span>
     </div>
   </div>
 </footer>
@@ -3960,6 +3978,22 @@ function renderAdminWorks(){
 ═══════════════════════════════════ */
 
 /* 모바일 패널 탭 전환 */
+
+function mAccordion(type, btn) {
+  var body = document.getElementById('mBody_' + type);
+  var arrow = btn.querySelector('.m-accordion-arrow');
+  if (!body) return;
+  var isOpen = body.style.display !== 'none';
+  if (isOpen) {
+    body.style.display = 'none';
+    if (arrow) arrow.textContent = '▼';
+  } else {
+    body.style.display = 'block';
+    if (arrow) arrow.textContent = '▲';
+    if (type === 'award') setTimeout(renderAwardRoll, 80);
+  }
+}
+
 function mTab(type, el) {
   // 탭 버튼 활성화
   document.querySelectorAll('.m-tab').forEach(function(t){ t.classList.remove('m-tab-on'); });

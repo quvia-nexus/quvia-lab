@@ -1430,7 +1430,13 @@ input, textarea, select { font-family: var(--sans); }
 }
 
 /* 모바일 탭 기본 숨김 (PC에서는 안보임) */
-.mobile-panel-tabs { display: none; }
+/* mobile-panel-tabs: 미디어쿼리에서만 제어 */
+
+@media (min-width: 769px) {
+  .mobile-panel-tabs { display: none !important; }
+  #mobilePanel_notice, #mobilePanel_award { display: flex !important; }
+}
+
 
 /* 제목 그린 강조 */
 .hero-title-green { color: #639922; }
@@ -3934,16 +3940,23 @@ function renderAdminWorks(){
 /* 모바일 패널 탭 전환 */
 function switchMobilePanel(type, el) {
   document.querySelectorAll('.mobile-panel-tab').forEach(t => t.classList.remove('active'));
-  // ID로 정확히 지정 (querySelectorAll은 PC패널까지 건드림)
   var panels = ['mobilePanel_notice','mobilePanel_award'];
   panels.forEach(function(id){ var p=document.getElementById(id); if(p) p.classList.remove('mobile-active'); });
   el.classList.add('active');
   var target = document.getElementById('mobilePanel_' + type);
   if (target) {
     target.classList.add('mobile-active');
-    setTimeout(function(){
-      target.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 50);
+    // 수상실적 탭: display:none 해제 후 애니메이션 재계산 (Gemini 분석)
+    if (type === 'award') {
+      setTimeout(function(){
+        renderAwardRoll();
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 60);
+    } else {
+      setTimeout(function(){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 50);
+    }
   }
 }
 

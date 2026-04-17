@@ -642,7 +642,7 @@ input, textarea, select { font-family: var(--sans); }
   margin-top: 3rem;
 }
 .slam-card {
-  padding: 24px 20px;
+  padding: 32px 24px;
   background: #f5f0e8;
   border: 1px solid rgba(200,190,170,0.4);
   border-radius: 14px;
@@ -650,17 +650,11 @@ input, textarea, select { font-family: var(--sans); }
   transition: all 0.25s;
 }
 .slam-card:hover { background: #faf7f2; transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.14); }
-.slam-q {
-  font-family: var(--serif);
-  font-size: 3rem;
-  color: rgba(0,0,0,0.06);
-  line-height: 1;
-  margin-bottom: 1rem;
-}
-.slam-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
-.slam-name { font-family: var(--serif); font-size: 1rem; color: var(--ink); margin-bottom: 4px; }
-.slam-title { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--g3); margin-bottom: 12px; }
-.slam-desc { font-size: 0.8rem; color: var(--ink3); line-height: 1.6; }
+.slam-q { display: none; }
+.slam-icon { font-size: 2.6rem; margin-bottom: 14px; display: block; }
+.slam-name { font-family: var(--serif); font-size: 1.25rem; color: var(--ink); margin-bottom: 6px; font-weight: 600; }
+.slam-title { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--g3); margin-bottom: 14px; }
+.slam-desc { font-size: 0.95rem; color: var(--ink3); line-height: 1.65; }
 
 /* ═══════════════════════════════════
    프로그램 페이지
@@ -1283,8 +1277,7 @@ input, textarea, select { font-family: var(--sans); }
   #hero { min-height: auto; }
   .hero-top-full { padding: 40px 5% 32px; }
   .hero-bottom-panels { grid-template-columns: 1fr; }
-  .hero-panel { border-right: none; border-bottom: 1px solid var(--border); min-height: 200px; }
-  .hero-panel:last-child { border-bottom: none; }
+  /* hero-panel 모바일: 탭 CSS에서 제어 */
   .hero-btns { flex-direction: column; }
   .btn-primary, .btn-outline-dark { width: 100%; text-align: center; }
 
@@ -1823,11 +1816,11 @@ input, textarea, select { font-family: var(--sans); }
 
 <!-- ═══ Q-Grand Slam ═══ -->
 <div id="page-grandslam" class="page page-wrap">
-  <div style="background:var(--g1);padding:48px 0">
+  <div style="background:#d4e8c2;padding:48px 0">
     <div class="container">
-      <div class="s-label" style="color:rgba(255,255,255,0.5)">Graduation</div>
-      <div class="s-title" style="color:white">Q-Grand Slam</div>
-      <div class="s-desc" style="color:rgba(255,255,255,0.75)">
+      <div class="s-label" style="color:#639922">Graduation</div>
+      <div class="s-title" style="color:#27500A">Q-Grand Slam</div>
+      <div class="s-desc" style="color:#3B6D11">
         큐비아 랩의 졸업은 단순한 기간 이수가 아닙니다.<br>
         탐구·창작·발표·실행의 다섯 영역에서 균형 있는 성취를 증명해야 완성됩니다.
       </div>
@@ -1867,12 +1860,12 @@ input, textarea, select { font-family: var(--sans); }
           <div class="slam-title">Q5 · 발명/하드웨어</div>
           <div class="slam-desc">3D프린팅, 전자회로, 아두이노 등으로 실물 결과물을 직접 설계하고 제작하는 단계입니다.</div>
         </div>
-        <div class="slam-card" style="background:linear-gradient(135deg,#3b2f6e,#6b5ca5);">
-          <div class="slam-q" style="color:#c4b5f4">Q</div>
+        <div class="slam-card" style="background:linear-gradient(135deg,#d4e8c2,#eaf4d8);border:2px solid #97C459;">
+          <div class="slam-q" style="color:#3B6D11;opacity:0.25">Q</div>
           <span class="slam-icon">🏆</span>
-          <div class="slam-name" style="color:white">Q-Grand Slam</div>
-          <div class="slam-title" style="color:#c4b5f4">졸업 · 최종 달성</div>
-          <div class="slam-desc" style="color:rgba(255,255,255,0.75)">Q1~Q5를 모두 달성한 학생에게 주어지는<br>큐비아 랩_공식 졸업 포트폴리오</div>
+          <div class="slam-name" style="color:#27500A;font-size:1.25rem;font-weight:600">Q-Grand Slam</div>
+          <div class="slam-title" style="color:#639922;font-size:0.72rem">졸업 · 최종 달성</div>
+          <div class="slam-desc" style="color:#3B6D11;font-size:0.95rem">Q1~Q5를 모두 달성한 학생에게 주어지는<br>큐비아 랩_공식 졸업 포트폴리오</div>
         </div>
       </div>
     </div>

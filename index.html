@@ -198,12 +198,14 @@ input, textarea, select { font-family: var(--sans); }
 }
 .mobile-menu {
   display: none;
-  position: fixed; top: var(--nav-h); left: 0; right: 0;
+  position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0;
   background: var(--white);
   border-bottom: 1px solid var(--border);
   z-index: 999;
-  padding: 1rem 5% 1.5rem;
+  padding: 1rem 5% 3rem;
   box-shadow: var(--shadow);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .mobile-menu.open { display: block; }
 .mobile-menu-section { margin-bottom: 1.2rem; }
@@ -1589,6 +1591,26 @@ input, textarea, select { font-family: var(--sans); }
 .hero-title-logo-row { display: block; }
 .hero-title-block { display: block; }
 .hero-logo-block { display: block; }
+/* ── 모바일 탭 패널 새 시스템 (m-pane) ── */
+.m-tabs { display: none; }
+.m-tab {
+  flex: 1; padding: 10px; text-align: center;
+  font-family: var(--mono); font-size: 0.65rem;
+  letter-spacing: 0.1em; color: var(--ink3);
+  cursor: pointer; background: var(--g6);
+  border: none; border-bottom: 2px solid var(--border);
+  transition: all 0.2s;
+}
+.m-tab.m-tab-on {
+  color: var(--g1); background: #e8f2e8;
+  border-bottom: 2px solid var(--g2); font-weight: 600;
+}
+.m-pane { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+@media (max-width: 768px) {
+  .m-tabs { display: flex !important; width: 100%; }
+  .m-pane { display: none !important; }
+  .m-pane.m-pane-show { display: flex !important; flex-direction: column; min-height: 200px; }
+}
 </style>
 </head>
 <body>
@@ -1706,17 +1728,17 @@ input, textarea, select { font-family: var(--sans); }
     <!-- 하단: 공지 | 수상실적 2열 -->
     <div class="hero-bottom-panels">
       <!-- 모바일 탭 버튼 -->
-      <div class="mobile-panel-tabs">
-        <button class="mobile-panel-tab active" onclick="switchMobilePanel('notice',this)">공지 / 소식</button>
-        <button class="mobile-panel-tab" onclick="switchMobilePanel('award',this)">수상 실적</button>
+      <div class="m-tabs">
+        <button class="m-tab m-tab-on" onclick="mTab('notice',this)">공지 / 소식</button>
+        <button class="m-tab" onclick="mTab('award',this)">수상 실적</button>
       </div>
-      <div class="hero-panel mobile-active" id="mobilePanel_notice">
+      <div class="m-pane m-pane-show" id="mPane_notice">
         <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">공지 / 소식</div>
         </div>
         <div class="hero-notice-list" id="heroNoticeList"></div>
       </div>
-      <div class="hero-panel" id="mobilePanel_award">
+      <div class="m-pane" id="mPane_award">
         <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">수상 실적</div>
         </div>
@@ -3938,27 +3960,23 @@ function renderAdminWorks(){
 ═══════════════════════════════════ */
 
 /* 모바일 패널 탭 전환 */
-function switchMobilePanel(type, el) {
-  document.querySelectorAll('.mobile-panel-tab').forEach(t => t.classList.remove('active'));
-  var panels = ['mobilePanel_notice','mobilePanel_award'];
-  panels.forEach(function(id){ var p=document.getElementById(id); if(p) p.classList.remove('mobile-active'); });
-  el.classList.add('active');
-  var target = document.getElementById('mobilePanel_' + type);
-  if (target) {
-    target.classList.add('mobile-active');
-    // 수상실적 탭: display:none 해제 후 애니메이션 재계산 (Gemini 분석)
+function mTab(type, el) {
+  // 탭 버튼 활성화
+  document.querySelectorAll('.m-tab').forEach(function(t){ t.classList.remove('m-tab-on'); });
+  el.classList.add('m-tab-on');
+  // 패널 전환
+  document.querySelectorAll('.m-pane').forEach(function(p){ p.classList.remove('m-pane-show'); });
+  var pane = document.getElementById('mPane_' + type);
+  if (pane) {
+    pane.classList.add('m-pane-show');
+    // 수상실적: 패널 표시 후 애니메이션 재계산
     if (type === 'award') {
-      setTimeout(function(){
-        renderAwardRoll();
-        target.scrollIntoView({behavior:'smooth', block:'start'});
-      }, 60);
-    } else {
-      setTimeout(function(){
-        target.scrollIntoView({behavior:'smooth', block:'start'});
-      }, 50);
+      setTimeout(renderAwardRoll, 80);
     }
   }
 }
+// 구버전 호환
+function switchMobilePanel(type, el) { mTab(type, el); }
 
 /* 카카오 상담 - 입력 정보 포함해서 전송 */
 function sendKakaoConsult() {

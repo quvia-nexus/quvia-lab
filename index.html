@@ -1718,9 +1718,10 @@ input, textarea, select { font-family: var(--sans); }
 
 /* 홈 탐구현장 미니 마퀴 */
 .home-gallery-marquee {
-  padding: 10px 0 14px;
+  padding: 10px 6% 14px;
   background: #f5f0e8;
   border-top: 1px solid var(--border);
+  overflow: hidden;
 }
 .home-gallery-marquee-label {
   font-family: var(--mono);
@@ -1728,15 +1729,12 @@ input, textarea, select { font-family: var(--sans); }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--g2);
-  padding: 0 0 10px;
+  padding: 0 0 8px;
   font-weight: 600;
-  max-width: var(--container-w, 1100px);
-  margin: 0 auto;
-  padding-left: 5%;
 }
 .home-gallery-marquee-wrap {
   overflow: hidden;
-  max-width: 100%;
+  width: 100%;
 }
 .home-gallery-marquee-track {
   display: flex;

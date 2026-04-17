@@ -287,10 +287,10 @@ input, textarea, select { font-family: var(--sans); }
 #hero {
   display: flex;
   flex-direction: column;
-  padding-top: var(--nav-h);
+  padding-top: calc(var(--nav-h) - 28px);
 }
 .hero-top-full {
-  padding: 48px 6% 32px;
+  padding: 0 6% 16px;
   position: relative; z-index: 1;
   text-align: center;
 }
@@ -307,7 +307,7 @@ input, textarea, select { font-family: var(--sans); }
   font-size: clamp(2rem, 4.5vw, 3.8rem);
   color: #1c2a1c;
   line-height: 1.2;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.3rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -317,13 +317,13 @@ input, textarea, select { font-family: var(--sans); }
   font-size: clamp(0.95rem, 1.3vw, 1.05rem);
   color: var(--g3);
   font-style: italic;
-  margin-bottom: 1.4rem;
+  margin-bottom: 0.6rem;
   white-space: nowrap;
 }
 .hero-desc {
   font-size: 0.97rem;
   color: var(--ink3);
-  line-height: 1.8;
+  line-height: 1.7;
   margin-bottom: 0;
   display: block;
   text-align: center;
@@ -358,7 +358,7 @@ input, textarea, select { font-family: var(--sans); }
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 220px;
-  margin-top: 32px;
+  margin-top: 24px;
   border-top: 1px solid var(--border);
 }
 .hero-panel {
@@ -1558,7 +1558,7 @@ input, textarea, select { font-family: var(--sans); }
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 .hero-logo-text-block {
   display: flex;
@@ -1670,10 +1670,11 @@ input, textarea, select { font-family: var(--sans); }
 
 /* 탐구현장 마퀴 슬라이드 */
 .gallery-marquee-wrap {
-  width: 100%;
   overflow: hidden;
-  padding: 32px 0;
   background: var(--cream);
+  display: flex;
+  align-items: center;
+  min-height: 280px;
 }
 .gallery-marquee-track {
   display: flex;
@@ -1709,6 +1710,82 @@ input, textarea, select { font-family: var(--sans); }
 }
 @media (max-width: 768px) {
   .gallery-marquee-item { width: 200px; height: 150px; }
+}
+
+/* 저장 버튼 비활성/활성 */
+.save-btn-dim { opacity: 0.35; pointer-events: none; }
+.save-btn-dim.modified { opacity: 1; pointer-events: auto; }
+
+/* 홈 탐구현장 미니 마퀴 */
+.home-gallery-marquee {
+  padding: 10px 0 14px;
+  background: #f5f0e8;
+  border-top: 1px solid var(--border);
+}
+.home-gallery-marquee-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--g2);
+  padding: 0 0 10px;
+  font-weight: 600;
+  max-width: var(--container-w, 1100px);
+  margin: 0 auto;
+  padding-left: 5%;
+}
+.home-gallery-marquee-wrap {
+  overflow: hidden;
+  max-width: 100%;
+}
+.home-gallery-marquee-track {
+  display: flex;
+  gap: 12px;
+  animation: galleryScroll 28s linear infinite;
+  width: max-content;
+}
+.home-gallery-marquee-track:hover { animation-play-state: paused; }
+.home-gallery-mini-item {
+  width: 160px;
+  height: 112px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--g5);
+  cursor: pointer;
+}
+.home-gallery-mini-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.3s;
+}
+.home-gallery-mini-item:hover img { transform: scale(1.06); }
+
+/* 페이지 헤더 타이틀+설명 좌우 배치 */
+.s-header-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+}
+.s-header-left { flex-shrink: 0; }
+.s-header-right {
+  flex: 1;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.7;
+  padding-bottom: 6px;
+  word-break: keep-all;
+}
+
+/* 탐구현장 마퀴 외부 컨테이너 */
+.gallery-marquee-outer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 5%;
+  overflow: hidden;
+}
+.gallery-marquee-outer .gallery-marquee-wrap {
+  border-radius: 12px;
+  overflow: hidden;
 }
 </style>
 </head>
@@ -1841,6 +1918,13 @@ input, textarea, select { font-family: var(--sans); }
         <div class="award-roll-track-wrap">
           <div class="award-roll-track" id="awardRollTrack"></div>
         </div>
+      </div>
+    </div>
+    <!-- 홈 탐구현장 미니 마퀴 -->
+    <div class="home-gallery-marquee" id="homeGallerySection">
+      <div class="home-gallery-marquee-label">탐구현장</div>
+      <div class="home-gallery-marquee-wrap">
+        <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
       </div>
     </div>
   </div>
@@ -2000,8 +2084,10 @@ input, textarea, select { font-family: var(--sans); }
 <div id="page-program" class="page page-wrap">
   <div class="program-hero">
     <div class="container">
-      <div class="s-label" style="color:rgba(255,255,255,0.4)">Program</div>
-      <div class="s-title" style="color:white">탐구 5단계</div>
+      <div class="s-header-row">
+        <div class="s-header-left"><div class="s-label" style="color:rgba(255,255,255,0.4)">Program</div><div class="s-title" style="color:white;margin-bottom:0">탐구 5단계</div></div>
+        <div class="s-header-right">아이의 성장에 맞춰 설계된 큐비아만의 체계적인 탐구 로드맵</div>
+      </div>
     </div>
   </div>
   <div class="level-tabs">
@@ -2148,9 +2234,14 @@ input, textarea, select { font-family: var(--sans); }
 <!-- ═══ 수상실적 ═══ -->
 <div id="page-awards" class="page page-wrap">
   <div style="background:var(--g1);padding:36px 0 28px">
-    <div class="container">
-      <div class="s-label" style="color:rgba(255,255,255,0.4)">Achievement</div>
-      <div class="s-title" style="color:white">수상실적</div>
+    <div style="max-width:760px;margin:0 auto;padding:0 5%">
+      <div class="s-header-row">
+        <div class="s-header-left">
+          <div class="s-label" style="color:rgba(255,255,255,0.4);margin-left:-1em">Achievement</div>
+          <div class="s-title" style="color:white;margin-bottom:0;margin-left:-1em">수상실적</div>
+        </div>
+        <div class="s-header-right">끊임없는 도전과 탐구로 증명해낸 큐비아의 역량</div>
+      </div>
     </div>
   </div>
   <div class="container section-sm">
@@ -2163,8 +2254,10 @@ input, textarea, select { font-family: var(--sans); }
 <div id="page-works" class="page page-wrap">
   <div style="background:var(--g1);padding:36px 0 28px">
     <div class="container">
-      <div class="s-label" style="color:rgba(255,255,255,0.4)">Student Works</div>
-      <div class="s-title" style="color:white">학생작품</div>
+      <div class="s-header-row">
+        <div class="s-header-left"><div class="s-label" style="color:rgba(255,255,255,0.4)">Student Works</div><div class="s-title" style="color:white;margin-bottom:0">학생작품</div></div>
+        <div class="s-header-right">상상이 현실이 되는 곳, 아이들의 아이디어가 구체화된 결과물</div>
+      </div>
     </div>
   </div>
   <div class="container section-sm">
@@ -2181,24 +2274,28 @@ input, textarea, select { font-family: var(--sans); }
 <div id="page-gallery" class="page page-wrap">
   <div style="background:var(--g1);padding:36px 0 28px">
     <div class="container">
-      <div class="s-label" style="color:rgba(255,255,255,0.4)">Gallery</div>
-      <div class="s-title" style="color:white">탐구현장</div>
+      <div class="s-header-row">
+        <div class="s-header-left"><div class="s-label" style="color:rgba(255,255,255,0.4)">Gallery</div><div class="s-title" style="color:white;margin-bottom:0">탐구현장</div></div>
+        <div class="s-header-right">논리적으로 설계하고 대담하게 도전하며, 내일의 경쟁력을 키우는 현장</div>
+      </div>
     </div>
   </div>
-  <div class="gallery-marquee-wrap">
-    <div class="gallery-marquee-track" id="galleryGrid"></div>
+  <div class="gallery-marquee-outer">
+    <div class="gallery-marquee-wrap">
+      <div class="gallery-marquee-track" id="galleryGrid"></div>
+    </div>
   </div>
 </div>
 
 <!-- ═══ 공지/소식 ═══ -->
 <div id="page-news" class="page page-wrap">
   <div style="background:var(--g1);padding:36px 0 28px">
-    <div class="container">
-      <div class="s-label" style="color:rgba(255,255,255,0.4)">News</div>
-      <div class="s-title" style="color:white">공지 / 소식</div>
+    <div style="max-width:760px;margin:0 auto;padding:0 5%">
+      <div class="s-label" style="color:rgba(255,255,255,0.4);margin-left:-1em">News</div>
+      <div class="s-title" style="color:white;margin-bottom:0;margin-left:-1em">공지 / 소식</div>
     </div>
   </div>
-  <div class="container section-sm">
+  <div class="container section-sm" style="max-width:760px;margin-left:auto;margin-right:auto">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="newsTagFilter">
       <button onclick="setNewsTag('전체',this)" style="padding:6px 16px;border-radius:20px;border:1px solid var(--g2);background:var(--g2);color:white;font-size:0.82rem;cursor:pointer">전체</button>
       <button onclick="setNewsTag('공지',this)" style="padding:6px 16px;border-radius:20px;border:1px solid var(--border2);background:white;color:var(--ink2);font-size:0.82rem;cursor:pointer">공지</button>
@@ -2210,11 +2307,15 @@ input, textarea, select { font-family: var(--sans); }
 
 <!-- ═══ 입회상담 ═══ -->
 <div id="page-consult" class="page page-wrap">
-  <div style="background:var(--g1);padding:48px 0 36px">
-    <div class="container" style="text-align:center">
-      <div class="s-label" style="color:rgba(255,255,255,0.4)">Consultation</div>
-      <div class="s-title" style="color:white">입회상담 신청</div>
-      <p style="color:rgba(255,255,255,0.7);font-size:0.95rem;margin-top:0.5rem">아래 버튼으로 바로 연락해 주세요. 친절하게 안내해드립니다.</p>
+  <div style="background:var(--g1);padding:36px 0 28px">
+    <div style="max-width:860px;margin:0 auto;padding:0 5%">
+      <div class="s-header-row">
+        <div class="s-header-left">
+          <div class="s-label" style="color:rgba(255,255,255,0.4)">Consultation</div>
+          <div class="s-title" style="color:white;margin-bottom:0">입회상담 신청</div>
+        </div>
+        <div class="s-header-right">아래 버튼을 눌러 상담 신청해주세요.</div>
+      </div>
     </div>
   </div>
   <div class="container" style="padding:60px 5%">
@@ -2630,7 +2731,7 @@ input, textarea, select { font-family: var(--sans); }
       <div id="admin-tab-awards" class="portal-tab">
         <button class="table-action-btn primary" style="margin-bottom:12px" onclick="addAwardRow()">+ 수상실적 추가</button>
         <table class="admin-table">
-          <thead><tr><th>아이콘</th><th>대회명 및 수상 내용 (한 칸에 작성)</th><th>분류</th><th>관리</th></tr></thead>
+          <thead><tr><th>연도</th><th>날짜</th><th>분류</th><th>대회명</th><th>관리</th></tr></thead>
           <tbody id="awardsBody"></tbody>
         </table>
       </div>
@@ -2885,6 +2986,20 @@ function switchPortalTab(portal, tab, el){
 function renderMain(){
   renderAwardRoll();
   renderHeroNotice();
+  renderHomeGallery();
+}
+function renderHomeGallery(){
+  const photos=DB.get('gallery',[]).filter(p=>p.url);
+  const el=document.getElementById('homeGalleryTrack');
+  const sec=document.getElementById('homeGallerySection');
+  if(!el) return;
+  if(!photos.length){if(sec)sec.style.display='none';return;}
+  if(sec)sec.style.display='';
+  const doubled=[...photos,...photos];
+  el.innerHTML=doubled.map(p=>`
+    <div class="home-gallery-mini-item" onclick="showPage('gallery')">
+      <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}" onerror="this.style.display='none'">
+    </div>`).join('');
 }
 
 function renderHeroNotice(){
@@ -3359,19 +3474,22 @@ function renderAdminDashboard(){
   if(t) t.textContent=teachers.length;
   if(a) a.textContent=awards.length;
   renderAdminTab('dashboard');
+  renderAdminStudents();
 }
 
 function renderAdminTab(tab){
   const renders={
     students:renderAdminStudents,
     teachers:renderAdminTeachers,
+    classes:renderAdminClasses,
     notice:renderAdminNotice,
     news:renderAdminNews,
     awards:renderAdminAwards,
     works:renderAdminWorks,
     gallery:renderAdminGallery,
     portfolios:renderPortfolioSelect,
-    logs:renderAdminLogs
+    logs:renderAdminLogs,
+    dashboard:renderAdminDashboard
   };
   if(renders[tab]) renders[tab]();
 }
@@ -3442,19 +3560,26 @@ function renderAdminTeachers(){
   const classes=DB.get('classes',[]);
   const tb=document.getElementById('teachersBody');
   if(!tb) return;
-  const clsOptions='<option value="">미배정</option>'+classes.map(c=>{
-    const nm=getClassName(c); return `<option value="${nm}">${nm||'(미설정)'}</option>`;
-  }).join('');
-  tb.innerHTML=teachers.map((t,i)=>`<tr>
-    <td><input value="${t.name||''}" onchange="updateTeacher(${i},'name',this.value)"></td>
-    <td><input value="${t.id||''}" onchange="updateTeacher(${i},'id',this.value)"></td>
-    <td><input type="password" value="${t.pw||''}" onchange="updateTeacher(${i},'pw',this.value)"></td>
-    <td><select onchange="updateTeacher(${i},'cls',this.value)">
-      ${clsOptions.replace(`value="${t.cls||''}"`,`value="${t.cls||''}" selected`)}
-    </select></td>
-    <td><button class="table-action-btn" onclick="saveTeacherRow(${i})">저장</button>
+  tb.innerHTML=teachers.map((t,i)=>{
+    const selCls=Array.isArray(t.cls)?t.cls:(t.cls?[t.cls]:[]);
+    const opts=classes.map(c=>{
+      const nm=getClassName(c);
+      return `<option value="${nm}" ${selCls.includes(nm)?'selected':''}>${nm||'(미설정)'}</option>`;
+    }).join('');
+    return `<tr>
+    <td style="width:90px"><input value="${t.name||''}" onchange="updateTeacher(${i},'name',this.value)" style="width:80px"></td>
+    <td style="width:90px"><input value="${t.id||''}" onchange="updateTeacher(${i},'id',this.value)" style="width:80px"></td>
+    <td style="width:70px"><input type="password" value="${t.pw||''}" onchange="updateTeacher(${i},'pw',this.value)" style="width:60px"></td>
+    <td><select multiple size="4" style="width:100%;min-width:300px" onchange="updateTeacherCls(${i},this)">
+      ${opts}
+    </select><div style="font-size:0.7rem;color:var(--ink4)">Ctrl/Cmd 클릭으로 다중선택(최대 15개)</div></td>
+    <td style="white-space:nowrap"><button class="table-action-btn" onclick="saveTeacherRow(${i})">저장</button>
     <button class="table-action-btn danger" onclick="deleteTeacher(${i})">삭제</button></td>
-  </tr>`).join('');
+  </tr>`;}).join('');
+}
+function updateTeacherCls(i,sel){
+  const selected=Array.from(sel.selectedOptions).map(o=>o.value).slice(0,15);
+  const a=DB.get('teachers',[]);if(a[i])a[i].cls=selected;DB.set('teachers',a);
 }
 function updateTeacher(i,k,v){const a=DB.get('teachers',[]);if(a[i])a[i][k]=v;DB.set('teachers',a);}
 function saveTeacherRow(i){renderAdminTeachers();alert('저장됨');}
@@ -3504,22 +3629,51 @@ function deleteNews(i){if(!confirm('삭제?'))return;const a=DB.get('news',[]);a
 function addNewsRow(){const a=DB.get('news',[]);a.push({date:new Date().toLocaleDateString('ko'),tag:'공지',title:'',content:''});DB.set('news',a);renderAdminNews();}
 
 /* 수상실적 */
+const AWARD_CAT_ICONS={
+  'SW':'💻', '과학':'🔬', 'AI':'🤖', '수학':'📐',
+  '발명':'💡', '로봇':'🦾', '코딩':'⌨️', '탐구':'🧪',
+  '예술':'🎨', '융합':'🌐', '기타':'🏆'
+};
+function getAwardIcon(cat){ return AWARD_CAT_ICONS[cat]||'🏆'; }
+
 function renderAdminAwards(){
   const awards=DB.get('awards',[]);
   const tb=document.getElementById('awardsBody');
   if(!tb) return;
+  const cats=Object.keys(AWARD_CAT_ICONS);
+  const years=[];
+  for(let y=new Date().getFullYear();y>=2018;y--) years.push(y);
   tb.innerHTML=awards.map((a,i)=>`<tr>
-    <td><input value="${a.icon||'🏅'}" onchange="updateAward(${i},'icon',this.value)" style="width:50px"></td>
-    <td><input value="${a.name||''}" onchange="updateAward(${i},'name',this.value)"></td>
-    <td><input value="${a.cat||'SW'}" onchange="updateAward(${i},'cat',this.value)" style="width:80px"></td>
-    <td><button class="table-action-btn" onclick="saveAwardRow(${i})">저장</button>
-    <button class="table-action-btn danger" onclick="deleteAward(${i})">삭제</button></td>
+    <td><select onchange="updateAward(${i},'year',this.value)" style="width:72px">
+      <option value="">연도</option>
+      ${years.map(y=>`<option ${String(a.year)===String(y)?'selected':''}>${y}</option>`).join('')}
+    </select></td>
+    <td><input value="${a.date||''}" placeholder="예:03.15" onchange="updateAward(${i},'date',this.value)" style="width:72px"></td>
+    <td><select onchange="updateAwardCat(${i},this.value)" style="width:80px">
+      ${cats.map(c=>`<option ${a.cat===c?'selected':''}>${c}</option>`).join('')}
+    </select></td>
+    <td><input value="${a.name||''}" onchange="updateAward(${i},'name',this.value)" style="min-width:200px"></td>
+    <td style="white-space:nowrap">
+      <button class="table-action-btn" onclick="saveAwardRow(${i})">저장</button>
+      <button class="table-action-btn danger" onclick="deleteAward(${i})">삭제</button>
+    </td>
   </tr>`).join('');
+}
+function updateAwardCat(i,cat){
+  const a=DB.get('awards',[]);
+  if(a[i]){a[i].cat=cat;a[i].icon=getAwardIcon(cat);}
+  DB.set('awards',a);
 }
 function updateAward(i,k,v){const a=DB.get('awards',[]);if(a[i])a[i][k]=v;DB.set('awards',a);}
 function saveAwardRow(i){renderAdminAwards();alert('저장됨');}
 function deleteAward(i){if(!confirm('삭제?'))return;const a=DB.get('awards',[]);a.splice(i,1);DB.set('awards',a);renderAdminAwards();}
-function addAwardRow(){const a=DB.get('awards',[]);a.push({icon:'🏅',name:'',cat:'SW'});DB.set('awards',a);renderAdminAwards();}
+function addAwardRow(){
+  const yr=new Date().getFullYear();
+  const a=DB.get('awards',[]);
+  a.unshift({year:yr,date:'',cat:'SW',icon:getAwardIcon('SW'),name:''});
+  DB.set('awards',a);
+  renderAdminAwards();
+}
 
 /* 학생작품 */
 function renderAdminWorks(){
@@ -3572,7 +3726,9 @@ function renderPortfolioSelect(){
   const sel=document.getElementById('portfolioStudentSelect');
   if(!sel) return;
   const students=DB.get('students',[]);
-  sel.innerHTML='<option value="">학생 선택...</option>'+students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  sel.innerHTML='<option value="">학생 선택...</option>'+students.map(s=>`<option value="${s.id}">${s.name||s.id}</option>`).join('');
+  // 학생이 이미 선택돼있으면 포트폴리오 표시
+  if(sel.value) viewStudentPortfolio();
 }
 function viewStudentPortfolio(){
   const id=document.getElementById('portfolioStudentSelect').value;
@@ -3620,8 +3776,25 @@ function renderAdminLogs(){
   const el2=document.getElementById('adminConsultLogs');
   const edu=DB.get('edulogs',[]);
   const con=DB.get('consultlogs',[]);
-  if(el1) el1.innerHTML=edu.length?edu.map(l=>`<div class="edu-log-item"><div class="edu-log-header"><span class="edu-log-date">${l.date}</span><span class="edu-log-class">${l.cls} · ${l.teacher}</span></div><div class="edu-log-content">${l.content}</div></div>`).join(''):'<div style="color:var(--ink4)">없음</div>';
-  if(el2) el2.innerHTML=con.length?con.map(l=>`<div class="edu-log-item"><div class="edu-log-header"><span class="edu-log-date">${l.date}</span><span class="edu-log-class">${l.student} · ${l.teacher}</span></div><div class="edu-log-content">${l.content}</div></div>`).join(''):'<div style="color:var(--ink4)">없음</div>';
+  if(el1) el1.innerHTML=edu.length
+    ? edu.slice().reverse().map(l=>`<div class="edu-log-item" style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px">
+        <div class="edu-log-header" style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span class="edu-log-date" style="font-size:0.8rem;color:var(--ink4)">${l.date}</span>
+          <span class="edu-log-class" style="font-size:0.8rem;color:var(--g2)">${l.cls||''} · ${l.teacher||''}</span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--ink4);margin-bottom:4px">학생: ${(l.students||[]).join(', ')||'-'}</div>
+        <div class="edu-log-content" style="font-size:0.88rem;color:var(--ink2);white-space:pre-line">${l.content||''}</div>
+      </div>`).join('')
+    : '<div style="color:var(--ink4);padding:24px;text-align:center;font-size:0.88rem">강사 포털에서 교육일지를 작성하면 여기에 표시됩니다.</div>';
+  if(el2) el2.innerHTML=con.length
+    ? con.slice().reverse().map(l=>`<div class="edu-log-item" style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px">
+        <div class="edu-log-header" style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span class="edu-log-date" style="font-size:0.8rem;color:var(--ink4)">${l.date}</span>
+          <span class="edu-log-class" style="font-size:0.8rem;color:var(--g2)">${l.student||''} · ${l.teacher||''}</span>
+        </div>
+        <div class="edu-log-content" style="font-size:0.88rem;color:var(--ink2);white-space:pre-line">${l.content||''}</div>
+      </div>`).join('')
+    : '<div style="color:var(--ink4);padding:24px;text-align:center;font-size:0.88rem">강사 포털에서 상담일지를 작성하면 여기에 표시됩니다.</div>';
 }
 
 /* 데이터 내보내기/가져오기 */

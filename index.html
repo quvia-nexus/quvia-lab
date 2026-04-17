@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>큐비아 탐구학원 QUVIA LAB</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════
    CSS 변수 & 리셋
@@ -301,13 +301,13 @@ input, textarea, select { font-family: var(--sans); }
   margin-bottom: 1.2rem;
 }
 .hero-main-title {
-  font-family: var(--serif);
-  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  font-family: 'Cormorant Garamond', 'Noto Serif KR', serif;
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
   color: #1c2a1c;
   line-height: 1.2;
   margin-bottom: 0.6rem;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 .hero-slogan {
@@ -637,7 +637,7 @@ input, textarea, select { font-family: var(--sans); }
 }
 .slam-cards {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-top: 3rem;
 }
@@ -1309,6 +1309,10 @@ input, textarea, select { font-family: var(--sans); }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 
   /* 상담 */
+  /* 상담 페이지 모바일 */
+  #page-consult .container > div {
+    grid-template-columns: 1fr !important;
+  }
   .consult-grid { grid-template-columns: 1fr; }
 
   /* 포털 */
@@ -1330,7 +1334,7 @@ input, textarea, select { font-family: var(--sans); }
 
   /* 1) 홈 제목 줄바꿈 허용 + 크기 조정 */
   .hero-main-title {
-    font-size: clamp(1.6rem, 7vw, 2.2rem) !important;
+    font-size: clamp(1.3rem, 5.5vw, 1.8rem) !important;
     white-space: normal !important;
     word-break: keep-all;
     text-align: center;
@@ -1433,6 +1437,13 @@ input, textarea, select { font-family: var(--sans); }
 
 /* 모바일 탭 기본 숨김 (PC에서는 안보임) */
 .mobile-panel-tabs { display: none; }
+
+/* PC 전용 패널 헤더 (모바일에서는 탭버튼이 대신함) */
+.pc-only-header { display: flex; }
+@media (max-width: 768px) {
+  .pc-only-header { display: none !important; }
+}
+
 
 @media (max-width: 768px) {
   .slam-cards {
@@ -1679,7 +1690,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-logo-top">
         <span class="logo-quvia">QUVIA</span><span class="logo-lab"> LAB</span>
       </div>
-      <div class="hero-main-title">질문이 탐구가 되고, 탐구가 결과가 되는 곳</div>
+      <div class="hero-main-title">질문이 탐구가 되고, <span style="color:#639922;">탐구가 결과가 되는 곳</span></div>
       <div class="hero-slogan">"Question carefully, Explore deeply, Prove boldly."</div>
       <div class="hero-desc">모든 위대한 혁신은 작은 질문에서 시작됩니다.<br>큐비아 랩은 학생이 스스로 질문하고, 탐구하고, 실제 결과물로 증명하는 교육을 설계합니다.</div>
     </div>
@@ -1691,16 +1702,14 @@ input, textarea, select { font-family: var(--sans); }
         <button class="mobile-panel-tab" onclick="switchMobilePanel('award',this)">수상 실적</button>
       </div>
       <div class="hero-panel mobile-active" id="mobilePanel_notice">
-        <div class="hero-panel-header">
+        <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">공지 / 소식</div>
-
         </div>
         <div class="hero-notice-list" id="heroNoticeList"></div>
       </div>
       <div class="hero-panel" id="mobilePanel_award">
-        <div class="hero-panel-header">
+        <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">수상 실적</div>
-
         </div>
         <div class="award-roll-track-wrap">
           <div class="award-roll-track" id="awardRollTrack"></div>
@@ -1716,7 +1725,7 @@ input, textarea, select { font-family: var(--sans); }
     <div class="container">
       <div class="s-label" style="color:rgba(255,255,255,0.4)">Brand Story</div>
       <div class="s-title" style="color:white">교육철학</div>
-      <div class="s-desc" style="color:rgba(255,255,255,0.6)">
+      <div class="s-desc" style="color:rgba(255,255,255,0.6);word-break:keep-all;">
         질문에서 시작해, 탐구로 문제를 발견하고 해결합니다.<br>
         코딩으로 아이디어를 구현하고 결과물로 증명합니다.
       </div>
@@ -1848,12 +1857,12 @@ input, textarea, select { font-family: var(--sans); }
           <div class="slam-title">Q5 · 발명/하드웨어</div>
           <div class="slam-desc">3D프린팅, 전자회로, 아두이노 등으로 실물 결과물을 직접 설계하고 제작하는 단계입니다.</div>
         </div>
-        <div class="slam-card" style="background:linear-gradient(135deg,#3b2f6e,#6b5ca5);cursor:pointer;" onclick="showPage('consult')">
+        <div class="slam-card" style="background:linear-gradient(135deg,#3b2f6e,#6b5ca5);">
           <div class="slam-q" style="color:#c4b5f4">Q</div>
           <span class="slam-icon">🏆</span>
           <div class="slam-name" style="color:white">Q-Grand Slam</div>
           <div class="slam-title" style="color:#c4b5f4">졸업 · 최종 달성</div>
-          <div class="slam-desc" style="color:rgba(255,255,255,0.75)">Q1~Q5를 모두 달성한 학생에게 주어지는 큐비아 랩 최고 영예. 입회상담으로 도전하세요!</div>
+          <div class="slam-desc" style="color:rgba(255,255,255,0.75)">Q1~Q5를 모두 달성한 학생에게 주어지는 큐비아 랩 포트폴리오</div>
         </div>
       </div>
     </div>
@@ -2079,43 +2088,66 @@ input, textarea, select { font-family: var(--sans); }
 
 <!-- ═══ 입회상담 ═══ -->
 <div id="page-consult" class="page page-wrap">
-  <div style="background:var(--g1);padding:36px 0 28px">
-    <div class="container">
+  <div style="background:var(--g1);padding:48px 0 36px">
+    <div class="container" style="text-align:center">
       <div class="s-label" style="color:rgba(255,255,255,0.4)">Consultation</div>
       <div class="s-title" style="color:white">입회상담 신청</div>
+      <p style="color:rgba(255,255,255,0.7);font-size:0.95rem;margin-top:0.5rem">아래 버튼으로 바로 연락해 주세요. 친절하게 안내해드립니다.</p>
     </div>
   </div>
-  <div class="container">
-    <div class="consult-grid">
-      <div class="consult-form">
-        <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1.5rem;color:var(--ink)">상담 신청서</h3>
-        <div class="form-group"><label class="form-label">학생 이름</label><input class="form-input" id="consult_name" type="text" placeholder="이름을 입력하세요"></div>
-        <div class="form-group"><label class="form-label">학교 / 학년</label><input class="form-input" id="consult_school" type="text" placeholder="예: 대구초등학교 5학년"></div>
-        <div class="form-group"><label class="form-label">학부모 연락처</label><input class="form-input" id="consult_tel" type="tel" placeholder="010-0000-0000"></div>
-        <div class="form-group"><label class="form-label">상담 내용</label><textarea class="form-input form-textarea" id="consult_msg" placeholder="궁금한 점이나 상담 내용을 입력해주세요"></textarea></div>
-        <button class="form-submit" onclick="sendKakaoConsult()">카카오톡으로 상담 신청 →</button>
-      </div>
-      <div>
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-title">학원 정보</div>
-          <p style="font-size:0.88rem;color:var(--ink3);line-height:2">
-            📍 경산시 압독2로2길 36, 4층<br>📞 010-8029-9770<br>🕐 평일 13:00–19:00 · 토 09:00–13:00<br>📸 인스타그램 @quvia_lab
-          </p>
-          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
-            <a href="tel:01080299770" style="flex:1;text-align:center;padding:10px;background:var(--g1);color:white;border-radius:6px;font-size:0.85rem;font-weight:500;text-decoration:none">📞 전화 상담</a>
-            <a href="http://pf.kakao.com/_vDLtG/chat" target="_blank" style="flex:1;text-align:center;padding:10px;background:#FEE500;color:#1a1a1a;border-radius:6px;font-size:0.85rem;font-weight:500;text-decoration:none">💬 카카오톡 상담</a>
+  <div class="container" style="padding:60px 5%">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:860px;margin:0 auto">
+
+      <!-- 학원 정보 카드 -->
+      <div class="card" style="padding:36px;display:flex;flex-direction:column;gap:20px">
+        <div style="font-family:var(--serif);font-size:1.3rem;color:var(--ink);font-weight:600">학원 정보</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px;font-size:0.95rem;color:var(--ink2)">
+            <span style="font-size:1.2rem">📍</span>
+            <span>경산시 압독2로2길 36, 4층</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:0.95rem;color:var(--ink2)">
+            <span style="font-size:1.2rem">📞</span>
+            <span>010-8029-9770</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:0.95rem;color:var(--ink2)">
+            <span style="font-size:1.2rem">🕐</span>
+            <span>평일 13:00–19:00 · 토 09:00–13:00</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:0.95rem;color:var(--ink2)">
+            <span style="font-size:1.2rem">📸</span>
+            <span>인스타그램 @quvia_lab</span>
           </div>
         </div>
-        <div class="card">
-          <div class="card-title">등록 절차</div>
-          <div style="display:flex;flex-direction:column;gap:12px">
-            <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--g2);font-weight:600;flex-shrink:0">1</div><div style="font-size:0.88rem;color:var(--ink2)">상담 신청 접수</div></div>
-            <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--g2);font-weight:600;flex-shrink:0">2</div><div style="font-size:0.88rem;color:var(--ink2)">레벨 테스트</div></div>
-            <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--g2);font-weight:600;flex-shrink:0">3</div><div style="font-size:0.88rem;color:var(--ink2)">학부모 상담</div></div>
-            <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:white;font-weight:600;flex-shrink:0">4</div><div style="font-size:0.88rem;color:var(--ink2)">등록 완료</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <a href="tel:01080299770" style="display:block;text-align:center;padding:14px;background:var(--g1);color:white;border-radius:8px;font-size:0.95rem;font-weight:600;text-decoration:none;letter-spacing:0.02em">📞 전화 상담</a>
+          <a href="http://pf.kakao.com/_vDLtG/chat" target="_blank" style="display:block;text-align:center;padding:14px;background:#FEE500;color:#1a1a1a;border-radius:8px;font-size:0.95rem;font-weight:600;text-decoration:none;letter-spacing:0.02em">💬 카카오톡으로 상담하기</a>
+        </div>
+      </div>
+
+      <!-- 등록 절차 카드 -->
+      <div class="card" style="padding:36px;display:flex;flex-direction:column;gap:20px">
+        <div style="font-family:var(--serif);font-size:1.3rem;color:var(--ink);font-weight:600">등록 절차</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border)">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--g2);font-weight:700;flex-shrink:0">1</div>
+            <div><div style="font-size:0.95rem;font-weight:600;color:var(--ink);margin-bottom:2px">상담 신청 접수</div><div style="font-size:0.82rem;color:var(--ink3)">전화 또는 카카오톡으로 연락</div></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border)">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--g2);font-weight:700;flex-shrink:0">2</div>
+            <div><div style="font-size:0.95rem;font-weight:600;color:var(--ink);margin-bottom:2px">레벨 테스트</div><div style="font-size:0.82rem;color:var(--ink3)">학생 수준에 맞는 단계 파악</div></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--border)">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--g5);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--g2);font-weight:700;flex-shrink:0">3</div>
+            <div><div style="font-size:0.95rem;font-weight:600;color:var(--ink);margin-bottom:2px">학부모 상담</div><div style="font-size:0.82rem;color:var(--ink3)">커리큘럼 및 수강료 안내</div></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;padding:16px 0">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:white;font-weight:700;flex-shrink:0">4</div>
+            <div><div style="font-size:0.95rem;font-weight:600;color:var(--ink);margin-bottom:2px">등록 완료</div><div style="font-size:0.82rem;color:var(--ink3)">수업 시작!</div></div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -3902,7 +3934,12 @@ function switchMobilePanel(type, el) {
   document.querySelectorAll('.hero-panel').forEach(p => p.classList.remove('mobile-active'));
   el.classList.add('active');
   const target = document.getElementById('mobilePanel_' + type);
-  if (target) target.classList.add('mobile-active');
+  if (target) {
+    target.classList.add('mobile-active');
+    setTimeout(function(){
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 50);
+  }
 }
 
 /* 카카오 상담 - 입력 정보 포함해서 전송 */

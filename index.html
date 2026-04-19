@@ -1679,31 +1679,47 @@ input, textarea, select { font-family: var(--sans); }
 .gallery-marquee-track {
   display: flex;
   gap: 16px;
+  align-items: flex-start;
   animation: galleryScroll 40s linear infinite;
   width: max-content;
+  padding-bottom: 8px;
 }
 .gallery-marquee-track:hover { animation-play-state: paused; }
 .gallery-marquee-item {
   width: 280px;
+  flex-shrink: 0;
+  background: transparent;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.gallery-marquee-img-wrap {
+  width: 280px;
   height: 200px;
   border-radius: 12px;
   overflow: hidden;
-  flex-shrink: 0;
   background: var(--g5);
-  position: relative;
+  flex-shrink: 0;
 }
 .gallery-marquee-item img {
   width: 100%; height: 100%; object-fit: cover;
   transition: transform 0.3s;
 }
-.gallery-marquee-item:hover img { transform: scale(1.05); }
+.gallery-marquee-item:hover .gallery-marquee-img-wrap img { transform: scale(1.05); }
 .gallery-marquee-desc {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: rgba(0,0,0,0.45);
-  color: white; font-size: 0.75rem; padding: 6px 10px;
-  opacity: 0; transition: opacity 0.2s;
+  display: none;
 }
-.gallery-marquee-item:hover .gallery-marquee-desc { opacity: 1; }
+.gallery-marquee-label {
+  font-size: 0.78rem;
+  color: var(--ink3);
+  padding: 6px 4px 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
 @keyframes galleryScroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -1718,7 +1734,7 @@ input, textarea, select { font-family: var(--sans); }
 
 /* 홈 탐구현장 미니 마퀴 */
 .home-gallery-marquee {
-  padding: 10px 6% 14px;
+  padding: 10px 0 14px;
   background: #f5f0e8;
   border-top: 1px solid var(--border);
   overflow: hidden;
@@ -1785,6 +1801,10 @@ input, textarea, select { font-family: var(--sans); }
   border-radius: 12px;
   overflow: hidden;
 }
+
+.hero-award-static { flex:1; overflow:hidden; }
+.hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); }
+.hero-award-static .award-roll-item:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -1904,6 +1924,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-panel" id="mPane_notice">
         <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">공지 / 소식</div>
+          <span class="hero-panel-more" onclick="showPage('news')">더보기 →</span>
         </div>
         <!-- 모바일 전용 심플 헤더 -->
         <div class="mobile-section-title">공지 / 소식</div>
@@ -1912,10 +1933,9 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-panel hero-panel-award-pc" id="mPane_award">
         <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">수상 실적</div>
+          <span class="hero-panel-more" onclick="showPage('awards')">더보기 →</span>
         </div>
-        <div class="award-roll-track-wrap">
-          <div class="award-roll-track" id="awardRollTrack"></div>
-        </div>
+        <div class="hero-award-static" id="heroAwardList"></div>
       </div>
     </div>
     <!-- 홈 탐구현장 미니 마퀴 -->
@@ -3014,21 +3034,15 @@ function renderHeroNotice(){
 
 function renderAwardRoll(){
   const awards=DB.get('awards',[]);
-  const track=document.getElementById('awardRollTrack');
-  if(!track||!awards.length) return;
-  const doubled=[...awards,...awards];
-  track.innerHTML=doubled.map(a=>`
-    <div class="award-roll-item">
+  const el=document.getElementById('heroAwardList');
+  if(!el) return;
+  if(!awards.length){el.innerHTML='';return;}
+  el.innerHTML=awards.filter(a=>a.name).slice(0,6).map(a=>`
+    <div class="award-roll-item" onclick="showPage('awards')" style="cursor:pointer">
       <span class="award-roll-icon">${a.icon||'🏅'}</span>
       <span class="award-roll-name">${a.name}</span>
       <span class="award-roll-cat">${a.cat||''}</span>
     </div>`).join('');
-  const itemH=38, total=awards.length*itemH;
-  const style=document.getElementById('rollStyle')||document.createElement('style');
-  style.id='rollStyle';
-  style.textContent=`@keyframes roll{0%{transform:translateY(0)}100%{transform:translateY(-${total}px)}}`;
-  document.head.appendChild(style);
-  track.style.animation=`roll ${awards.length*2.5}s linear infinite`;
 }
 
 /* ═══════════════════════════════════
@@ -3165,8 +3179,10 @@ function renderGallery(){
   const doubled=[...validPhotos,...validPhotos];
   el.innerHTML=doubled.map(p=>`
     <div class="gallery-marquee-item">
-      <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}" onerror="this.style.display='none'">
-      ${p.desc?`<div class="gallery-marquee-desc">${p.desc}</div>`:''}
+      <div class="gallery-marquee-img-wrap">
+        <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s">
+      </div>
+      ${p.desc?`<div class="gallery-marquee-label">${p.desc}</div>`:''}
     </div>`).join('');
   // 사진 수에 따라 속도 조절 (많을수록 천천히)
   const speed=Math.max(20, validPhotos.length*5);

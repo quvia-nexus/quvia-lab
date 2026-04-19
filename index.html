@@ -2664,7 +2664,7 @@ input, textarea, select { font-family: var(--sans); }
           <button class="table-action-btn primary" onclick="exportData()">데이터 내보내기 (JSON)</button>
           <label class="table-action-btn" style="cursor:pointer">
             데이터 가져오기 (JSON)
-            <input type="file" accept=".json" style="display:none" onchange="importData(this)">
+            <input type="file" accept=".json,application/json,text/plain" style="display:none" onchange="importData(this)">
           </label>
         </div>
       </div>
@@ -3804,32 +3804,28 @@ function exportData(){
 function importData(input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      // BOM 제거 후 파싱
-      let text=e.target.result;
-      if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
-      text=text.trim();
-      const data=JSON.parse(text);
-      if(typeof data!=='object'||Array.isArray(data)){
-        alert('올바른 형식의 JSON 파일이 아닙니다.');return;
-      }
-      const validKeys=['students','teachers','classes','awards','news','works','gallery','notices','edulogs','consultlogs'];
-      const found=Object.keys(data).filter(k=>validKeys.includes(k));
-      if(found.length===0){
-        alert('데이터가 없거나 형식이 맞지 않습니다.\n키: '+Object.keys(data).join(', '));return;
-      }
-      if(confirm('기존 데이터를 덮어씁니까?\n(불러올 항목: '+found.join(', ')+')')){
-        found.forEach(k=>DB.set(k,data[k]));
-        // classes가 없으면 빈 배열로 초기화
-        if(!data.classes) DB.set('classes',[]);
-        alert('가져오기 완료! ('+found.length+'개 항목)');
-        renderAdminDashboard();
-      }
-    }catch(err){
-      alert('파일을 읽는 중 오류가 발생했습니다.\n'+err.message);
+  reader.onload=function(e){
+    var text=e.target.result||'';
+    // BOM 제거
+    if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
+    text=text.trim();
+    var data;
+    try{ data=JSON.parse(text); }
+    catch(err){
+      alert('JSON 파싱 실패: '+err.message+'\n\n파일 첫 50자: '+text.slice(0,50));
+      return;
     }
+    if(!data||typeof data!=='object'||Array.isArray(data)){
+      alert('올바른 형식이 아닙니다 (object 필요)');return;
+    }
+    var keys=Object.keys(data);
+    if(!confirm('데이터를 불러옵니까?\n항목: '+keys.join(', '))){return;}
+    keys.forEach(function(k){ DB.set(k,data[k]); });
+    if(!data.classes) DB.set('classes',[]);
+    alert('가져오기 완료! '+keys.length+'개 항목 로드됨');
+    renderAdminDashboard();
   };
+  reader.onerror=function(){ alert('파일 읽기 오류: '+reader.error); };
   reader.readAsText(file,'UTF-8');
 }
 

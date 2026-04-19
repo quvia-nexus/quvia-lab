@@ -357,7 +357,7 @@ input, textarea, select { font-family: var(--sans); }
 .hero-bottom-panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 220px;
+  min-height: 220px;
   margin-top: 24px;
   border-top: 1px solid var(--border);
 }
@@ -367,6 +367,7 @@ input, textarea, select { font-family: var(--sans); }
   border-left: none;
   display: flex; flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 
 .hero-panel:last-child { border-right: none; }
@@ -1734,10 +1735,13 @@ input, textarea, select { font-family: var(--sans); }
 
 /* 홈 탐구현장 미니 마퀴 */
 .home-gallery-marquee {
-  padding: 10px 0 14px;
   background: #f5f0e8;
   border-top: 1px solid var(--border);
   overflow: hidden;
+}
+.home-gallery-inner {
+  overflow: hidden;
+  padding: 10px 0 14px;
 }
 .home-gallery-marquee-label {
   font-family: var(--mono);
@@ -1802,7 +1806,7 @@ input, textarea, select { font-family: var(--sans); }
   overflow: hidden;
 }
 
-.hero-award-static { flex:1; overflow:hidden; }
+.hero-award-static { flex:1; overflow:hidden; max-height:220px; }
 .hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); }
 .hero-award-static .award-roll-item:last-child { border-bottom: none; }
 </style>
@@ -1924,7 +1928,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-panel" id="mPane_notice">
         <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">공지 / 소식</div>
-          <span class="hero-panel-more" onclick="showPage('news')">더보기 →</span>
+          <a class="hero-panel-more" onclick="event.stopPropagation();showPage('news');return false;" href="#">더보기 →</a>
         </div>
         <!-- 모바일 전용 심플 헤더 -->
         <div class="mobile-section-title">공지 / 소식</div>
@@ -1933,16 +1937,18 @@ input, textarea, select { font-family: var(--sans); }
       <div class="hero-panel hero-panel-award-pc" id="mPane_award">
         <div class="hero-panel-header pc-only-header">
           <div class="hero-panel-title">수상 실적</div>
-          <span class="hero-panel-more" onclick="showPage('awards')">더보기 →</span>
+          <a class="hero-panel-more" onclick="event.stopPropagation();showPage('awards');return false;" href="#">더보기 →</a>
         </div>
         <div class="hero-award-static" id="heroAwardList"></div>
       </div>
     </div>
     <!-- 홈 탐구현장 미니 마퀴 -->
     <div class="home-gallery-marquee" id="homeGallerySection">
-      <div class="home-gallery-marquee-label">탐구현장</div>
-      <div class="home-gallery-marquee-wrap">
-        <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
+      <div class="home-gallery-inner">
+        <div class="home-gallery-marquee-label">탐구현장</div>
+        <div class="home-gallery-marquee-wrap">
+          <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
+        </div>
       </div>
     </div>
   </div>

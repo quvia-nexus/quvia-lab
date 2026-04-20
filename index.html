@@ -1821,8 +1821,8 @@ input, textarea, select { font-family: var(--sans); }
   overflow: hidden;
 }
 
-.hero-award-static { flex:1; }
-.hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); }
+.hero-award-static { flex:1; display:grid; grid-template-rows: repeat(6, 1fr); }
+.hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); height: auto !important; }
 .hero-award-static .award-roll-item:last-child { border-bottom: none; }
 </style>
 </head>
@@ -4365,7 +4365,7 @@ function sendKakaoConsult() {
 /* ═══════════════════════════════════
    구글 시트 연동 (공개 데이터)
 ═══════════════════════════════════ */
-const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/pub?output=csv&sheet=';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsZ4qFAw5-NRPOJOPDIn9FAAi2KeNR0NBeRmDSdZ0_9L7rI-kSPZLnOqQ_q_MWE5b5gQ/exec';
 
 // CSV 한 줄 파싱 (따옴표 처리 포함)
 function parseCSVLine(line) {
@@ -4398,10 +4398,9 @@ function parseCSV(text) {
 
 async function fetchSheet(sheetName) {
   try {
-    const res = await fetch(SHEET_BASE + sheetName, {mode:'cors'});
+    const res = await fetch(APPS_SCRIPT_URL + '?sheet=' + sheetName);
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    return parseCSV(text);
+    return await res.json();
   } catch(e) {
     console.warn('시트 로드 실패(' + sheetName + '):', e.message);
     return null;
@@ -4422,8 +4421,7 @@ async function loadFromSheets() {
     renderGallery();
   }
   if (awards && awards.length) {
-    // 아이콘 자동 매핑
-    const iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆'};
+    const iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
     awards.forEach(a => { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
     DB.set('awards', awards);
     renderAwardRoll();

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>큐비아 탐구학원 QUVIA LAB</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=Space+Mono&family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════
    CSS 변수 & 리셋
@@ -279,8 +279,11 @@ input, textarea, select { font-family: var(--sans); }
   position: relative;
 }
 .hero-bg-pattern {
-  position: absolute; inset: 0; opacity: 0.4;
-  background-image: radial-gradient(circle at 70% 50%, var(--g5) 0%, transparent 60%);
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 360px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 히어로 구조: 세로 2단 */
@@ -288,6 +291,7 @@ input, textarea, select { font-family: var(--sans); }
   display: flex;
   flex-direction: column;
   padding-top: calc(var(--nav-h) - 28px);
+  background: #f2eeea;
 }
 .hero-top-full {
   padding: 0 6% 16px;
@@ -362,6 +366,9 @@ input, textarea, select { font-family: var(--sans); }
   border-radius: 8px;
   overflow: hidden;
   align-items: stretch;
+  position: relative;
+  z-index: 2;
+  background: white;
 }
 .hero-panel {
   padding: 0;
@@ -1582,15 +1589,19 @@ input, textarea, select { font-family: var(--sans); }
   white-space: nowrap;
 }
 .logo-quvia {
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
-  color: var(--ink2);
-  letter-spacing: 0.03em;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4.2vw, 3.8rem);
+  color: #b8960c;
+  letter-spacing: 0.04em;
+  text-shadow: 2px 3px 0px rgba(120,80,0,0.18), 4px 6px 12px rgba(184,150,12,0.15);
 }
 .logo-lab {
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
-  color: #7B6FD0;
-  margin-left: 0.3em;
-  letter-spacing: 0.03em;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4.2vw, 3.8rem);
+  color: #6B5CA5;
+  margin-left: 0.2em;
+  letter-spacing: 0.04em;
+  text-shadow: 2px 3px 0px rgba(50,30,100,0.18), 4px 6px 12px rgba(107,92,165,0.15);
 }
 /* 로고 이미지 배경 제거 */
 .hero-logo-block img {
@@ -1751,6 +1762,8 @@ input, textarea, select { font-family: var(--sans); }
   border-radius: 8px;
   overflow: hidden;
   margin-top: 12px;
+  position: relative;
+  z-index: 2;
 }
 .home-gallery-inner {
   overflow: hidden;
@@ -1928,7 +1941,86 @@ input, textarea, select { font-family: var(--sans); }
 <!-- ═══ 메인 페이지 ═══ -->
 <div id="page-main" class="page active page-wrap">
   <div id="hero">
-    <div class="hero-bg-pattern"></div>
+    <div class="hero-bg-pattern">
+      <svg width="100%" height="100%" viewBox="0 0 1400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="1400" height="500" fill="#f2eeea"/>
+        <!-- 왼쪽 큰 돋보기 -->
+        <g opacity="0.13">
+          <circle cx="180" cy="250" r="140" stroke="#7B6FD0" stroke-width="3" fill="none"/>
+          <circle cx="180" cy="250" r="95" stroke="#7B6FD0" stroke-width="2" fill="rgba(123,111,208,0.04)"/>
+          <line x1="278" y1="348" x2="360" y2="430" stroke="#7B6FD0" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- 오른쪽 큰 돋보기 -->
+        <g opacity="0.12">
+          <circle cx="1230" cy="340" r="120" stroke="#b8960c" stroke-width="3" fill="none"/>
+          <circle cx="1230" cy="340" r="80" stroke="#b8960c" stroke-width="2" fill="rgba(184,150,12,0.04)"/>
+          <line x1="1310" y1="420" x2="1380" y2="490" stroke="#b8960c" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- 회로 왼쪽 -->
+        <g stroke="#7B6FD0" stroke-width="1.5" fill="none" opacity="0.2">
+          <polyline points="0,140 80,140 80,100 180,100 180,130 260,130"/>
+          <polyline points="0,200 55,200 55,165 140,165 140,195 220,195 220,160 300,160"/>
+          <polyline points="0,270 40,270 40,235 110,235 110,265 185,265"/>
+          <polyline points="0,340 65,340 65,370 140,370 140,345 210,345 210,375 270,375"/>
+          <circle cx="80" cy="140" r="5" fill="#7B6FD0"/>
+          <circle cx="180" cy="100" r="5" fill="#7B6FD0"/>
+          <circle cx="140" cy="165" r="5" fill="#7B6FD0"/>
+          <circle cx="110" cy="235" r="5" fill="#7B6FD0"/>
+          <circle cx="140" cy="370" r="5" fill="#7B6FD0"/>
+          <circle cx="35" cy="430" r="4" fill="#7B6FD0"/>
+          <polyline points="0,420 35,420 35,450 90,450"/>
+        </g>
+        <!-- 회로 오른쪽 -->
+        <g stroke="#b8960c" stroke-width="1.5" fill="none" opacity="0.2">
+          <polyline points="1400,135 1320,135 1320,95 1220,95 1220,125 1140,125"/>
+          <polyline points="1400,195 1345,195 1345,160 1260,160 1260,190 1180,190 1180,155 1100,155"/>
+          <polyline points="1400,265 1360,265 1360,230 1290,230 1290,260 1215,260"/>
+          <polyline points="1400,340 1335,340 1335,370 1260,370 1260,345 1190,345 1190,375 1130,375"/>
+          <circle cx="1320" cy="135" r="5" fill="#b8960c"/>
+          <circle cx="1220" cy="95" r="5" fill="#b8960c"/>
+          <circle cx="1260" cy="160" r="5" fill="#b8960c"/>
+          <circle cx="1290" cy="230" r="5" fill="#b8960c"/>
+          <circle cx="1260" cy="370" r="5" fill="#b8960c"/>
+          <polyline points="1400,420 1365,420 1365,450 1310,450"/>
+        </g>
+        <!-- 별 골드 -->
+        <g fill="#b8960c" opacity="0.55">
+          <path d="M55 70 L59 82 L72 82 L62 90 L66 102 L55 94 L44 102 L48 90 L38 82 L51 82 Z"/>
+          <path d="M1320 80 L1323 90 L1334 90 L1325 97 L1328 107 L1320 101 L1312 107 L1315 97 L1306 90 L1317 90 Z"/>
+          <path d="M1340 380 L1342 388 L1351 388 L1344 393 L1347 401 L1340 397 L1333 401 L1336 393 L1329 388 L1338 388 Z"/>
+          <path d="M60 390 L62 398 L71 398 L64 403 L67 411 L60 407 L53 411 L56 403 L49 398 L58 398 Z"/>
+          <path d="M700 18 L702 25 L710 25 L704 30 L706 37 L700 33 L694 37 L696 30 L690 25 L698 25 Z"/>
+        </g>
+        <!-- 별 보라 -->
+        <g fill="#7B6FD0" opacity="0.35">
+          <path d="M290 440 L292 448 L300 448 L294 453 L296 461 L290 457 L284 461 L286 453 L280 448 L288 448 Z"/>
+          <path d="M1100 450 L1102 458 L1110 458 L1104 463 L1106 471 L1100 467 L1094 471 L1096 463 L1090 458 L1098 458 Z"/>
+          <path d="M1380 200 L1382 207 L1389 207 L1384 211 L1386 218 L1380 214 L1374 218 L1376 211 L1371 207 L1378 207 Z"/>
+        </g>
+        <!-- AI 노드 왼쪽 상단 -->
+        <g opacity="0.15" stroke="#6B5CA5" stroke-width="1.5">
+          <line x1="400" y1="30" x2="460" y2="65"/>
+          <line x1="400" y1="30" x2="355" y2="68"/>
+          <line x1="460" y1="65" x2="425" y2="100"/>
+          <line x1="355" y1="68" x2="425" y2="100"/>
+          <circle cx="400" cy="30" r="7" fill="#b8960c"/>
+          <circle cx="460" cy="65" r="5" fill="#6B5CA5"/>
+          <circle cx="355" cy="68" r="5" fill="#6B5CA5"/>
+          <circle cx="425" cy="100" r="7" fill="#b8960c"/>
+        </g>
+        <!-- AI 노드 오른쪽 상단 -->
+        <g opacity="0.15" stroke="#6B5CA5" stroke-width="1.5">
+          <line x1="960" y1="30" x2="1020" y2="65"/>
+          <line x1="960" y1="30" x2="915" y2="68"/>
+          <line x1="1020" y1="65" x2="985" y2="100"/>
+          <line x1="915" y1="68" x2="985" y2="100"/>
+          <circle cx="960" cy="30" r="7" fill="#b8960c"/>
+          <circle cx="1020" cy="65" r="5" fill="#6B5CA5"/>
+          <circle cx="915" cy="68" r="5" fill="#6B5CA5"/>
+          <circle cx="985" cy="100" r="7" fill="#b8960c"/>
+        </g>
+      </svg>
+    </div>
     <!-- 상단: 센터 레이아웃 -->
     <div class="hero-top-full">
       <div class="hero-logo-top">

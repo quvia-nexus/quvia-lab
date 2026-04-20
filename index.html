@@ -357,18 +357,18 @@ input, textarea, select { font-family: var(--sans); }
 .hero-bottom-panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 220px;
+  height: 320px;
   margin-top: 24px;
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 .hero-panel {
   padding: 0;
-  border-right: none;
-  border-left: none;
   display: flex; flex-direction: column;
   overflow: hidden;
-  min-height: 0;
 }
+.hero-panel:first-child { border-right: 1px solid var(--border); }
 
 .hero-panel:last-child { border-right: none; }
 .hero-panel-header {
@@ -392,7 +392,7 @@ input, textarea, select { font-family: var(--sans); }
   transition: color 0.2s;
 }
 .hero-panel-more:hover { color: var(--g1); }
-.hero-notice-list { flex: 1; }
+.hero-notice-list { flex: 1; overflow-y: auto; }
 .hero-notice-item {
   padding: 10px 20px;
   border-bottom: 1px solid var(--border);
@@ -1742,6 +1742,8 @@ input, textarea, select { font-family: var(--sans); }
 .home-gallery-inner {
   overflow: hidden;
   padding: 10px 0 14px;
+  width: 100%;
+  max-width: 100%;
 }
 .home-gallery-marquee-label {
   font-family: var(--mono);
@@ -1755,6 +1757,8 @@ input, textarea, select { font-family: var(--sans); }
 .home-gallery-marquee-wrap {
   overflow: hidden;
   width: 100%;
+  max-width: 100%;
+  position: relative;
 }
 .home-gallery-marquee-track {
   display: flex;
@@ -1806,7 +1810,7 @@ input, textarea, select { font-family: var(--sans); }
   overflow: hidden;
 }
 
-.hero-award-static { flex:1; overflow:hidden; max-height:220px; }
+.hero-award-static { flex:1; overflow-y: auto; }
 .hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); }
 .hero-award-static .award-roll-item:last-child { border-bottom: none; }
 </style>
@@ -3043,7 +3047,7 @@ function renderAwardRoll(){
   const el=document.getElementById('heroAwardList');
   if(!el) return;
   if(!awards.length){el.innerHTML='';return;}
-  el.innerHTML=awards.filter(a=>a.name).slice(0,6).map(a=>`
+  el.innerHTML=awards.filter(a=>a.name).slice(0,10).map(a=>`
     <div class="award-roll-item" onclick="showPage('awards')" style="cursor:pointer">
       <span class="award-roll-icon">${a.icon||'🏅'}</span>
       <span class="award-roll-name">${a.name}</span>
@@ -4342,6 +4346,81 @@ function sendKakaoConsult() {
   );
   // 카카오톡 채널 채팅 + 메시지 pre-fill (지원 환경에서 동작)
   window.open('http://pf.kakao.com/_vDLtG/chat?msg=' + text, '_blank');
+}
+
+
+/* ═══════════════════════════════════
+   구글 시트 연동 (공개 데이터)
+═══════════════════════════════════ */
+const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/gviz/tq?tqx=out:csv&sheet=';
+
+// CSV 한 줄 파싱 (따옴표 처리 포함)
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (c === ',' && !inQ) {
+      result.push(cur.trim()); cur = '';
+    } else cur += c;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = parseCSVLine(lines[0]).map(h => h.replace(/^"|"$/g,''));
+  return lines.slice(1).map(line => {
+    const vals = parseCSVLine(line).map(v => v.replace(/^"|"$/g,''));
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = vals[i] || '');
+    return obj;
+  }).filter(r => Object.values(r).some(v => v));
+}
+
+async function fetchSheet(sheetName) {
+  try {
+    const res = await fetch(SHEET_BASE + sheetName);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    return parseCSV(text);
+  } catch(e) {
+    console.warn('시트 로드 실패(' + sheetName + '):', e.message);
+    return null;
+  }
+}
+
+// 구글 시트에서 gallery, awards, news 로드 → DB에 저장 후 렌더
+async function loadFromSheets() {
+  const [gallery, awards, news] = await Promise.all([
+    fetchSheet('gallery'),
+    fetchSheet('awards'),
+    fetchSheet('news')
+  ]);
+
+  if (gallery && gallery.length) {
+    DB.set('gallery', gallery);
+    renderHomeGallery();
+    renderGallery();
+  }
+  if (awards && awards.length) {
+    // 아이콘 자동 매핑
+    const iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆'};
+    awards.forEach(a => { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
+    DB.set('awards', awards);
+    renderAwardRoll();
+    renderAwards();
+  }
+  if (news && news.length) {
+    DB.set('news', news);
+    renderHeroNotice();
+    renderNews();
+  }
 }
 
 document.addEventListener('DOMContentLoaded',()=>{

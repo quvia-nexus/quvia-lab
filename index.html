@@ -4365,7 +4365,7 @@ function sendKakaoConsult() {
 /* ═══════════════════════════════════
    구글 시트 연동 (공개 데이터)
 ═══════════════════════════════════ */
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwK00idwcIPFWEgVGyCASgcEcDHBKMov9p8LofZmVq0mS4nyhukxvh_d4TJ0Ob4a8VNA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMZYLin3qZQ2IA3t-8NCY9fmLlR35alsfU4ShUMUgJ34MTvsN3DP30-aM9SnFxeP3sqQ/exec';
 
 // CSV 한 줄 파싱 (따옴표 처리 포함)
 function parseCSVLine(line) {
@@ -4396,24 +4396,53 @@ function parseCSV(text) {
   }).filter(r => Object.values(r).some(v => v));
 }
 
-async function fetchSheet(sheetName) {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?sheet=' + sheetName);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return await res.json();
-  } catch(e) {
-    console.warn('시트 로드 실패(' + sheetName + '):', e.message);
-    return null;
-  }
+function fetchSheet(sheetName) {
+  return new Promise(function(resolve) {
+    var cbName = 'cb_' + sheetName + '_' + Date.now();
+    var script = document.createElement('script');
+    var timer = setTimeout(function() {
+      delete window[cbName];
+      document.body.removeChild(script);
+      console.warn('시트 로드 실패(' + sheetName + '): timeout');
+      resolve(null);
+    }, 8000);
+    window[cbName] = function(data) {
+      clearTimeout(timer);
+      delete window[cbName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    script.src = APPS_SCRIPT_URL + '?sheet=' + sheetName + '&callback=' + cbName;
+    document.body.appendChild(script);
+  });
 }
 
 // 구글 시트에서 gallery, awards, news 로드 → DB에 저장 후 렌더
-async function loadFromSheets() {
-  const [gallery, awards, news] = await Promise.all([
-    fetchSheet('gallery'),
-    fetchSheet('awards'),
-    fetchSheet('news')
-  ]);
+function loadFromSheets() {
+  fetchSheet('gallery').then(function(gallery) {
+    if (gallery && gallery.length) {
+      DB.set('gallery', gallery);
+      renderHomeGallery();
+      renderGallery();
+    }
+  });
+  fetchSheet('awards').then(function(awards) {
+    if (awards && awards.length) {
+      var iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
+      awards.forEach(function(a) { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
+      DB.set('awards', awards);
+      renderAwardRoll();
+      renderAwards();
+    }
+  });
+  fetchSheet('news').then(function(news) {
+    if (news && news.length) {
+      DB.set('news', news);
+      renderHeroNotice();
+      renderNews();
+    }
+  });
+  return; // 아래 코드 무시
 
   if (gallery && gallery.length) {
     DB.set('gallery', gallery);

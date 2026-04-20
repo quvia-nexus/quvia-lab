@@ -383,20 +383,19 @@ input, textarea, select { font-family: var(--sans); }
   padding: 14px 24px;
   border-bottom: 1px solid var(--border);
   display: flex; justify-content: space-between; align-items: center;
-  background: #e8f2e8;
+  background: #2d5a27;
   flex-shrink: 0;
 }
 .hero-panel-title {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--g2);
-  font-weight: 600;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 .hero-panel-more {
   font-size: 0.72rem;
-  color: var(--g3);
+  color: rgba(255,255,255,0.85);
   cursor: pointer;
   transition: color 0.2s;
   pointer-events: auto;
@@ -404,7 +403,7 @@ input, textarea, select { font-family: var(--sans); }
   z-index: 10;
   text-decoration: none;
 }
-.hero-panel-more:hover { color: var(--g1); }
+.hero-panel-more:hover { color: white; }
 .hero-notice-list { flex: 1; }
 .hero-notice-item {
   padding: 10px 20px;
@@ -1838,6 +1837,72 @@ input, textarea, select { font-family: var(--sans); }
 .hero-award-static { flex:1; display:grid; grid-template-rows: repeat(6, 1fr); }
 .hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); height: auto !important; }
 .hero-award-static .award-roll-item:last-child { border-bottom: none; }
+
+/* ═══ 카드뉴스 ═══ */
+#page-cardnews { background: var(--cream); }
+.cardnews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.cardnews-item {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cardnews-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.cardnews-thumb {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background: var(--g5);
+  display: block;
+}
+.cardnews-thumb-empty {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: var(--g5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+.cardnews-body {
+  padding: 14px 16px;
+}
+.cardnews-source {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+.cardnews-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cardnews-date {
+  font-size: 0.72rem;
+  color: var(--ink4);
+}
+@media (max-width: 768px) {
+  .cardnews-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
 </style>
 </head>
 <body>
@@ -1874,10 +1939,10 @@ input, textarea, select { font-family: var(--sans); }
     <div class="nav-item">
       소식
       <div class="nav-dropdown">
-        <a onclick="showPage('awards')">수상실적</a>
-        <a onclick="showPage('works')">학생작품</a>
-        <a onclick="showPage('gallery')">탐구현장</a>
         <a onclick="showPage('news')">공지/소식</a>
+        <a onclick="showPage('gallery')">탐구현장</a>
+        <a onclick="showPage('awards')">수상실적</a>
+        <a onclick="showPage('cardnews')">카드뉴스</a>
       </div>
     </div>
     <div class="nav-item" onclick="showPage('consult')">입회상담</div>
@@ -2162,6 +2227,7 @@ input, textarea, select { font-family: var(--sans); }
     <div class="container">
       <div class="s-label" style="color:#639922">Graduation</div>
       <div class="s-title" style="color:#27500A">Q-Grand Slam</div>
+      <div style="display:inline-block;margin-top:10px;background:#27500A;color:white;font-size:0.85rem;font-weight:700;padding:5px 18px;border-radius:20px;letter-spacing:0.05em">졸업인증제</div>
       <div class="s-desc" style="color:#3B6D11">
         큐비아 랩의 졸업은 단순한 기간 이수가 아닙니다.<br>
         탐구·창작·발표·실행의 다섯 영역에서 균형 있는 성취를 증명해야 완성됩니다.
@@ -2422,6 +2488,24 @@ input, textarea, select { font-family: var(--sans); }
 </div>
 
 <!-- ═══ 공지/소식 ═══ -->
+<!-- ═══ 카드뉴스 ═══ -->
+<div id="page-cardnews" class="page page-wrap">
+  <div style="background:var(--g1);padding:36px 0 28px">
+    <div style="max-width:960px;margin:0 auto;padding:0 5%">
+      <div class="s-header-row">
+        <div class="s-header-left">
+          <div class="s-label" style="color:rgba(255,255,255,0.4)">Card News</div>
+          <div class="s-title" style="color:white;margin-bottom:0">카드뉴스</div>
+        </div>
+        <div class="s-header-right">인스타그램·블로그 게시글을 모아봤어요</div>
+      </div>
+    </div>
+  </div>
+  <div class="container section-sm" style="max-width:960px;margin-left:auto;margin-right:auto">
+    <div class="cardnews-grid" id="cardnewsGrid"></div>
+  </div>
+</div>
+
 <div id="page-news" class="page page-wrap">
   <div style="background:var(--g1);padding:36px 0 28px">
     <div style="max-width:760px;margin:0 auto;padding:0 5%">
@@ -2780,6 +2864,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','teachers',this)">강사 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','classes',this)">클래스 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','notice',this)">전달사항</div>
+      <div class="portal-nav-item" onclick="switchMobilePanel('admin','cardnews',this)">카드뉴스</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','news',this)">공지/소식</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','awards',this)">수상실적</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','works',this)">학생작품</div>
@@ -2850,6 +2935,14 @@ input, textarea, select { font-family: var(--sans); }
           <thead><tr><th>날짜</th><th>대상</th><th>내용</th><th>관리</th></tr></thead>
           <tbody id="noticeBody"></tbody>
         </table>
+      </div>
+
+      <!-- 카드뉴스 -->
+      <div id="admin-tab-cardnews" class="portal-tab">
+        <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:12px">인스타그램·블로그 게시글 링크와 썸네일을 등록하면 카드뉴스 페이지에 표시됩니다.</p>
+        <button class="table-action-btn primary" style="margin-bottom:12px" onclick="addCardnewsRow()">+ 카드뉴스 추가</button>
+        <div id="cardnewsList" style="display:flex;flex-direction:column;gap:10px"></div>
+        <button class="table-action-btn" style="margin-top:16px" onclick="saveCardnews()">저장</button>
       </div>
 
       <!-- 공지/소식 -->
@@ -2958,6 +3051,7 @@ input, textarea, select { font-family: var(--sans); }
 ═══════════════════════════════════ */
 const DB = {
   get:(k,d=[])=>{try{const v=localStorage.getItem('qv_'+k);return v?JSON.parse(v):d;}catch{return d;}},
+  // cardnews 기본값
   set:(k,v)=>{try{localStorage.setItem('qv_'+k,JSON.stringify(v));}catch(e){console.error(e);}}
 };
 
@@ -3074,6 +3168,7 @@ function showPage(name, param){
     'works':renderWorks,
     'gallery':renderGallery,
     'news':renderNews,
+    'cardnews':renderCardnews,
     'characters':renderCharacters,
     'student':renderStudentPortal,
     'teacher':renderTeacherPortal,
@@ -3164,64 +3259,191 @@ function renderAwardRoll(){
 /* ═══════════════════════════════════
    캐릭터 카드 렌더
 ═══════════════════════════════════ */
+function svgQuri(){return `<svg width="90" height="90" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="34" r="10" fill="#e07820"/><circle cx="74" cy="34" r="10" fill="#e07820"/>
+  <circle cx="30" cy="34" r="6" fill="#f5a040"/><circle cx="74" cy="34" r="6" fill="#f5a040"/>
+  <circle cx="52" cy="58" r="34" fill="#e07820"/><circle cx="52" cy="58" r="27" fill="#f5a040"/><circle cx="52" cy="58" r="20" fill="#ffd090"/>
+  <path d="M72 78 Q78 84 81 87" stroke="#b05810" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="43" cy="54" rx="6" ry="6" fill="white"/><ellipse cx="61" cy="54" rx="6" ry="6" fill="white"/>
+  <circle cx="44" cy="55" r="3.5" fill="#1a1a3e"/><circle cx="62" cy="55" r="3.5" fill="#1a1a3e"/>
+  <circle cx="45" cy="54" r="1.4" fill="white"/><circle cx="63" cy="54" r="1.4" fill="white"/>
+  <ellipse cx="52" cy="61" rx="3" ry="2" fill="#c06010"/>
+  <path d="M45 67 Q52 73 59 67" stroke="#b05010" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <circle cx="18" cy="80" r="11" stroke="#f5803a" stroke-width="3" fill="rgba(245,128,58,0.15)"/>
+  <line x1="26" y1="88" x2="34" y2="96" stroke="#f5803a" stroke-width="3.5" stroke-linecap="round"/>
+</svg>`;}
+function svgQro(){return `<svg width="90" height="90" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="34" r="10" fill="#2da870"/><circle cx="74" cy="34" r="10" fill="#2da870"/>
+  <circle cx="30" cy="34" r="6" fill="#5dc89a"/><circle cx="74" cy="34" r="6" fill="#5dc89a"/>
+  <circle cx="52" cy="58" r="34" fill="#2da870"/><circle cx="52" cy="58" r="27" fill="#5dc89a"/><circle cx="52" cy="58" r="20" fill="#90e0c0"/>
+  <path d="M72 78 Q78 84 81 87" stroke="#1a8050" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="61" cy="54" rx="6" ry="6" fill="white"/>
+  <circle cx="62" cy="55" r="3.5" fill="#1a1a3e"/><circle cx="63" cy="54" r="1.4" fill="white"/>
+  <path d="M38 53 Q43 49 48 53" stroke="#1a5a3e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="52" cy="61" rx="3" ry="2" fill="#1e9060"/>
+  <path d="M44 67 Q52 74 60 67" stroke="#1a8050" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M18 18 L21 28 L32 28 L23 35 L26 45 L18 38 L10 45 L13 35 L4 28 L15 28 Z" fill="#f5c842" stroke="#d4a020" stroke-width="0.8"/>
+</svg>`;}
+function svgQube(){return `<svg width="90" height="90" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="36" r="9" fill="#c03030"/><circle cx="74" cy="36" r="9" fill="#c03030"/>
+  <circle cx="30" cy="36" r="5" fill="#e05050"/><circle cx="74" cy="36" r="5" fill="#e05050"/>
+  <circle cx="52" cy="58" r="32" fill="#c03030"/><circle cx="52" cy="58" r="25" fill="#e05050"/><circle cx="52" cy="58" r="18" fill="#f09090"/>
+  <path d="M70 76 Q76 82 79 85" stroke="#901010" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="43" cy="54" rx="7" ry="7" fill="white"/><ellipse cx="61" cy="54" rx="7" ry="7" fill="white"/>
+  <circle cx="44" cy="55" r="4" fill="#1a1a3e"/><circle cx="62" cy="55" r="4" fill="#1a1a3e"/>
+  <circle cx="45" cy="54" r="1.6" fill="white"/><circle cx="63" cy="54" r="1.6" fill="white"/>
+  <ellipse cx="52" cy="66" rx="5" ry="6" fill="#901010" stroke="#700000" stroke-width="1.5"/>
+  <path d="M10 30 L2 50 L12 50 L4 74 L24 44 L14 44 Z" fill="#f5c842" stroke="#d4a020" stroke-width="1"/>
+</svg>`;}
+function svgQon(){return `<svg width="90" height="90" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="44" cy="100" rx="5" ry="9" fill="#ff4400"/><ellipse cx="44" cy="98" rx="3.5" ry="6" fill="#ff8800"/><ellipse cx="44" cy="96" rx="2" ry="3.5" fill="#ffdd00"/>
+  <ellipse cx="52" cy="102" rx="5" ry="9" fill="#ff4400"/><ellipse cx="52" cy="100" rx="3.5" ry="7" fill="#ff8800"/><ellipse cx="52" cy="97" rx="2" ry="4" fill="#ffdd00"/>
+  <ellipse cx="60" cy="100" rx="5" ry="9" fill="#ff4400"/><ellipse cx="60" cy="98" rx="3.5" ry="6" fill="#ff8800"/><ellipse cx="60" cy="96" rx="2" ry="3.5" fill="#ffdd00"/>
+  <rect x="36" y="84" width="36" height="8" rx="4" fill="#1a4a90"/>
+  <polygon points="14,72 28,60 28,84 18,84" fill="#2a5aba"/><polygon points="94,72 80,60 80,84 90,84" fill="#2a5aba"/>
+  <circle cx="30" cy="38" r="9" fill="#2a5aba"/><circle cx="74" cy="38" r="9" fill="#2a5aba"/>
+  <circle cx="30" cy="38" r="5.5" fill="#4a7ad4"/><circle cx="74" cy="38" r="5.5" fill="#4a7ad4"/>
+  <circle cx="52" cy="58" r="32" fill="#2a5aba"/><circle cx="52" cy="58" r="25" fill="#4a7ad4"/><circle cx="52" cy="58" r="18" fill="#80aaf0"/>
+  <polygon points="52,8 60,22 44,22" fill="#1a3a8a"/><polygon points="52,14 66,34 38,34" fill="#2a5aba"/>
+  <path d="M70 76 Q76 82 79 85" stroke="#1a3a8a" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="43" cy="54" rx="6" ry="6" fill="white"/><ellipse cx="61" cy="54" rx="6" ry="6" fill="white"/>
+  <circle cx="44" cy="55" r="3.5" fill="#1a1a3e"/><circle cx="62" cy="55" r="3.5" fill="#1a1a3e"/>
+  <circle cx="45" cy="54" r="1.4" fill="white"/><circle cx="63" cy="54" r="1.4" fill="white"/>
+  <ellipse cx="52" cy="61" rx="3" ry="2" fill="#1a3a8a"/>
+  <path d="M45 67 Q52 73 59 67" stroke="#1a3a8a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+</svg>`;}
+function svgQvia(){return `<svg width="90" height="90" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="30" cy="34" r="10" fill="#6050c0"/><circle cx="74" cy="34" r="10" fill="#6050c0"/>
+  <circle cx="30" cy="34" r="6" fill="#8878d8"/><circle cx="74" cy="34" r="6" fill="#8878d8"/>
+  <circle cx="52" cy="58" r="34" fill="#6050c0"/><circle cx="52" cy="58" r="27" fill="#8878d8"/><circle cx="52" cy="58" r="20" fill="#b0a0ea"/>
+  <path d="M72 76 Q78 82 81 85" stroke="#4030a0" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="43" cy="52" rx="6" ry="6" fill="white"/><ellipse cx="61" cy="52" rx="6" ry="6" fill="white"/>
+  <circle cx="44" cy="53" r="3.5" fill="#1a1a3e"/><circle cx="62" cy="53" r="3.5" fill="#1a1a3e"/>
+  <circle cx="45" cy="52" r="1.4" fill="white"/><circle cx="63" cy="52" r="1.4" fill="white"/>
+  <ellipse cx="52" cy="59" rx="3" ry="2" fill="#5040b0"/>
+  <path d="M42 64 L52 76 L62 64 Z" fill="#3a2a90"/><ellipse cx="52" cy="64" rx="10" ry="2" fill="#3a2a90"/>
+  <circle cx="14" cy="78" r="13" fill="#fff9c4" stroke="#f5c842" stroke-width="2.5"/>
+  <circle cx="14" cy="78" r="8" fill="#ffee80" opacity="0.6"/>
+  <rect x="9" y="88" width="10" height="4" rx="2" fill="#d4a020"/>
+  <rect x="10" y="92" width="8" height="3" rx="1.5" fill="#b08010"/>
+  <line x1="14" y1="61" x2="14" y2="58" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+  <line x1="24" y1="64" x2="26" y2="62" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+  <line x1="4" y1="64" x2="2" y2="62" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+</svg>`;}
+function svgGrad(){return `<svg width="90" height="90" viewBox="0 0 108 108" xmlns="http://www.w3.org/2000/svg">
+  <path d="M90 16 L91.5 21 L96 19.5 L93 23 L97 25.5 L92 25 L91.5 30 L90 25 L85 25.5 L89 23 L86 19.5 L91.5 21 Z" fill="#f5c842" opacity="0.8"/>
+  <path d="M10 32 L11 36 L15 34.5 L12.5 38 L16 40 L12 39.5 L11 43 L10 39.5 L6 40 L9.5 38 L7 34.5 L11 36 Z" fill="#f5c842" opacity="0.6"/>
+  <rect x="46" y="18" width="12" height="5" rx="2" fill="#d4a020"/>
+  <rect x="44" y="22" width="16" height="3" rx="1.5" fill="#b08010"/>
+  <rect x="50" y="10" width="4" height="9" rx="2" fill="#e8b820"/>
+  <path d="M38 2 Q38 14 52 16 Q66 14 66 2 Z" fill="#f5c842"/>
+  <path d="M40 3 Q40 13 52 15 Q64 13 64 3 Z" fill="#f8d860"/>
+  <path d="M38 4 Q30 4 30 9 Q30 14 38 12" stroke="#d4a020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M66 4 Q74 4 74 9 Q74 14 66 12" stroke="#d4a020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M52 5 L53.2 8.5 L57 8.5 L54 10.5 L55.2 14 L52 12 L48.8 14 L50 10.5 L47 8.5 L50.8 8.5 Z" fill="#d4a020"/>
+  <rect x="6" y="52" width="18" height="8" rx="4" fill="#c8960c" transform="rotate(-40 15 56)"/>
+  <rect x="84" y="52" width="18" height="8" rx="4" fill="#c8960c" transform="rotate(40 93 56)"/>
+  <circle cx="30" cy="42" r="9" fill="#c8960c"/><circle cx="74" cy="42" r="9" fill="#c8960c"/>
+  <circle cx="30" cy="42" r="5.5" fill="#e8b830"/><circle cx="74" cy="42" r="5.5" fill="#e8b830"/>
+  <circle cx="52" cy="66" r="30" fill="#c8960c"/><circle cx="52" cy="66" r="23" fill="#e8b830"/><circle cx="52" cy="66" r="16" fill="#f8d860"/>
+  <path d="M70 82 Q76 88 79 91" stroke="#a07008" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="43" cy="62" rx="6" ry="6" fill="white"/><ellipse cx="61" cy="62" rx="6" ry="6" fill="white"/>
+  <circle cx="44" cy="63" r="3.5" fill="#1a1a3e"/><circle cx="62" cy="63" r="3.5" fill="#1a1a3e"/>
+  <circle cx="45" cy="62" r="1.4" fill="white"/><circle cx="63" cy="62" r="1.4" fill="white"/>
+  <ellipse cx="52" cy="69" rx="3" ry="2" fill="#b08010"/>
+  <path d="M43 75 Q52 83 61 75" stroke="#a07008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;}
+
+/* ═══ 카드뉴스 렌더 ═══ */
+function renderCardnews(){
+  const items=DB.get('cardnews',[]);
+  const el=document.getElementById('cardnewsGrid');
+  if(!el) return;
+  if(!items.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:3rem;font-size:0.9rem;grid-column:1/-1;text-align:center">등록된 카드뉴스가 없습니다.<br>관리자 포털에서 추가해주세요.</div>';
+    return;
+  }
+  el.innerHTML=items.map(n=>`
+    <div class="cardnews-item" onclick="window.open('${n.link}','_blank')">
+      ${n.thumb
+        ? `<img class="cardnews-thumb" src="${toPreviewUrl(n.thumb)}" onerror="this.style.display='none'" alt="">`
+        : `<div class="cardnews-thumb-empty">${n.source==='인스타그램'?'📸':'📝'}</div>`}
+      <div class="cardnews-body">
+        <div class="cardnews-source">${n.source||'인스타그램'}</div>
+        <div class="cardnews-title">${n.title||''}</div>
+        <div class="cardnews-date">${n.date||''}</div>
+      </div>
+    </div>`).join('');
+}
+
+
+/* 카드뉴스 관리 */
+function renderCardnewsAdmin(){
+  const items=DB.get('cardnews',[]);
+  const el=document.getElementById('cardnewsList');
+  if(!el) return;
+  el.innerHTML=items.map((n,i)=>`
+    <div style="border:1px solid var(--border);border-radius:8px;padding:14px;background:white;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:center">
+        <select onchange="updateCardnews(${i},'source',this.value)" style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:0.82rem;width:120px">
+          <option ${n.source==='인스타그램'?'selected':''}>인스타그램</option>
+          <option ${n.source==='네이버블로그'?'selected':''}>네이버블로그</option>
+          <option ${n.source==='기타'?'selected':''}>기타</option>
+        </select>
+        <input value="${n.date||''}" placeholder="날짜 (예: 2026.04.20)" onchange="updateCardnews(${i},'date',this.value)" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:0.82rem">
+        <button onclick="removeCardnews(${i})" style="padding:4px 10px;background:#fee;border:1px solid #fcc;border-radius:4px;font-size:0.78rem;cursor:pointer;color:#c00">삭제</button>
+      </div>
+      <input value="${n.title||''}" placeholder="제목" onchange="updateCardnews(${i},'title',this.value)" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:4px;font-size:0.85rem;box-sizing:border-box">
+      <input value="${n.link||''}" placeholder="게시글 링크 (인스타/블로그 URL)" onchange="updateCardnews(${i},'link',this.value)" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:4px;font-size:0.82rem;box-sizing:border-box">
+      <input value="${n.thumb||''}" placeholder="썸네일 이미지 URL (구글 드라이브 링크)" onchange="updateCardnews(${i},'thumb',this.value)" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:4px;font-size:0.82rem;box-sizing:border-box">
+    </div>`).join('');
+}
+function addCardnewsRow(){
+  const items=DB.get('cardnews',[]);
+  items.unshift({source:'인스타그램',title:'',link:'',thumb:'',date:new Date().toLocaleDateString('ko-KR')});
+  DB.set('cardnews',items);
+  renderCardnewsAdmin();
+}
+function updateCardnews(i,k,v){
+  const items=DB.get('cardnews',[]);
+  if(items[i]) items[i][k]=v;
+  DB.set('cardnews',items);
+}
+function removeCardnews(i){
+  if(!confirm('삭제할까요?')) return;
+  const items=DB.get('cardnews',[]);
+  items.splice(i,1);
+  DB.set('cardnews',items);
+  renderCardnewsAdmin();
+}
+function saveCardnews(){
+  alert('저장 완료!');
+  renderCardnews();
+}
+
 function renderCharacters(){
   const grid=document.getElementById('charGrid');
   if(!grid) return;
   const chars=[
-    {svg:'sh0','fill':'#5b9fd4','accent':'#a8d8f0',name:'큐리',lv:'LV.1 Sense',line:'"뭐가 있을까?"'},
-    {svg:'sh1','fill':'#3a9e78','accent':'#90ddb8',name:'큐로',lv:'LV.2 Spark',line:'"내가 해볼게."'},
-    {svg:'sh2','fill':'#b07840','accent':'#f0c080',name:'큐브',lv:'LV.3 Probe',line:'"왜 그럴까?"'},
-    {svg:'sh3','fill':'#b85050','accent':'#f0a090',name:'큐온',lv:'LV.4 Build',line:'"내가 만들겠어."'},
-    {svg:'sh4','fill':'#6858b8','accent':'#b0a0e8',name:'큐비아',lv:'LV.5 Master',line:'"내가 증명한다."'},
+    {svg:svgQuri(),name:'큐리',lv:'LV.1 SENSE',desc:'세상의 신호를 감지하다.',line:'"뭐가 있을까?"'},
+    {svg:svgQro(),name:'큐로',lv:'LV.2 SPARK',desc:'아이디어의 불꽃이 튀다!',line:'"내가 해볼게."'},
+    {svg:svgQube(),name:'큐브',lv:'LV.3 PROBE',desc:'알고리즘 속 비밀을 찾아서.',line:'"왜 그럴까?"'},
+    {svg:svgQon(),name:'큐온',lv:'LV.4 BUILD',desc:'상상을 현실로 만드는 메이커.',line:'"내가 만들겠어."'},
+    {svg:svgQvia(),name:'큐비아',lv:'LV.5 MASTER',desc:'세상을 바꾸는 탐구의 완성.',line:'"내가 증명한다."'},
   ];
   grid.innerHTML=chars.map(c=>`
     <div class="char-card">
-      <svg width="72" height="90" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-        <defs><filter id="${c.svg}"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.15)"/></filter></defs>
-        <circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#${c.svg})"/>
-        <circle cx="0" cy="-16" r="25" fill="${c.fill}"/>
-        <circle cx="0" cy="-16" r="8" fill="${c.accent}" opacity="0.7"/>
-        <circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/>
-        <circle cx="-14" cy="-42" r="5" fill="${c.accent}"/>
-        <circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/>
-        <circle cx="14" cy="-42" r="5" fill="${c.accent}"/>
-        <circle cx="-8" cy="-22" r="6.5" fill="white"/>
-        <circle cx="8" cy="-22" r="6.5" fill="white"/>
-        <circle cx="-7.5" cy="-21" r="4" fill="#1a1a1a"/>
-        <circle cx="8.5" cy="-21" r="4" fill="#1a1a1a"/>
-        <circle cx="-9.5" cy="-23" r="1.6" fill="white"/>
-        <circle cx="6.5" cy="-23" r="1.6" fill="white"/>
-        <path d="M-8 -6 Q0 2 8 -6" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-        <rect x="22" y="-1" width="20" height="8" rx="4" fill="#534AB7" transform="rotate(40 22 -1)"/>
-      </svg>
+      ${c.svg}
       <div class="char-name">${c.name}</div>
       <div class="char-lv">${c.lv}</div>
+      <div style="font-size:0.72rem;color:#555;line-height:1.5;text-align:center;margin:6px 0 4px;font-family:var(--serif);word-break:keep-all">${c.desc}</div>
       <div class="char-line">${c.line}</div>
     </div>`).join('')
   +`<div class="char-card char-slam" onclick="showPage('grandslam')">
-      <svg width="72" height="90" viewBox="-42 -80 84 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
-        <defs><filter id="sh-slam"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.15)"/></filter></defs>
-        <path d="M-18 -62 L-18 -74 Q-12 -82 -6 -74 Q0 -66 0 -78 Q6 -66 12 -74 Q18 -82 18 -74 L18 -62 Z" fill="#EEA800" opacity="0.9"/>
-        <rect x="-20" y="-64" width="40" height="7" rx="3" fill="#CC8800"/>
-        <circle cx="0" cy="-75" r="4" fill="#FFD700"/>
-        <circle cx="0" cy="-16" r="30" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="1" filter="url(#sh-slam)"/>
-        <circle cx="0" cy="-16" r="25" fill="#3b2f6e"/>
-        <circle cx="0" cy="-16" r="10" fill="none" stroke="rgba(255,215,0,0.3)" stroke-width="2"/>
-        <circle cx="0" cy="-16" r="5" fill="rgba(255,215,0,0.5)"/>
-        <circle cx="-14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/>
-        <circle cx="-14" cy="-42" r="5" fill="#7F77DD"/>
-        <circle cx="14" cy="-42" r="8" fill="#F1EFE8" stroke="#D0CCC0" stroke-width="0.8"/>
-        <circle cx="14" cy="-42" r="5" fill="#7F77DD"/>
-        <circle cx="-8" cy="-20" r="6" fill="white"/>
-        <circle cx="8" cy="-20" r="6" fill="white"/>
-        <circle cx="-7" cy="-19" r="3.5" fill="#1A0A40"/>
-        <circle cx="9" cy="-19" r="3.5" fill="#1A0A40"/>
-        <path d="M-10 -5 Q0 8 10 -5 Z" fill="rgba(255,255,255,0.9)"/>
-        <rect x="20" y="-4" width="16" height="7" rx="3.5" fill="#7F77DD" transform="rotate(40 20 -4)"/>
-      </svg>
+      ${svgGrad()}
       <div class="char-name gold">졸업생</div>
-      <div class="char-lv gold">Q-Grand Slam</div>
-      <div class="char-line" style="color:rgba(255,215,0,0.55)">"5단계 완주 · 졸업 인증"</div>
+      <div class="char-lv gold">Q-GRAND SLAM</div>
+      <div style="font-size:0.72rem;color:rgba(208,192,240,0.9);line-height:1.5;text-align:center;margin:6px 0 4px;font-family:var(--serif)">5단계 완주 · 졸업 인증</div>
       <div class="char-slam-badge">당신의 이름이 여기에</div>
     </div>`;
 }

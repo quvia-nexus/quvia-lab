@@ -357,25 +357,27 @@ input, textarea, select { font-family: var(--sans); }
 .hero-bottom-panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 320px;
   margin-top: 24px;
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
+  align-items: stretch;
 }
 .hero-panel {
   padding: 0;
-  display: flex; flex-direction: column;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-.hero-panel:first-child { border-right: 1px solid var(--border); }
+.hero-panel:first-child { border-right: 1px solid var(--border); min-height: 240px; }
+.hero-panel:last-child { min-height: 240px; }
 
 .hero-panel:last-child { border-right: none; }
 .hero-panel-header {
   padding: 14px 24px;
-  border-bottom: none;
+  border-bottom: 1px solid var(--border);
   display: flex; justify-content: space-between; align-items: center;
   background: #e8f2e8;
+  flex-shrink: 0;
 }
 .hero-panel-title {
   font-family: var(--mono);
@@ -390,9 +392,13 @@ input, textarea, select { font-family: var(--sans); }
   color: var(--g3);
   cursor: pointer;
   transition: color 0.2s;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+  text-decoration: none;
 }
 .hero-panel-more:hover { color: var(--g1); }
-.hero-notice-list { flex: 1; overflow-y: auto; }
+.hero-notice-list { flex: 1; }
 .hero-notice-item {
   padding: 10px 20px;
   border-bottom: 1px solid var(--border);
@@ -1736,14 +1742,14 @@ input, textarea, select { font-family: var(--sans); }
 /* 홈 탐구현장 미니 마퀴 */
 .home-gallery-marquee {
   background: #f5f0e8;
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow: hidden;
+  margin-top: 12px;
 }
 .home-gallery-inner {
   overflow: hidden;
   padding: 10px 0 14px;
-  width: 100%;
-  max-width: 100%;
 }
 .home-gallery-marquee-label {
   font-family: var(--mono);
@@ -1810,7 +1816,7 @@ input, textarea, select { font-family: var(--sans); }
   overflow: hidden;
 }
 
-.hero-award-static { flex:1; overflow-y: auto; }
+.hero-award-static { flex:1; }
 .hero-award-static .award-roll-item { border-bottom: 1px solid var(--border); }
 .hero-award-static .award-roll-item:last-child { border-bottom: none; }
 </style>
@@ -1947,11 +1953,13 @@ input, textarea, select { font-family: var(--sans); }
       </div>
     </div>
     <!-- 홈 탐구현장 미니 마퀴 -->
-    <div class="home-gallery-marquee" id="homeGallerySection">
-      <div class="home-gallery-inner">
-        <div class="home-gallery-marquee-label">탐구현장</div>
-        <div class="home-gallery-marquee-wrap">
-          <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
+    <div id="homeGallerySection" style="display:none">
+      <div class="home-gallery-marquee">
+        <div class="home-gallery-inner">
+          <div class="home-gallery-marquee-label">탐구현장</div>
+          <div class="home-gallery-marquee-wrap">
+            <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -3022,7 +3030,7 @@ function renderHomeGallery(){
   const sec=document.getElementById('homeGallerySection');
   if(!el) return;
   if(!photos.length){if(sec)sec.style.display='none';return;}
-  if(sec)sec.style.display='';
+  if(sec)sec.style.display='block';
   const doubled=[...photos,...photos];
   el.innerHTML=doubled.map(p=>`
     <div class="home-gallery-mini-item" onclick="showPage('gallery')">
@@ -3047,7 +3055,7 @@ function renderAwardRoll(){
   const el=document.getElementById('heroAwardList');
   if(!el) return;
   if(!awards.length){el.innerHTML='';return;}
-  el.innerHTML=awards.filter(a=>a.name).slice(0,10).map(a=>`
+  el.innerHTML=awards.filter(a=>a.name).slice(0,6).map(a=>`
     <div class="award-roll-item" onclick="showPage('awards')" style="cursor:pointer">
       <span class="award-roll-icon">${a.icon||'🏅'}</span>
       <span class="award-roll-name">${a.name}</span>
@@ -4385,7 +4393,7 @@ function parseCSV(text) {
 
 async function fetchSheet(sheetName) {
   try {
-    const res = await fetch(SHEET_BASE + sheetName);
+    const res = await fetch(SHEET_BASE + sheetName, {mode:'cors'});
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
     return parseCSV(text);

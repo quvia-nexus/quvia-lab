@@ -434,12 +434,17 @@ input, textarea, select { font-family: var(--sans); }
 }
 .award-roll-track { display: flex; flex-direction: column; }
 .award-roll-item {
-  padding: 8px 20px;
+  padding: 0 20px;
+  height: 38px;
   display: flex; align-items: center; gap: 10px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 .award-roll-icon { font-size: 14px; flex-shrink: 0; }
-.award-roll-name { font-size: 0.82rem; color: var(--ink2); flex: 1; }
+.award-roll-name {
+  font-size: 0.82rem; color: var(--ink2); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .award-roll-cat {
   font-size: 0.6rem;
   color: #2d6a2d;
@@ -4360,7 +4365,7 @@ function sendKakaoConsult() {
 /* ═══════════════════════════════════
    구글 시트 연동 (공개 데이터)
 ═══════════════════════════════════ */
-const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/gviz/tq?tqx=out:csv&sheet=';
+const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/pub?output=csv&sheet=';
 
 // CSV 한 줄 파싱 (따옴표 처리 포함)
 function parseCSVLine(line) {

@@ -1748,6 +1748,21 @@ input, textarea, select { font-family: var(--sans); }
     word-break: keep-all;
   }
 
+  /* ★ 1) Coding·AI 배지 짤림 수정 */
+  .hero-top-badge {
+    max-width: 90vw;
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+    padding: 6px 14px;
+    margin-bottom: 24px;
+  }
+  .hero-top-badge-text {
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    word-break: break-word;
+  }
+
   /* 2) 공지/수상실적 - 탭 버튼 방식 */
   .hero-bottom-panels {
     display: block !important;
@@ -1785,6 +1800,22 @@ input, textarea, select { font-family: var(--sans); }
   }
   .hero-panel.mobile-active {
     display: flex !important;
+  }
+
+  /* ★ 3) 서브페이지 헤더 — 모바일에서 제목/설명 세로 스택 */
+  .s-header-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  .s-header-right {
+    border-left: none !important;
+    padding-left: 0 !important;
+    padding-top: 0 !important;
+    border-top: 2px solid var(--gold);
+    padding-top: 14px !important;
+    font-size: 0.88rem !important;
+    width: 100%;
   }
 
   /* 3) 교육철학 pillars 한줄 표시 */
@@ -2562,6 +2593,8 @@ input, textarea, select { font-family: var(--sans); }
         <div class="hero-panel-title">수상 실적</div>
         <a class="hero-panel-more" onclick="event.stopPropagation();showPage('awards');return false;" href="#">더보기 →</a>
       </div>
+      <!-- 모바일 전용 심플 헤더 -->
+      <div class="mobile-section-title">수상 실적</div>
       <div class="hero-award-static" id="heroAwardList"></div>
     </div>
   </div>

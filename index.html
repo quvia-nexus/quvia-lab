@@ -2541,7 +2541,7 @@ input, textarea, select { font-family: var(--sans); }
 
       <!-- 한국어 슬로건 -->
       <div class="hero-main-title">
-        <span class="hero-title-gold">코딩</span>과 <span class="hero-title-gold">탐구</span>로 생각을 확장하고, <span class="hero-title-gold">AI</span>로 문제를 해결하는 곳
+        <span class="hero-title-gold">코딩</span>으로 생각을 <span class="hero-title-gold">설계</span>하고, <span class="hero-title-gold">AI</span>로 탐구해 상상을 현실로 만드는 곳
       </div>
 
       <!-- 영문 인용구 -->
@@ -3147,6 +3147,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item active" onclick="switchPortalTab('student','info',this)">내 정보</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">수업결과</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','report',this)">탐구보고서</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('student','awards',this)">자격증·수상이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','slam',this)">Q-Grand Slam</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','pdf',this)">포트폴리오 PDF</div>
     </div>
@@ -3207,6 +3208,18 @@ input, textarea, select { font-family: var(--sans); }
               <input class="form-input" id="r_simple_date" type="date">
             </div>
             <div class="form-group">
+              <label class="form-label">🧪 이 프로그램은 어떤 프로그램인가요?</label>
+              <textarea class="form-input form-textarea" id="r_simple_desc" placeholder="어떤 프로그램인지 쉽게 설명해 보세요. (예: 고양이가 마우스를 따라다니는 게임이에요!)"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">💡 어떻게 만들었나요? (사용한 블록이나 코드)</label>
+              <textarea class="form-input form-textarea" id="r_simple_how" placeholder="어떤 블록이나 명령어를 사용했는지 적어보세요."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">😊 느낀 점</label>
+              <textarea class="form-input form-textarea" id="r_simple_feel" placeholder="만들면서 어떤 점이 재미있었나요? 어려운 점은 무엇이었나요?"></textarea>
+            </div>
+            <div class="form-group">
               <label class="form-label">사진 링크 (선택)</label>
               <input class="form-input" id="r_simple_photo" type="url" placeholder="이미지 URL">
             </div>
@@ -3242,6 +3255,52 @@ input, textarea, select { font-family: var(--sans); }
           <div class="card-title">달성 현황 업데이트</div>
           <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:12px">관리자 또는 강사가 확인 후 업데이트합니다.</p>
         </div>
+      </div>
+
+      <!-- 자격증·수상이력 -->
+      <div id="student-tab-awards" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:1rem;font-weight:500;color:var(--ink)">자격증 · 대회출전 · 수상이력</div>
+          <button class="table-action-btn primary" onclick="openStudentAwardForm()">+ 새 기록 추가</button>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div id="studentAwardForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">새 기록 작성</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">날짜</label>
+              <input class="form-input" id="sa_date" type="date">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">종류</label>
+              <select class="form-input" id="sa_type">
+                <option value="자격증">📜 자격증</option>
+                <option value="대회출전">🏁 대회출전</option>
+                <option value="수상">🏆 수상</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">이름 (자격증명 / 대회명 / 수상명)</label>
+            <input class="form-input" id="sa_name" type="text" placeholder="예: COS PRO 3급, 전국 SW 경진대회, 과기부 장관상">
+          </div>
+          <div class="form-group">
+            <label class="form-label">주최 기관 (선택)</label>
+            <input class="form-input" id="sa_org" type="text" placeholder="예: YBM, 교육부, 과학기술정보통신부">
+          </div>
+          <div class="form-group">
+            <label class="form-label">메모 (선택)</label>
+            <input class="form-input" id="sa_memo" type="text" placeholder="추가 내용">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="form-submit" style="flex:1" onclick="saveStudentAward()">저장</button>
+            <button class="table-action-btn" onclick="closeStudentAwardForm()">취소</button>
+          </div>
+        </div>
+
+        <!-- 목록 -->
+        <div id="studentAwardList"></div>
       </div>
 
       <!-- PDF -->
@@ -3385,7 +3444,6 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','teachers',this)">강사 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','classes',this)">클래스 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','notice',this)">전달사항</div>
-      <div class="portal-nav-item" onclick="switchMobilePanel('admin','cardnews',this)">카드뉴스</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','news',this)">공지/소식</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','awards',this)">수상실적</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','works',this)">학생작품</div>
@@ -3458,16 +3516,11 @@ input, textarea, select { font-family: var(--sans); }
         </table>
       </div>
 
-      <!-- 카드뉴스 -->
-      <div id="admin-tab-cardnews" class="portal-tab">
-        <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:12px">인스타그램·블로그 게시글 링크와 썸네일을 등록하면 카드뉴스 페이지에 표시됩니다.</p>
-        <button class="table-action-btn primary" style="margin-bottom:12px" onclick="addCardnewsRow()">+ 카드뉴스 추가</button>
-        <div id="cardnewsList" style="display:flex;flex-direction:column;gap:10px"></div>
-        <button class="table-action-btn" style="margin-top:16px" onclick="saveCardnews()">저장</button>
-      </div>
-
       <!-- 공지/소식 -->
       <div id="admin-tab-news" class="portal-tab">
+        <div style="background:#fffbe6;border:1px solid #ffe58f;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.82rem;color:#7d6200">
+          ⚠️ <b>구글시트 연동 안내:</b> 공지/소식 데이터는 구글시트에서 자동으로 불러옵니다. 여기서 추가한 내용은 로컬에만 저장되며, 페이지 새로고침 시 구글시트 데이터로 덮어씁니다. <b>실제 운영은 구글시트에서 직접 수정해 주세요.</b>
+        </div>
         <button class="table-action-btn primary" style="margin-bottom:12px" onclick="addNewsRow()">+ 공지 추가</button>
         <table class="admin-table">
           <thead><tr><th>날짜</th><th>구분</th><th>제목</th><th>내용</th><th>관리</th></tr></thead>
@@ -3523,6 +3576,13 @@ input, textarea, select { font-family: var(--sans); }
 
     </div>
   </div>
+</div>
+
+<!-- 관리자 복귀 플로팅 버튼 (관리자 로그인 시에만 표시) -->
+<div id="adminReturnBtn" style="display:none;position:fixed;bottom:24px;right:24px;z-index:2000">
+  <button onclick="showPage('admin')" style="background:var(--g1);color:white;border:none;border-radius:50px;padding:10px 20px;font-size:0.82rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.25);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.2s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='var(--g1)'">
+    ⚙️ 관리자 포털
+  </button>
 </div>
 
 <!-- ═══ FOOTER ═══ -->
@@ -3672,6 +3732,9 @@ function updateNavUserUI(){
 function doLogout(){
   currentUser=null; currentRole=null;
   updateNavUserUI();
+  // 관리자 복귀 버튼 숨김
+  const rb=document.getElementById('adminReturnBtn');
+  if(rb) rb.style.display='none';
   showPage('main');
 }
 
@@ -3730,16 +3793,8 @@ function switchLevel(id, tabEl){
 }
 
 /* ═══════════════════════════════════
-   포털 탭
+   포털 탭 (함수 정의는 하단 참조)
 ═══════════════════════════════════ */
-function switchPortalTab(portal, tab, el){
-  document.querySelectorAll(`#page-${portal} .portal-tab`).forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll(`#page-${portal} .portal-nav-item`).forEach(t=>t.classList.remove('active'));
-  const t=document.getElementById(`${portal}-tab-${tab}`);
-  if(t) t.classList.add('active');
-  if(el) el.classList.add('active');
-  if(portal==='admin') renderAdminTab(tab);
-}
 
 /* ═══════════════════════════════════
    메인 렌더
@@ -4186,6 +4241,9 @@ function doAdminLogin(){
   if(id==='quviamaster'&&pw==='1234'){
     currentUser={id:'quviamaster',name:'원장'}; currentRole='admin';
     updateNavUserUI();
+    // 관리자 복귀 버튼 표시
+    const rb=document.getElementById('adminReturnBtn');
+    if(rb) rb.style.display='block';
     showPage('admin');
   } else {
     document.getElementById('adminLoginErr').classList.add('show');
@@ -4195,21 +4253,7 @@ function doAdminLogin(){
 /* ═══════════════════════════════════
    학생 포털
 ═══════════════════════════════════ */
-function renderStudentPortal(){
-  if(!currentUser||currentRole!=='student') return;
-  const s=currentUser;
-  document.getElementById('studentPortalUser').textContent=s.name+' 학생';
-  document.getElementById('studentAvatar').textContent=s.name[0]||'Q';
-  document.getElementById('studentName').textContent=s.name;
-  document.getElementById('studentMeta').textContent=`${s.school||''} · ${s.grade||''}`;
-  document.getElementById('studentLevel').textContent=s.level||'LV.1 Sense';
-  const dreamEl=document.getElementById('studentDreamDisplay');
-  const dreamInput=document.getElementById('studentDreamInput');
-  if(dreamEl) dreamEl.textContent=s.dream||'아직 꿈을 입력하지 않았습니다.';
-  if(dreamInput) dreamInput.value=s.dream||'';
-  renderStudentReports();
-  renderStudentSlam();
-}
+// renderStudentPortal → 하단 정의 버전 사용 (renderStudentClassLogs 포함)
 
 function saveDream(){
   if(!currentUser) return;
@@ -4239,6 +4283,9 @@ function saveReport(){
   if(reportType==='simple'){
     report.title=document.getElementById('r_simple_title').value||'무제';
     report.date=document.getElementById('r_simple_date').value;
+    report.desc=document.getElementById('r_simple_desc').value;
+    report.how=document.getElementById('r_simple_how').value;
+    report.feel=document.getElementById('r_simple_feel').value;
     report.photo=document.getElementById('r_simple_photo').value;
   } else {
     report.title=document.getElementById('r_title').value||'무제';
@@ -4278,10 +4325,14 @@ function renderStudentReports(){
     <div class="edu-log-item">
       <div class="edu-log-header">
         <span class="edu-log-date">${r.date||''}</span>
-        <span class="edu-log-class">${r.type==='simple'?'저학년용':'일반'}</span>
+        <span class="edu-log-class">${r.type==='simple'?'초등저학년용':'일반'}</span>
       </div>
-      <div style="font-weight:500;font-size:0.92rem;margin-bottom:4px">${r.title}</div>
+      <div style="font-weight:500;font-size:0.92rem;margin-bottom:6px">${r.title}</div>
+      ${r.desc?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:4px">🧪 ${r.desc}</div>`:''}
+      ${r.how?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:4px">💡 ${r.how}</div>`:''}
+      ${r.feel?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:4px">😊 ${r.feel}</div>`:''}
       ${r.tools?`<div style="font-size:0.8rem;color:var(--ink4)">도구: ${r.tools}</div>`:''}
+      ${r.photo?`<img src="${r.photo}" style="max-width:200px;border-radius:6px;margin-top:8px" onerror="this.style.display='none'">`:''}
       <button class="table-action-btn danger" style="margin-top:8px" onclick="deleteReport(${i})">삭제</button>
     </div>`).join('');
 }
@@ -4311,14 +4362,7 @@ function renderStudentSlam(){
 /* ═══════════════════════════════════
    강사 포털
 ═══════════════════════════════════ */
-function renderTeacherPortal(){
-  if(!currentUser||currentRole!=='teacher') return;
-  document.getElementById('teacherPortalUser').textContent=currentUser.name+' 선생님';
-  renderTeacherNotices();
-  renderEduLogs();
-  renderConsultLogs();
-  renderTeacherStudents();
-}
+// renderTeacherPortal → 하단 정의 버전 사용
 
 function renderTeacherNotices(){
   const notices=DB.get('notices',[]).filter(n=>n.target==='전체'||n.target===currentUser.id);
@@ -4330,71 +4374,8 @@ function renderTeacherNotices(){
 }
 
 function openEduLogForm(){document.getElementById('eduLogForm').style.display='block';}
-function saveEduLog(){
-  const log={
-    date:document.getElementById('el_date').value,
-    cls:document.getElementById('el_class').value,
-    content:document.getElementById('el_content').value,
-    note:document.getElementById('el_note').value,
-    teacher:currentUser.id
-  };
-  const logs=DB.get('edulogs',[]);
-  logs.unshift(log);
-  DB.set('edulogs',logs);
-  document.getElementById('eduLogForm').style.display='none';
-  renderEduLogs();
-}
-
-function renderEduLogs(){
-  const logs=DB.get('edulogs',[]).filter(l=>l.teacher===currentUser.id);
-  const el=document.getElementById('eduLogList');
-  if(!el) return;
-  el.innerHTML=logs.length?logs.map(l=>`
-    <div class="edu-log-item">
-      <div class="edu-log-header"><span class="edu-log-date">${l.date}</span><span class="edu-log-class">${l.cls}</span></div>
-      <div class="edu-log-content">${l.content}</div>
-      ${l.note?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:6px">특이사항: ${l.note}</div>`:''}
-    </div>`).join('')
-    :'<div style="color:var(--ink4)">작성한 교육일지가 없습니다.</div>';
-}
 
 function openConsultLogForm(){document.getElementById('consultLogForm').style.display='block';}
-function saveConsultLog(){
-  const log={
-    date:document.getElementById('cl_date').value,
-    student:document.getElementById('cl_student').value,
-    content:document.getElementById('cl_content').value,
-    result:document.getElementById('cl_result').value,
-    teacher:currentUser.id
-  };
-  const logs=DB.get('consultlogs',[]);
-  logs.unshift(log);
-  DB.set('consultlogs',logs);
-  document.getElementById('consultLogForm').style.display='none';
-  renderConsultLogs();
-}
-
-function renderConsultLogs(){
-  const logs=DB.get('consultlogs',[]).filter(l=>l.teacher===currentUser.id);
-  const el=document.getElementById('consultLogList');
-  if(!el) return;
-  el.innerHTML=logs.length?logs.map(l=>`
-    <div class="edu-log-item">
-      <div class="edu-log-header"><span class="edu-log-date">${l.date}</span><span class="edu-log-class">${l.student}</span></div>
-      <div class="edu-log-content">${l.content}</div>
-      ${l.result?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:6px">결과: ${l.result}</div>`:''}
-    </div>`).join('')
-    :'<div style="color:var(--ink4)">작성한 상담일지가 없습니다.</div>';
-}
-
-function renderTeacherStudents(){
-  const students=DB.get('students',[]).filter(s=>s.cls===currentUser.cls||currentUser.cls==='전체');
-  const el=document.getElementById('teacherStudentList');
-  if(!el) return;
-  el.innerHTML=`<table class="admin-table"><thead><tr><th>이름</th><th>학교/학년</th><th>레벨</th><th>보고서</th></tr></thead><tbody>
-    ${students.map(s=>`<tr><td>${s.name}</td><td>${s.school||''} ${s.grade||''}</td><td>${s.level||'-'}</td><td>${(s.reports||[]).length}개</td></tr>`).join('')}
-  </tbody></table>`;
-}
 
 /* ═══════════════════════════════════
    관리자 포털
@@ -4697,6 +4678,10 @@ function viewStudentPortfolio(){
         </div>`).join('')}
       </div>
       <button class="table-action-btn primary" onclick="saveStudentSlamAll('${s.id}')">Q-Grand Slam 저장</button>
+      <div class="card-title">자격증·수상이력 (${(s.studentAwards||[]).length}건)</div>
+      ${(s.studentAwards||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>이름</th><th>주최</th></tr></thead><tbody>
+        ${(s.studentAwards||[]).map(a=>`<tr><td>${a.date||''}</td><td>${a.type||''}</td><td>${a.name}</td><td>${a.org||'-'}</td></tr>`).join('')}
+      </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
       <div class="card-title">탐구보고서 (${(s.reports||[]).length}개)</div>
       ${(s.reports||[]).map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem"><b>${r.title}</b> <span style="color:var(--ink4);font-size:0.78rem">${r.date||''}</span></div>`).join('')||'<div style="color:var(--ink4);font-size:0.82rem">없음</div>'}
     </div>`;
@@ -5158,9 +5143,20 @@ function switchPortalTab(portal, tab, el){
   const t=document.getElementById(`${portal}-tab-${tab}`);
   if(t) t.classList.add('active');
   if(el) el.classList.add('active');
+  // 관리자 탭
   if(portal==='admin') renderAdminTab(tab);
-  if(portal==='student'&&tab==='classlog') renderStudentClassLogs();
-  if(portal==='teacher'&&tab==='edulog') populateClassSelect();
+  // 학생 탭
+  if(portal==='student'){
+    if(tab==='classlog') renderStudentClassLogs();
+    if(tab==='awards') renderStudentAwards();
+  }
+  // 강사 탭 — 각 탭 전환 시 해당 렌더 함수 실행
+  if(portal==='teacher'){
+    if(tab==='notice')   renderTeacherNotices();
+    if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
+    if(tab==='consult')  renderConsultLogs();
+    if(tab==='students') renderTeacherStudents();
+  }
 }
 
 /* ═══ 학생 보고서 목록 클릭 ═══ */
@@ -5184,6 +5180,77 @@ function renderTeacherStudents(){
 function toggleStudentReports(id){
   const el=document.getElementById(`sreports_${id}`);
   if(el) el.style.display=el.style.display==='none'?'block':'none';
+}
+
+/* ═══ 학생포털 자격증·수상이력 ═══ */
+function openStudentAwardForm(){
+  document.getElementById('studentAwardForm').style.display='block';
+  // 날짜 기본값
+  const d=new Date();
+  document.getElementById('sa_date').value=d.toISOString().slice(0,10);
+}
+function closeStudentAwardForm(){
+  document.getElementById('studentAwardForm').style.display='none';
+}
+function saveStudentAward(){
+  if(!currentUser) return;
+  const record={
+    id:Date.now(),
+    date:document.getElementById('sa_date').value,
+    type:document.getElementById('sa_type').value,
+    name:document.getElementById('sa_name').value.trim(),
+    org:document.getElementById('sa_org').value.trim(),
+    memo:document.getElementById('sa_memo').value.trim()
+  };
+  if(!record.name){alert('이름을 입력해주세요.');return;}
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===currentUser.id);
+  if(idx>=0){
+    if(!students[idx].studentAwards) students[idx].studentAwards=[];
+    students[idx].studentAwards.unshift(record);
+    currentUser=students[idx];
+    DB.set('students',students);
+  }
+  // 입력 초기화
+  ['sa_name','sa_org','sa_memo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  closeStudentAwardForm();
+  renderStudentAwards();
+  alert('저장되었습니다!');
+}
+function deleteStudentAward(id){
+  if(!confirm('삭제하시겠습니까?')) return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===currentUser.id);
+  if(idx>=0){
+    students[idx].studentAwards=(students[idx].studentAwards||[]).filter(a=>a.id!==id);
+    currentUser=students[idx];
+    DB.set('students',students);
+  }
+  renderStudentAwards();
+}
+function renderStudentAwards(){
+  const el=document.getElementById('studentAwardList');
+  if(!el||!currentUser) return;
+  const awards=currentUser.studentAwards||[];
+  const typeIcon={자격증:'📜',대회출전:'🏁',수상:'🏆'};
+  if(!awards.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 기록이 없습니다. 자격증, 대회출전, 수상이력을 추가해보세요!</div>';
+    return;
+  }
+  el.innerHTML=awards.map(a=>`
+    <div class="edu-log-item">
+      <div class="edu-log-header">
+        <span style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:1.1rem">${typeIcon[a.type]||'📋'}</span>
+          <span style="font-size:0.75rem;padding:2px 8px;border-radius:20px;background:var(--g5);color:var(--g2);font-weight:600">${a.type}</span>
+          <span class="edu-log-date">${a.date||''}</span>
+        </span>
+        <button class="table-action-btn danger" onclick="deleteStudentAward(${a.id})">삭제</button>
+      </div>
+      <div style="font-weight:600;font-size:0.95rem;margin:6px 0 2px">${a.name}</div>
+      ${a.org?`<div style="font-size:0.82rem;color:var(--ink3)">주최: ${a.org}</div>`:''}
+      ${a.memo?`<div style="font-size:0.82rem;color:var(--ink4);margin-top:2px">${a.memo}</div>`:''}
+    </div>`).join('');
 }
 
 /* ═══ 작품 관리 (날짜 date-input 버전 - 위 함수와 통합) ═══ */
@@ -5329,31 +5396,26 @@ function loadFromSheets() {
       renderNews();
     }
   });
-  fetchSheet('cardnews').then(function(cardnews) {
-    if (cardnews && cardnews.length) {
-      DB.set('cardnews', cardnews);
-      renderCardnews();
+  // ★ 학생작품 시트 연동 추가
+  fetchSheet('works').then(function(works) {
+    if (works && works.length) {
+      // 구글시트 컬럼명 정규화: img/image/이미지→img, title/제목→title 등
+      var normalized = works.map(function(w) {
+        return {
+          img:     w.img     || w.image   || w['이미지'] || '',
+          title:   w.title   || w['제목'] || '',
+          student: w.student || w['학생'] || '',
+          desc:    w.desc    || w['설명'] || w['내용']  || '',
+          tag:     w.tag     || w['분류'] || w['태그']  || '',
+          date:    w.date    || w['날짜'] || '',
+          emoji:   w.emoji   || '💻'
+        };
+      });
+      DB.set('works', normalized);
+      renderWorks();
+      renderAdminWorks();
     }
   });
-  return; // 아래 코드 무시
-
-  if (gallery && gallery.length) {
-    DB.set('gallery', gallery);
-    renderHomeGallery();
-    renderGallery();
-  }
-  if (awards && awards.length) {
-    const iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
-    awards.forEach(a => { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
-    DB.set('awards', awards);
-    renderAwardRoll();
-    renderAwards();
-  }
-  if (news && news.length) {
-    DB.set('news', news);
-    renderHeroNotice();
-    renderNews();
-  }
 }
 
 /* ═══════════════════════════════════

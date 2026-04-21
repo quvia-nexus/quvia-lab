@@ -4270,7 +4270,28 @@ function saveDream(){
 }
 
 let reportType='simple';
-function openReportForm(){document.getElementById('reportForm').style.display='block';}
+function openReportForm(){
+  // 폼 초기화 (이전 내용 지우기)
+  ['r_simple_title','r_simple_date','r_simple_desc','r_simple_how','r_simple_feel','r_simple_photo',
+   'r_title','r_date','r_tools','r_why','r_feature','r_algo','r_code','r_bug','r_fix','r_link','r_screenshot'
+  ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // 날짜 오늘로 기본값
+  const today=new Date().toISOString().slice(0,10);
+  const sd=document.getElementById('r_simple_date');if(sd)sd.value=today;
+  const fd=document.getElementById('r_date');if(fd)fd.value=today;
+  // 타입 simple로 초기화
+  reportType='simple';
+  document.getElementById('simpleReport').style.display='block';
+  document.getElementById('fullReport').style.display='none';
+  document.querySelectorAll('.report-type-btn').forEach(b=>b.classList.remove('active'));
+  const btn1=document.getElementById('typeBtn1');if(btn1)btn1.classList.add('active');
+  // 저장 버튼을 새 보고서 저장으로 복원
+  const submitBtn=document.querySelector('#reportForm .form-submit');
+  if(submitBtn) submitBtn.onclick=saveReport;
+  // 폼 표시
+  document.getElementById('reportForm').style.display='block';
+  document.getElementById('reportForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
 function closeReportForm(){document.getElementById('reportForm').style.display='none';}
 function selectReportType(type,btn){
   reportType=type;
@@ -4316,29 +4337,7 @@ function saveReport(){
   alert('저장되었습니다!');
 }
 
-function renderStudentReports(){
-  const el=document.getElementById('reportList');
-  if(!el||!currentUser) return;
-  const reports=currentUser.reports||[];
-  if(!reports.length){
-    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 작성한 보고서가 없습니다.</div>';
-    return;
-  }
-  el.innerHTML=reports.map((r,i)=>`
-    <div class="edu-log-item">
-      <div class="edu-log-header">
-        <span class="edu-log-date">${r.date||''}</span>
-        <span class="edu-log-class">${r.type==='simple'?'초등저학년용':'일반'}</span>
-      </div>
-      <div style="font-weight:500;font-size:0.92rem;margin-bottom:6px">${r.title}</div>
-      ${r.desc?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:4px">🧪 ${r.desc}</div>`:''}
-      ${r.how?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:4px">💡 ${r.how}</div>`:''}
-      ${r.feel?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:4px">😊 ${r.feel}</div>`:''}
-      ${r.tools?`<div style="font-size:0.8rem;color:var(--ink4)">도구: ${r.tools}</div>`:''}
-      ${r.photo?`<img src="${r.photo}" style="max-width:200px;border-radius:6px;margin-top:8px" onerror="this.style.display='none'">`:''}
-      <button class="table-action-btn danger" style="margin-top:8px" onclick="deleteReport(${i})">삭제</button>
-    </div>`).join('');
-}
+// renderStudentReports → 하단 정의 버전 사용 (편집 포함)
 
 function deleteReport(idx){
   if(!confirm('삭제하시겠습니까?')) return;
@@ -4685,8 +4684,33 @@ function viewStudentPortfolio(){
       ${(s.studentAwards||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>이름</th><th>주최</th></tr></thead><tbody>
         ${(s.studentAwards||[]).map(a=>`<tr><td>${a.date||''}</td><td>${a.type||''}</td><td>${a.name}</td><td>${a.org||'-'}</td></tr>`).join('')}
       </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
-      <div class="card-title">탐구보고서 (${(s.reports||[]).length}개)</div>
-      ${(s.reports||[]).map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem"><b>${r.title}</b> <span style="color:var(--ink4);font-size:0.78rem">${r.date||''}</span></div>`).join('')||'<div style="color:var(--ink4);font-size:0.82rem">없음</div>'}
+      <div class="card-title" style="margin-top:16px">탐구보고서 (${(s.reports||[]).length}개)</div>
+      ${(s.reports||[]).length===0
+        ? '<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'
+        : (s.reports||[]).slice().reverse().map((r,ri)=>{
+            const origIdx=(s.reports||[]).indexOf(r);
+            return `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px" id="admin_report_${s.id}_${origIdx}">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <div>
+                  <span style="font-weight:600">${r.title||'무제'}</span>
+                  <span style="font-size:0.75rem;color:var(--ink4);margin-left:8px">${r.date||''}</span>
+                  <span style="font-size:0.72rem;padding:2px 8px;border-radius:10px;background:var(--g5);color:var(--g2);margin-left:6px">${r.type==='simple'?'저학년용':'일반'}</span>
+                </div>
+                <button class="table-action-btn" onclick="adminEditReport('${s.id}',${origIdx})">편집</button>
+              </div>
+              <div id="admin_report_body_${s.id}_${origIdx}">
+                ${r.desc?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)">🧪 <b>설명:</b> ${r.desc}</div>`:''}
+                ${r.how?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)">💡 <b>제작:</b> ${r.how}</div>`:''}
+                ${r.feel?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)">😊 <b>느낀점:</b> ${r.feel}</div>`:''}
+                ${r.tools?`<div style="font-size:0.8rem;color:var(--ink4)">🔧 도구: ${r.tools}</div>`:''}
+                ${r.why?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>기획:</b> ${r.why}</div>`:''}
+                ${r.feature?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>기능:</b> ${r.feature}</div>`:''}
+                ${r.algo?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>알고리즘:</b> ${r.algo}</div>`:''}
+                ${r.bug?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>오류→해결:</b> ${r.bug}${r.fix?' → '+r.fix:''}</div>`:''}
+              </div>
+            </div>`;
+          }).join('')
+      }
     </div>`;
 }
 function updateStudentSlam(id,idx,val){
@@ -5174,38 +5198,66 @@ function renderStudentClassLogs(){
 function renderStudentReports(){
   const el=document.getElementById('reportList');
   if(!el||!currentUser) return;
-  const reports=currentUser.reports||[];
-  if(!reports.length){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 작성한 보고서가 없습니다.</div>';return;}
-  el.innerHTML=reports.map((r,i)=>`
-    <div class="edu-log-item" id="report_${i}">
-      <div class="edu-log-header">
-        <span class="edu-log-date">${r.date||''}</span>
-        <span class="edu-log-class">${r.type==='simple'?'저학년용':'일반'}</span>
+  const reports=[...(currentUser.reports||[])].reverse(); // 최신 순
+  if(!reports.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 작성한 보고서가 없습니다.<br><small>위의 [+ 새 보고서 작성] 버튼을 눌러 작성해보세요!</small></div>';
+    return;
+  }
+  // 원본 인덱스 유지 (reverse 했으므로)
+  const origReports=currentUser.reports||[];
+  el.innerHTML=reports.map((r)=>{
+    const origIdx=origReports.indexOf(r);
+    return `
+    <div class="edu-log-item" id="report_card_${origIdx}" style="margin-bottom:12px">
+      <div class="edu-log-header" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="edu-log-date">${r.date||''}</span>
+          <span class="edu-log-class" style="font-size:0.72rem">${r.type==='simple'?'초등저학년용':'일반보고서'}</span>
+        </div>
         <div style="display:flex;gap:6px">
-          <button class="table-action-btn" onclick="editReport(${i})">편집</button>
-          <button class="table-action-btn danger" onclick="deleteReport(${i})">삭제</button>
+          <button class="table-action-btn" onclick="editReport(${origIdx})">편집</button>
+          <button class="table-action-btn danger" onclick="deleteReport(${origIdx})">삭제</button>
         </div>
       </div>
-      <div style="font-weight:500;font-size:0.92rem">${r.title}</div>
-      ${r.tools?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:2px">도구: ${r.tools}</div>`:''}
-    </div>`).join('');
+      <div style="font-weight:600;font-size:0.95rem;margin-bottom:8px">${r.title||'무제'}</div>
+      ${r.desc?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:6px;padding:8px;background:var(--g6);border-radius:6px"><b>🧪 프로그램 설명</b><br>${r.desc}</div>`:''}
+      ${r.how?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:6px;padding:8px;background:var(--g6);border-radius:6px"><b>💡 제작 방법</b><br>${r.how}</div>`:''}
+      ${r.feel?`<div style="font-size:0.85rem;color:var(--ink2);margin-bottom:6px;padding:8px;background:var(--g6);border-radius:6px"><b>😊 느낀 점</b><br>${r.feel}</div>`:''}
+      ${r.tools?`<div style="font-size:0.82rem;color:var(--ink3);margin-bottom:4px">🔧 도구: ${r.tools}</div>`:''}
+      ${r.why?`<div style="font-size:0.85rem;margin-bottom:4px;padding:8px;background:var(--g6);border-radius:6px"><b>기획 배경</b><br>${r.why}</div>`:''}
+      ${r.feature?`<div style="font-size:0.85rem;margin-bottom:4px;padding:8px;background:var(--g6);border-radius:6px"><b>주요 기능</b><br>${r.feature}</div>`:''}
+      ${r.algo?`<div style="font-size:0.85rem;margin-bottom:4px;padding:8px;background:var(--g6);border-radius:6px"><b>핵심 알고리즘</b><br>${r.algo}</div>`:''}
+      ${r.bug?`<div style="font-size:0.85rem;margin-bottom:4px;padding:8px;background:var(--g6);border-radius:6px"><b>오류 & 해결</b><br>${r.bug}${r.fix?' → '+r.fix:''}</div>`:''}
+      ${r.photo?`<img src="${r.photo}" style="max-width:240px;border-radius:8px;margin-top:8px" onerror="this.style.display='none'">`:''}
+    </div>`;
+  }).join('');
 }
 function editReport(idx){
   const r=(currentUser.reports||[])[idx];if(!r)return;
   reportType=r.type;
-  openReportForm();
+  // 타입 버튼 전환
   selectReportType(r.type,document.getElementById(r.type==='simple'?'typeBtn1':'typeBtn2'));
+  // 필드 채우기
   if(r.type==='simple'){
     document.getElementById('r_simple_title').value=r.title||'';
     document.getElementById('r_simple_date').value=r.date||'';
+    document.getElementById('r_simple_desc').value=r.desc||'';
+    document.getElementById('r_simple_how').value=r.how||'';
+    document.getElementById('r_simple_feel').value=r.feel||'';
     document.getElementById('r_simple_photo').value=r.photo||'';
   } else {
     ['title','date','tools','why','feature','algo','code','bug','fix','link','screenshot'].forEach(k=>{
       const el=document.getElementById('r_'+k);if(el)el.value=r[k]||'';
     });
   }
-  // 저장 버튼을 수정 저장으로 변경
-  document.querySelector('#reportForm .form-submit').onclick=()=>updateReport(idx);
+  // 저장 버튼 → 수정 저장
+  const submitBtn=document.querySelector('#reportForm .form-submit');
+  if(submitBtn){
+    submitBtn.textContent='수정 저장';
+    submitBtn.onclick=()=>updateReport(idx);
+  }
+  document.getElementById('reportForm').style.display='block';
+  document.getElementById('reportForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function updateReport(idx){
   if(!currentUser) return;
@@ -5213,9 +5265,12 @@ function updateReport(idx){
   const si=students.findIndex(s=>s.id===currentUser.id);
   if(si<0) return;
   let r=students[si].reports[idx];
-  if(reportType==='simple'){
+  if(r.type==='simple'){
     r.title=document.getElementById('r_simple_title').value||'무제';
     r.date=document.getElementById('r_simple_date').value;
+    r.desc=document.getElementById('r_simple_desc').value;
+    r.how=document.getElementById('r_simple_how').value;
+    r.feel=document.getElementById('r_simple_feel').value;
     r.photo=document.getElementById('r_simple_photo').value;
   } else {
     ['title','date','tools','why','feature','algo','code','bug','fix','link','screenshot'].forEach(k=>{
@@ -5225,7 +5280,9 @@ function updateReport(idx){
   currentUser=students[si];
   DB.set('students',students);
   closeReportForm();
-  document.querySelector('#reportForm .form-submit').onclick=saveReport;
+  // 저장 버튼 원복
+  const submitBtn=document.querySelector('#reportForm .form-submit');
+  if(submitBtn){submitBtn.textContent='저장하기';submitBtn.onclick=saveReport;}
   renderStudentReports();
   alert('수정되었습니다!');
 }
@@ -5239,6 +5296,67 @@ function updateStudentSlamNote(id,idx,val){
 function saveStudentSlamAll(id){
   alert('Q-Grand Slam 변경사항이 저장되었습니다!');
   // 이미 onchange로 실시간 저장됨
+  viewStudentPortfolio();
+}
+
+/* 관리자 — 보고서 편집 */
+function adminEditReport(sid, idx){
+  const students=DB.get('students',[]);
+  const si=students.findIndex(s=>s.id===sid);
+  if(si<0) return;
+  const r=students[si].reports[idx];
+  if(!r) return;
+  const bodyEl=document.getElementById(`admin_report_body_${sid}_${idx}`);
+  if(!bodyEl) return;
+  if(r.type==='simple'){
+    bodyEl.innerHTML=`
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">프로그램 이름</label><input class="form-input" id="ar_title_${idx}" value="${(r.title||'').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">날짜</label><input class="form-input" id="ar_date_${idx}" type="date" value="${r.date||''}"></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">🧪 프로그램 설명</label><textarea class="form-input form-textarea" id="ar_desc_${idx}">${r.desc||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">💡 제작 방법</label><textarea class="form-input form-textarea" id="ar_how_${idx}">${r.how||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">😊 느낀 점</label><textarea class="form-input form-textarea" id="ar_feel_${idx}">${r.feel||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">사진 링크</label><input class="form-input" id="ar_photo_${idx}" value="${r.photo||''}"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="table-action-btn primary" onclick="adminSaveReport('${sid}',${idx},'simple')">저장</button>
+        <button class="table-action-btn" onclick="viewStudentPortfolio()">취소</button>
+      </div>`;
+  } else {
+    bodyEl.innerHTML=`
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">프로젝트명</label><input class="form-input" id="ar_title_${idx}" value="${(r.title||'').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">날짜</label><input class="form-input" id="ar_date_${idx}" type="date" value="${r.date||''}"></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">도구</label><input class="form-input" id="ar_tools_${idx}" value="${r.tools||''}"></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">기획 배경</label><textarea class="form-input form-textarea" id="ar_why_${idx}">${r.why||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">주요 기능</label><textarea class="form-input form-textarea" id="ar_feature_${idx}">${r.feature||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">알고리즘</label><textarea class="form-input form-textarea" id="ar_algo_${idx}">${r.algo||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">오류</label><textarea class="form-input form-textarea" id="ar_bug_${idx}">${r.bug||''}</textarea></div>
+      <div class="form-group" style="margin-bottom:8px"><label class="form-label">해결</label><textarea class="form-input form-textarea" id="ar_fix_${idx}">${r.fix||''}</textarea></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="table-action-btn primary" onclick="adminSaveReport('${sid}',${idx},'full')">저장</button>
+        <button class="table-action-btn" onclick="viewStudentPortfolio()">취소</button>
+      </div>`;
+  }
+}
+function adminSaveReport(sid, idx, type){
+  const students=DB.get('students',[]);
+  const si=students.findIndex(s=>s.id===sid);
+  if(si<0) return;
+  const r=students[si].reports[idx];
+  if(!r) return;
+  if(type==='simple'){
+    r.title=document.getElementById(`ar_title_${idx}`).value||'무제';
+    r.date=document.getElementById(`ar_date_${idx}`).value;
+    r.desc=document.getElementById(`ar_desc_${idx}`).value;
+    r.how=document.getElementById(`ar_how_${idx}`).value;
+    r.feel=document.getElementById(`ar_feel_${idx}`).value;
+    r.photo=document.getElementById(`ar_photo_${idx}`).value;
+  } else {
+    ['title','date','tools','why','feature','algo','bug','fix'].forEach(k=>{
+      const el=document.getElementById(`ar_${k}_${idx}`);if(el)r[k]=el.value;
+    });
+  }
+  DB.set('students',students);
+  viewStudentPortfolio();
+  alert('보고서가 수정되었습니다!');
 }
 
 /* ═══ Q-Grand Slam 학생 포털 연동 (근거 표시) ═══ */
@@ -5312,17 +5430,32 @@ function switchPortalTab(portal, tab, el){
 
 /* ═══ 학생 보고서 목록 클릭 ═══ */
 function renderTeacherStudents(){
-  const students=DB.get('students',[]).filter(s=>!currentUser.cls||s.cls===currentUser.cls||currentUser.cls==='전체');
+  const teacherCls=currentUser.cls;
+  const clsList=Array.isArray(teacherCls)?teacherCls:(teacherCls?[teacherCls]:[]);
+  const students=DB.get('students',[]).filter(s=>{
+    if(!clsList.length||clsList.includes('전체')) return true;
+    return clsList.includes(s.cls);
+  });
   const el=document.getElementById('teacherStudentList');
   if(!el) return;
-  el.innerHTML=`<table class="admin-table"><thead><tr><th>이름</th><th>학교/학년</th><th>레벨</th><th>보고서</th></tr></thead><tbody>
+  if(!students.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">담당 클래스의 학생이 없습니다.<br><small>관리자 포털에서 학생 클래스를 배정해 주세요.</small></div>';
+    return;
+  }
+  el.innerHTML=`<table class="admin-table"><thead><tr>
+    <th>이름</th><th>학교/학년</th><th>클래스</th><th>레벨</th><th>보고서</th>
+  </tr></thead><tbody>
     ${students.map(s=>`<tr>
-      <td>${s.name}</td>
+      <td style="font-weight:500">${s.name}</td>
       <td>${s.school||''} ${s.grade||''}</td>
+      <td>${s.cls||'-'}</td>
       <td>${s.level||'-'}</td>
       <td><button class="table-action-btn" onclick="toggleStudentReports('${s.id}')">${(s.reports||[]).length}개 보기</button>
         <div id="sreports_${s.id}" style="display:none;margin-top:8px">
-          ${(s.reports||[]).map(r=>`<div style="font-size:0.8rem;padding:4px 0;border-bottom:1px solid var(--border)">${r.title} <span style="color:var(--ink4)">${r.date||''}</span></div>`).join('')||'없음'}
+          ${[...(s.reports||[])].reverse().map(r=>`<div style="font-size:0.8rem;padding:4px 0;border-bottom:1px solid var(--border)">
+            <b>${r.title}</b> <span style="color:var(--ink4)">${r.date||''}</span>
+            <span style="font-size:0.7rem;color:var(--g3)">${r.type==='simple'?'저학년':'일반'}</span>
+          </div>`).join('')||'<div style="font-size:0.8rem;color:var(--ink4)">없음</div>'}
         </div>
       </td>
     </tr>`).join('')}

@@ -1729,15 +1729,20 @@ input, textarea, select { font-family: var(--sans); }
     text-align: center;
   }
   .hero-slogan {
-    white-space: normal !important;
-    font-size: 0.88rem;
+    white-space: nowrap !important;   /* 영문 1줄 유지 */
+    font-size: clamp(0.68rem, 3.2vw, 0.88rem) !important;
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
+  /* ★ 로고 크기 크게 */
   .hero-logo-top {
-    font-size: clamp(1.2rem, 5vw, 1.6rem) !important;
+    font-size: clamp(2.8rem, 13vw, 4rem) !important;
+    margin-bottom: 16px;
   }
   .logo-quvia, .logo-lab {
-    font-size: clamp(1.2rem, 5vw, 1.6rem) !important;
+    font-size: inherit !important;
   }
   .hero-top-full {
     padding: 28px 5% 20px !important;
@@ -1868,8 +1873,11 @@ input, textarea, select { font-family: var(--sans); }
 /* 제목 강조 (골드로 통일) */
 .hero-title-green { color: var(--gold); font-weight: 600; }
 .hero-title-break { display: inline; }
+/* hero-br: PC=공백, 모바일=줄바꿈 */
+.hero-br { display: inline; white-space: pre; }
 @media (max-width: 768px) {
   .hero-title-break { display: block; height: 0; }
+  .hero-br::before { content: '\A'; white-space: pre; }
   .hero-title-green { display: block; color: var(--gold); }
 }
 
@@ -2541,7 +2549,7 @@ input, textarea, select { font-family: var(--sans); }
 
       <!-- 한국어 슬로건 -->
       <div class="hero-main-title">
-        <span class="hero-title-gold">코딩</span>으로 생각을 <span class="hero-title-gold">설계</span>하고, <span class="hero-title-gold">AI</span>로 탐구해 상상을 현실로 만드는 곳
+        <span class="hero-title-gold">코딩</span>으로 생각을 <span class="hero-title-gold">설계</span>하고,<span class="hero-br"> </span><span class="hero-title-gold">AI</span>로 탐구해 상상을 현실로 만드는 곳
       </div>
 
       <!-- 영문 인용구 -->
@@ -2549,8 +2557,8 @@ input, textarea, select { font-family: var(--sans); }
 
       <!-- 설명 -->
       <div class="hero-desc">
-        스스로 질문하고, 코드로 탐구하고, AI와 융합해 결과물로 증명합니다.<br>
-        큐비아 랩은 미래 인재를 위한 코딩 · AI · 융합 전문 탐구학원입니다.
+        스스로 질문하고, 코드로 탐구하고,<span class="hero-br"> </span>AI와 융합해 결과물로 증명합니다.<br>
+        큐비아 랩은 미래 인재를 위한<span class="hero-br"> </span>코딩 · AI · 융합 전문 탐구학원입니다.
       </div>
 
       <!-- CTA 버튼 -->

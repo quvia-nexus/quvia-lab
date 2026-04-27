@@ -1084,6 +1084,40 @@ input, textarea, select { font-family: var(--sans); }
   border-bottom-color: var(--g2);
   background: var(--g6);
 }
+/* ═══ 프로그램 트랙 로드맵 CSS ═══ */
+.track-node{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding-bottom:0;transition:transform 0.2s;}
+.track-node:hover{transform:translateY(-2px);}
+.track-dot{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;color:rgba(0,0,0,0.5);position:relative;z-index:2;transition:box-shadow 0.2s,transform 0.2s;}
+.track-node:hover .track-dot{transform:scale(1.1);}
+.track-label{font-weight:700;font-size:0.9rem;letter-spacing:0.02em;}
+.track-age{font-size:0.72rem;color:var(--ink4);text-align:center;}
+.track-bar{width:100%;height:4px;border-radius:2px 2px 0 0;margin-top:8px;opacity:0;transition:opacity 0.2s,height 0.2s;}
+.track-node.active-lv .track-dot{transform:scale(1.15);}
+.track-node.active-lv .track-bar{opacity:1;height:6px;}
+.lv-card{display:grid;grid-template-columns:160px 1fr;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.09);margin:32px 0 48px;min-height:260px;border:1px solid rgba(0,0,0,0.06);animation:fadeUp 0.35s ease both;}
+.lv-card-left{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;}
+.lv-big-num{font-size:3.5rem;font-weight:900;color:rgba(0,0,0,0.2);line-height:1;font-family:var(--serif);}
+.lv-en{font-size:1.1rem;font-weight:700;color:rgba(0,0,0,0.5);margin-top:4px;}
+.lv-ko{font-size:0.8rem;color:rgba(0,0,0,0.4);letter-spacing:0.1em;}
+.lv-card-right{background:white;padding:28px 32px;display:flex;flex-direction:column;gap:14px;}
+.lv-target{font-size:0.8rem;color:var(--ink4);font-weight:500;}
+.lv-summary{font-size:1.05rem;font-weight:600;color:var(--ink);line-height:1.5;}
+.lv-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.lv-tag{background:#f0f4f0;color:var(--ink2);font-size:0.76rem;padding:4px 12px;border-radius:20px;font-weight:500;border:1px solid rgba(0,0,0,0.07);}
+.lv-goals{display:flex;flex-direction:column;gap:6px;}
+.lv-goal-item{font-size:0.85rem;color:var(--ink2);}
+.lv-keyword{display:flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:600;color:var(--ink4);letter-spacing:0.08em;margin-top:auto;padding-top:8px;border-top:1px solid var(--border);}
+.lv-kw-dot{color:var(--ink5);}
+@media(max-width:640px){
+  .lv-card{grid-template-columns:1fr;min-height:auto;}
+  .lv-card-left{flex-direction:row;gap:12px;padding:16px 20px;justify-content:flex-start;}
+  .lv-big-num{font-size:2rem;}
+  .lv-card-right{padding:16px 20px;}
+  .track-age{display:none;}
+  .track-label{font-size:0.7rem;}
+  .track-dot{width:40px;height:40px;font-size:0.9rem;}
+}
+
 .level-content { display: none; padding: 50px 0; }
 .level-content.active { display: block; }
 .level-header {
@@ -2431,8 +2465,8 @@ input, textarea, select { font-family: var(--sans); }
       <div class="nav-dropdown">
         <a onclick="showPage('news')">공지/소식</a>
         <a onclick="showPage('gallery')">탐구현장</a>
-        <a onclick="showPage('awards')">수상실적</a>
         <a onclick="showPage('student-works')">학생작품</a>
+        <a onclick="showPage('awards')">수상실적</a>
       </div>
     </div>
     <div class="nav-item" onclick="showPage('consult')">입회상담</div>
@@ -2477,10 +2511,10 @@ input, textarea, select { font-family: var(--sans); }
   <div class="mobile-menu-section">
     <div class="mobile-menu-title">소식</div>
     <div class="mobile-menu-links">
-      <a onclick="showPage('awards');toggleMenu()">수상실적</a>
-      <a onclick="showPage('student-works');toggleMenu()">학생작품</a>
-      <a onclick="showPage('gallery');toggleMenu()">탐구현장</a>
       <a onclick="showPage('news');toggleMenu()">공지/소식</a>
+      <a onclick="showPage('gallery');toggleMenu()">탐구현장</a>
+      <a onclick="showPage('student-works');toggleMenu()">학생작품</a>
+      <a onclick="showPage('awards');toggleMenu()">수상실적</a>
     </div>
   </div>
   <div class="mobile-menu-section">
@@ -2782,145 +2816,214 @@ input, textarea, select { font-family: var(--sans); }
       </div>
     </div>
   </div>
-  <div class="level-tabs">
-    <div class="level-tab active" onclick="switchLevel('lv1',this)">LV.1 감지</div>
-    <div class="level-tab" onclick="switchLevel('lv2',this)">LV.2 탐색</div>
-    <div class="level-tab" onclick="switchLevel('lv3',this)">LV.3 탐구</div>
-    <div class="level-tab" onclick="switchLevel('lv4',this)">LV.4 제작</div>
-    <div class="level-tab" onclick="switchLevel('lv5',this)">LV.5 융합</div>
+
+  <!-- 트랙 로드맵 바 -->
+  <div style="background:#f7f7f4;border-bottom:1px solid var(--border);padding:28px 0 0">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative">
+        <!-- 연결선 -->
+        <div style="position:absolute;top:28px;left:10%;right:10%;height:3px;background:linear-gradient(90deg,#a8d8ea,#b8e0a0,#f5c8a0,#c8b8e8,#4878b8);border-radius:2px;z-index:0"></div>
+        <!-- LV1 -->
+        <div class="track-node" onclick="switchLevel('lv1',null)" id="track-lv1" style="z-index:1">
+          <div class="track-dot" style="background:#a8d8ea;border:3px solid white;box-shadow:0 0 0 3px #a8d8ea">1</div>
+          <div class="track-label active-track" style="color:#2a6a8a">Sense</div>
+          <div class="track-age">유아~초등 2</div>
+          <div class="track-bar" style="background:#a8d8ea"></div>
+        </div>
+        <!-- LV2 -->
+        <div class="track-node" onclick="switchLevel('lv2',null)" id="track-lv2" style="z-index:1">
+          <div class="track-dot" style="background:#b8e0a0;border:3px solid white;box-shadow:0 0 0 3px #b8e0a0">2</div>
+          <div class="track-label" style="color:#3a6a1a">Spark</div>
+          <div class="track-age">초등 2~4</div>
+          <div class="track-bar" style="background:#b8e0a0"></div>
+        </div>
+        <!-- LV3 -->
+        <div class="track-node" onclick="switchLevel('lv3',null)" id="track-lv3" style="z-index:1">
+          <div class="track-dot" style="background:#f5c8a0;border:3px solid white;box-shadow:0 0 0 3px #f5c8a0">3</div>
+          <div class="track-label" style="color:#8a4a10">Probe</div>
+          <div class="track-age">초등 4~6</div>
+          <div class="track-bar" style="background:#f5c8a0"></div>
+        </div>
+        <!-- LV4 -->
+        <div class="track-node" onclick="switchLevel('lv4',null)" id="track-lv4" style="z-index:1">
+          <div class="track-dot" style="background:#c8b8e8;border:3px solid white;box-shadow:0 0 0 3px #c8b8e8">4</div>
+          <div class="track-label" style="color:#4a2a8a">Build</div>
+          <div class="track-age">초등 6~중등</div>
+          <div class="track-bar" style="background:#c8b8e8"></div>
+        </div>
+        <!-- LV5 -->
+        <div class="track-node" onclick="switchLevel('lv5',null)" id="track-lv5" style="z-index:1">
+          <div class="track-dot" style="background:#4878b8;border:3px solid white;box-shadow:0 0 0 3px #4878b8;color:white">5</div>
+          <div class="track-label" style="color:#1a3a6a">Master</div>
+          <div class="track-age">중등~</div>
+          <div class="track-bar" style="background:#4878b8"></div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="container">
+
+  <!-- 레벨 상세 카드 -->
+  <div class="container" style="padding-top:0">
+
+    <!-- LV1 -->
     <div id="lv1" class="level-content active">
-      <div class="level-header">
+      <div class="lv-card" style="--lv-color:#a8d8ea;--lv-dark:#2a6a8a">
+        <div class="lv-card-left" style="background:#a8d8ea">
+          <div class="lv-big-num">1</div>
+          <div class="lv-en">Sense</div>
+          <div class="lv-ko">감지</div>
+          <div style="font-size:2rem;margin-top:12px">🐾</div>
+        </div>
+        <div class="lv-card-right">
+          <div class="lv-target">📅 유아 ~ 초등 2학년</div>
+          <div class="lv-summary">코딩과의 첫 만남, 놀이로 시작하는 컴퓨팅 사고력</div>
+          <div class="lv-tags">
+            <span class="lv-tag">ScratchJr</span>
+            <span class="lv-tag">로봇 코딩</span>
+            <span class="lv-tag">스토리텔링</span>
+            <span class="lv-tag">누리과정 연계</span>
+          </div>
+          <div class="lv-goals">
+            <div class="lv-goal-item">🎯 명령의 순서와 흐름 이해</div>
+            <div class="lv-goal-item">🎯 블록 코딩으로 작품 만들기</div>
+            <div class="lv-goal-item">🎯 탐구 노트 작성 첫 경험</div>
+          </div>
+          <div class="lv-keyword">
+            <span>순서</span><span class="lv-kw-dot">·</span><span>반복</span><span class="lv-kw-dot">·</span><span>명령</span>
+          </div>
+        </div>
+      </div>
+      <div class="level-header" style="display:none">
         <div class="level-num">1</div>
         <div class="level-badge-wrap" style="flex:1">
           <div class="level-name-en">Sense</div>
           <div class="level-name-ko">감지 단계 · 유아~초등 1-2학년</div>
-          <div class="level-desc">코딩과의 첫 만남을 놀이와 탐구로 설계한 입문 단계입니다. 누리과정·교과 주제와 연계된 스토리텔링 기반 ScratchJr 프로젝트를 통해 컴퓨팅 사고력의 기초를 형성하고, 로봇 코딩으로 명령의 순서와 흐름을 익힙니다.</div>
         </div>
-        <div style="display:flex;gap:12px;flex-shrink:0;align-items:flex-start">
-              <div style="width:100px;flex-shrink:0">
-                <div style="background:#a8d8ea;border-radius:8px;padding:12px 10px;text-align:center;box-shadow:2px 4px 14px rgba(0,0,0,0.12);height:130px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
-                  <div style="font-size:0.45rem;letter-spacing:0.08em;color:rgba(0,0,0,0.45)">QUVIA LAB</div>
-                  <div><div style="font-size:1.6rem;margin-bottom:2px">🐾</div><div style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.6)">Sense</div><div style="font-size:0.5rem;color:rgba(0,0,0,0.45)">교재 Vol.1</div></div>
-                  <div style="font-size:0.48rem;color:rgba(0,0,0,0.4);font-weight:600">LV.1 감지</div>
-                </div>
-              </div>
-              <div style="width:90px;flex-shrink:0">
-                <div style="background:#7eb5c8;border-radius:8px;padding:10px;height:130px;display:flex;flex-direction:column;box-shadow:2px 4px 14px rgba(0,0,0,0.12)">
-                  <div style="font-size:0.45rem;color:rgba(255,255,255,0.7);margin-bottom:6px">설계노트 1</div>
-                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div></div>
-                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.6);text-align:right">탐구 설계노트</div>
-                </div>
-              </div>
-            </div>
       </div>
     </div>
+
+    <!-- LV2 -->
     <div id="lv2" class="level-content">
-      <div class="level-header">
-        <div class="level-num">2</div>
-        <div class="level-badge-wrap" style="flex:1">
-          <div class="level-name-en">Spark</div>
-          <div class="level-name-ko">점화 단계 · 초등 2-4학년</div>
-          <div class="level-desc">알고리즘적 사고를 실제 프로그램으로 구현하는 단계입니다. 엔트리 기반 프로젝트에서 변수·조건·반복 구조를 체득하고, 로봇 코딩으로 알고리즘의 물리적 작동을 검증하며, 메타버스 플랫폼에서 학생 주도의 디지털 공간을 직접 설계·발표합니다.</div>
+      <div class="lv-card" style="--lv-color:#b8e0a0;--lv-dark:#3a6a1a">
+        <div class="lv-card-left" style="background:#b8e0a0">
+          <div class="lv-big-num">2</div>
+          <div class="lv-en">Spark</div>
+          <div class="lv-ko">점화</div>
+          <div style="font-size:2rem;margin-top:12px">🔥</div>
         </div>
-        <div style="display:flex;gap:12px;flex-shrink:0;align-items:flex-start">
-              <div style="width:100px;flex-shrink:0">
-                <div style="background:#b8e0a0;border-radius:8px;padding:12px 10px;text-align:center;box-shadow:2px 4px 14px rgba(0,0,0,0.12);height:130px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
-                  <div style="font-size:0.45rem;letter-spacing:0.08em;color:rgba(0,0,0,0.45)">QUVIA LAB</div>
-                  <div><div style="font-size:1.6rem;margin-bottom:2px">🔥</div><div style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.6)">Spark</div><div style="font-size:0.5rem;color:rgba(0,0,0,0.45)">교재 Vol.2</div></div>
-                  <div style="font-size:0.48rem;color:rgba(0,0,0,0.4);font-weight:600">LV.2 점화</div>
-                </div>
-              </div>
-              <div style="width:90px;flex-shrink:0">
-                <div style="background:#6aab5a;border-radius:8px;padding:10px;height:130px;display:flex;flex-direction:column;box-shadow:2px 4px 14px rgba(0,0,0,0.12)">
-                  <div style="font-size:0.45rem;color:rgba(255,255,255,0.7);margin-bottom:6px">설계노트 2</div>
-                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div></div>
-                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.6);text-align:right">탐구 설계노트</div>
-                </div>
-              </div>
-            </div>
+        <div class="lv-card-right">
+          <div class="lv-target">📅 초등 2 ~ 4학년</div>
+          <div class="lv-summary">알고리즘 사고를 프로그램으로 구현하는 본격 코딩</div>
+          <div class="lv-tags">
+            <span class="lv-tag">엔트리</span>
+            <span class="lv-tag">로봇 코딩</span>
+            <span class="lv-tag">메타버스</span>
+            <span class="lv-tag">앱인벤터 입문</span>
+          </div>
+          <div class="lv-goals">
+            <div class="lv-goal-item">🎯 변수·조건·반복 구조 체득</div>
+            <div class="lv-goal-item">🎯 로봇으로 알고리즘 검증</div>
+            <div class="lv-goal-item">🎯 디지털 공간 직접 설계·발표</div>
+          </div>
+          <div class="lv-keyword">
+            <span>변수</span><span class="lv-kw-dot">·</span><span>조건</span><span class="lv-kw-dot">·</span><span>알고리즘</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- LV3 -->
     <div id="lv3" class="level-content">
-      <div class="level-header">
-        <div class="level-num">3</div>
-        <div class="level-badge-wrap" style="flex:1">
-          <div class="level-name-en">Probe</div>
-          <div class="level-name-ko">탐구 단계 · 초등 4-6학년</div>
-          <div class="level-desc">소프트웨어와 하드웨어의 융합 설계를 경험하는 탐구 단계입니다. 엔트리 심화 프로젝트로 응용 프로그래밍 역량을 키우고, 센서·액추에이터를 제어하는 피지컬 컴퓨팅 실습으로 IoT 개념을 습득하며, 앱인벤터로 실제 배포 가능한 모바일 애플리케이션을 완성합니다.</div>
+      <div class="lv-card" style="--lv-color:#f5c8a0;--lv-dark:#8a4a10">
+        <div class="lv-card-left" style="background:#f5c8a0">
+          <div class="lv-big-num">3</div>
+          <div class="lv-en">Probe</div>
+          <div class="lv-ko">탐구</div>
+          <div style="font-size:2rem;margin-top:12px">🔍</div>
         </div>
-        <div style="display:flex;gap:12px;flex-shrink:0;align-items:flex-start">
-              <div style="width:100px;flex-shrink:0">
-                <div style="background:#f5c8a0;border-radius:8px;padding:12px 10px;text-align:center;box-shadow:2px 4px 14px rgba(0,0,0,0.12);height:130px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
-                  <div style="font-size:0.45rem;letter-spacing:0.08em;color:rgba(0,0,0,0.45)">QUVIA LAB</div>
-                  <div><div style="font-size:1.6rem;margin-bottom:2px">🔍</div><div style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.6)">Probe</div><div style="font-size:0.5rem;color:rgba(0,0,0,0.45)">교재 Vol.3</div></div>
-                  <div style="font-size:0.48rem;color:rgba(0,0,0,0.4);font-weight:600">LV.3 탐구</div>
-                </div>
-              </div>
-              <div style="width:90px;flex-shrink:0">
-                <div style="background:#e8a070;border-radius:8px;padding:10px;height:130px;display:flex;flex-direction:column;box-shadow:2px 4px 14px rgba(0,0,0,0.12)">
-                  <div style="font-size:0.45rem;color:rgba(255,255,255,0.7);margin-bottom:6px">설계노트 3</div>
-                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div></div>
-                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.6);text-align:right">탐구 설계노트</div>
-                </div>
-              </div>
-            </div>
+        <div class="lv-card-right">
+          <div class="lv-target">📅 초등 4 ~ 6학년</div>
+          <div class="lv-summary">SW·HW 융합을 경험하고 앱 제작까지 도전</div>
+          <div class="lv-tags">
+            <span class="lv-tag">엔트리 심화</span>
+            <span class="lv-tag">피지컬 컴퓨팅</span>
+            <span class="lv-tag">앱인벤터</span>
+            <span class="lv-tag">IoT 기초</span>
+          </div>
+          <div class="lv-goals">
+            <div class="lv-goal-item">🎯 센서·모터 제어 실습</div>
+            <div class="lv-goal-item">🎯 실제 배포 가능한 앱 완성</div>
+            <div class="lv-goal-item">🎯 탐구보고서 첫 작성</div>
+          </div>
+          <div class="lv-keyword">
+            <span>융합</span><span class="lv-kw-dot">·</span><span>제어</span><span class="lv-kw-dot">·</span><span>구현</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- LV4 -->
     <div id="lv4" class="level-content">
-      <div class="level-header">
-        <div class="level-num">4</div>
-        <div class="level-badge-wrap" style="flex:1">
-          <div class="level-name-en">Build</div>
-          <div class="level-name-ko">제작 단계 · 초등 6학년~중등 1학년</div>
-          <div class="level-desc">인공지능의 학습 원리를 직접 실험하고 제작물로 증명하는 단계입니다. 머신러닝 플랫폼으로 데이터 수집·모델 훈련·성능 평가의 AI 개발 사이클을 경험하고, 피지컬 디바이스와 연동해 실생활 문제를 해결하는 AI 융합 결과물을 설계·구현합니다.</div>
+      <div class="lv-card" style="--lv-color:#c8b8e8;--lv-dark:#4a2a8a">
+        <div class="lv-card-left" style="background:#c8b8e8">
+          <div class="lv-big-num">4</div>
+          <div class="lv-en">Build</div>
+          <div class="lv-ko">제작</div>
+          <div style="font-size:2rem;margin-top:12px">🤖</div>
         </div>
-        <div style="display:flex;gap:12px;flex-shrink:0;align-items:flex-start">
-              <div style="width:100px;flex-shrink:0">
-                <div style="background:#c8b8e8;border-radius:8px;padding:12px 10px;text-align:center;box-shadow:2px 4px 14px rgba(0,0,0,0.12);height:130px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
-                  <div style="font-size:0.45rem;letter-spacing:0.08em;color:rgba(0,0,0,0.45)">QUVIA LAB</div>
-                  <div><div style="font-size:1.6rem;margin-bottom:2px">🤖</div><div style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.6)">Build</div><div style="font-size:0.5rem;color:rgba(0,0,0,0.45)">교재 Vol.4</div></div>
-                  <div style="font-size:0.48rem;color:rgba(0,0,0,0.4);font-weight:600">LV.4 제작</div>
-                </div>
-              </div>
-              <div style="width:90px;flex-shrink:0">
-                <div style="background:#7868b0;border-radius:8px;padding:10px;height:130px;display:flex;flex-direction:column;box-shadow:2px 4px 14px rgba(0,0,0,0.12)">
-                  <div style="font-size:0.45rem;color:rgba(255,255,255,0.7);margin-bottom:6px">설계노트 4</div>
-                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div></div>
-                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.6);text-align:right">탐구 설계노트</div>
-                </div>
-              </div>
-            </div>
+        <div class="lv-card-right">
+          <div class="lv-target">📅 초등 6학년 ~ 중등</div>
+          <div class="lv-summary">AI 학습 원리를 직접 실험하고 결과물로 증명</div>
+          <div class="lv-tags">
+            <span class="lv-tag">Python 기초</span>
+            <span class="lv-tag">AI·머신러닝</span>
+            <span class="lv-tag">아두이노</span>
+            <span class="lv-tag">AI 융합 프로젝트</span>
+          </div>
+          <div class="lv-goals">
+            <div class="lv-goal-item">🎯 데이터 수집·모델 훈련 경험</div>
+            <div class="lv-goal-item">🎯 피지컬 디바이스 + AI 연동</div>
+            <div class="lv-goal-item">🎯 실생활 문제 해결 결과물 제작</div>
+          </div>
+          <div class="lv-keyword">
+            <span>설계</span><span class="lv-kw-dot">·</span><span>제작</span><span class="lv-kw-dot">·</span><span>AI</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- LV5 -->
     <div id="lv5" class="level-content">
-      <div class="level-header">
-        <div class="level-num">5</div>
-        <div class="level-badge-wrap" style="flex:1">
-          <div class="level-name-en">Master</div>
-          <div class="level-name-ko">통달 단계 · 중등~</div>
-          <div class="level-desc">Python을 기반으로 소프트웨어 개발 역량을 종합적으로 완성하는 단계입니다. 정렬·탐색 알고리즘 설계, 데이터 수집·시각화·분석, 머신러닝 모델 구현까지 — 실세계 문제를 스스로 정의하고 해결하는 전 과정을 수행하며, 탐구보고서와 포트폴리오로 결과를 정리해 활용할 수 있습니다.</div>
+      <div class="lv-card" style="--lv-color:#4878b8;--lv-dark:#1a3a6a">
+        <div class="lv-card-left" style="background:#4878b8">
+          <div class="lv-big-num" style="color:rgba(255,255,255,0.9)">5</div>
+          <div class="lv-en" style="color:white">Master</div>
+          <div class="lv-ko" style="color:rgba(255,255,255,0.8)">통달</div>
+          <div style="font-size:2rem;margin-top:12px">🐍</div>
         </div>
-        <div style="display:flex;gap:12px;flex-shrink:0;align-items:flex-start">
-              <div style="width:100px;flex-shrink:0">
-                <div style="background:#4878b8;border-radius:8px;padding:12px 10px;text-align:center;box-shadow:2px 4px 14px rgba(0,0,0,0.12);height:130px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
-                  <div style="font-size:0.45rem;letter-spacing:0.08em;color:rgba(0,0,0,0.45)">QUVIA LAB</div>
-                  <div><div style="font-size:1.6rem;margin-bottom:2px">🐍</div><div style="font-size:0.65rem;font-weight:700;color:rgba(0,0,0,0.6)">Master</div><div style="font-size:0.5rem;color:rgba(0,0,0,0.45)">교재 Vol.5</div></div>
-                  <div style="font-size:0.48rem;color:rgba(0,0,0,0.4);font-weight:600">LV.5 통달</div>
-                </div>
-              </div>
-              <div style="width:90px;flex-shrink:0">
-                <div style="background:#5848a0;border-radius:8px;padding:10px;height:130px;display:flex;flex-direction:column;box-shadow:2px 4px 14px rgba(0,0,0,0.12)">
-                  <div style="font-size:0.45rem;color:rgba(255,255,255,0.7);margin-bottom:6px">설계노트 5</div>
-                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div><div style="height:1px;background:rgba(255,255,255,0.3);margin-bottom:5px"></div></div>
-                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.6);text-align:right">탐구 설계노트</div>
-                </div>
-              </div>
-            </div>
+        <div class="lv-card-right">
+          <div class="lv-target">📅 중등 ~</div>
+          <div class="lv-summary">Python 기반 SW 역량을 종합 완성, SW경진대회 도전</div>
+          <div class="lv-tags">
+            <span class="lv-tag">Python 심화</span>
+            <span class="lv-tag">알고리즘</span>
+            <span class="lv-tag">데이터 분석</span>
+            <span class="lv-tag">SW경진대회</span>
+            <span class="lv-tag">포트폴리오</span>
+          </div>
+          <div class="lv-goals">
+            <div class="lv-goal-item">🎯 정렬·탐색 알고리즘 직접 설계</div>
+            <div class="lv-goal-item">🎯 머신러닝 모델 구현 및 분석</div>
+            <div class="lv-goal-item">🎯 포트폴리오·탐구보고서 완성</div>
+          </div>
+          <div class="lv-keyword">
+            <span>완성</span><span class="lv-kw-dot">·</span><span>도전</span><span class="lv-kw-dot">·</span><span>증명</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+
+  </div><!-- /container -->
 </div>
 
 <!-- ═══ 수상실적 ═══ -->
@@ -2967,15 +3070,13 @@ input, textarea, select { font-family: var(--sans); }
   <div class="page-header-dark" style="padding:36px 0 28px">
     <div class="container">
       <div class="s-header-row">
-        <div class="s-header-left"><div class="s-label" style="color:rgba(255,255,255,0.4)">Gallery</div><div class="s-title" style="color:white;margin-bottom:0">탐구현장</div></div>
+        <div class="s-header-left"><div class="s-label" style="color:rgba(0,224,110,0.45)">Gallery</div><div class="s-title" style="color:white;margin-bottom:0">탐구현장</div></div>
         <div class="s-header-right">논리적으로 설계하고 대담하게 도전하며, 내일의 경쟁력을 키우는 현장</div>
       </div>
     </div>
   </div>
-  <div class="gallery-marquee-outer">
-    <div class="gallery-marquee-wrap">
-      <div class="gallery-marquee-track" id="galleryGrid"></div>
-    </div>
+  <div class="container" style="padding-top:32px;padding-bottom:60px">
+    <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px"></div>
   </div>
 </div>
 
@@ -3156,6 +3257,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item active" onclick="switchPortalTab('student','info',this)">내 정보</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">수업결과</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','report',this)">탐구보고서</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('student','history',this)">수업·도전 이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','awards',this)">자격증·수상이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','slam',this)">Q-Grand Slam</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','pdf',this)">포트폴리오 PDF</div>
@@ -3266,6 +3368,62 @@ input, textarea, select { font-family: var(--sans); }
         </div>
       </div>
 
+      <!-- 수업·도전 이력 -->
+      <div id="student-tab-history" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:1rem;font-weight:500;color:var(--ink)">수업 · 도전 이력</div>
+          <button class="table-action-btn primary" onclick="openStudentHistoryForm()">+ 새 기록 추가</button>
+        </div>
+
+        <!-- 필터 탭 -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="historyFilterRow">
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('전체',this)">전체</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('수업이수',this)">수업 이수</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('대회출전',this)">대회 출전</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('수상·자격증',this)">수상·자격증</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('기타',this)">기타</button>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div id="studentHistoryForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">새 기록 작성</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">날짜</label>
+              <input class="form-input" id="sh_date" type="date">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">종류</label>
+              <select class="form-input" id="sh_type">
+                <option value="수업이수">✅ 수업 이수</option>
+                <option value="대회출전">🏁 대회 출전</option>
+                <option value="수상·자격증">🏆 수상·자격증</option>
+                <option value="기타">📌 기타</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">내용 (과정명 / 대회명 / 수상명)</label>
+            <input class="form-input" id="sh_title" type="text" placeholder="예: Python 기초 과정 이수 / 전국 SW 경진대회 / COS PRO 3급">
+          </div>
+          <div class="form-group">
+            <label class="form-label">상세 (기간·주최·학년 등)</label>
+            <input class="form-input" id="sh_detail" type="text" placeholder="예: 24주 완료 / 교육부 주최 / LV.3 Probe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">메모 (선택)</label>
+            <input class="form-input" id="sh_memo" type="text" placeholder="추가 내용">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="form-submit" style="flex:1" onclick="saveStudentHistory()">저장</button>
+            <button class="table-action-btn" onclick="closeStudentHistoryForm()">취소</button>
+          </div>
+        </div>
+
+        <!-- 목록 -->
+        <div id="studentHistoryList"></div>
+      </div>
+
       <!-- 자격증·수상이력 -->
       <div id="student-tab-awards" class="portal-tab">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -3317,11 +3475,9 @@ input, textarea, select { font-family: var(--sans); }
         <div class="card" style="margin-bottom:16px">
           <div class="card-title">포트폴리오 PDF 다운로드</div>
           <p style="font-size:0.88rem;color:var(--ink3);margin-bottom:16px;line-height:1.7">
-            지금까지의 탐구보고서, Q-Grand Slam 현황, 나의 꿈을 PDF로 저장합니다.
+            지금까지의 탐구보고서, Q-Grand Slam 현황, 수업·도전 이력, 나의 꿈을 PDF로 저장합니다.
           </p>
-          <button class="pdf-download-btn" onclick="downloadPortfolioPDF()">
-            📄 포트폴리오 PDF 다운로드
-          </button>
+          <div id="pdfBtnArea"></div>
         </div>
       </div>
 
@@ -3458,6 +3614,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','works',this)">학생작품</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','gallery',this)">탐구현장</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','portfolios',this)">포트폴리오 확인</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','history',this)">수업·도전 이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','logs',this)">교육/상담일지</div>
     </div>
     <div class="portal-content">
@@ -3491,7 +3648,7 @@ input, textarea, select { font-family: var(--sans); }
         <div style="overflow-x:auto">
           <table class="admin-table" id="studentsTable">
             <thead><tr>
-              <th>이름</th><th>학교</th><th>학년</th><th>생년월일</th><th>클래스</th><th>아이디</th><th>비밀번호</th><th>레벨</th><th>관리</th>
+              <th>이름</th><th>학교</th><th>학년</th><th>생년월일</th><th>클래스</th><th>아이디</th><th>비밀번호</th><th>레벨</th><th>PDF허용</th><th>관리</th>
             </tr></thead>
             <tbody id="studentsBody"></tbody>
           </table>
@@ -3550,6 +3707,9 @@ input, textarea, select { font-family: var(--sans); }
       <div id="admin-tab-works" class="portal-tab">
         <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:12px">이미지 링크, 제목, 학생 이름, 설명, 분류(태그)를 입력하면 <b>학생작품</b> 페이지에 표시됩니다.</p>
         <button class="table-action-btn primary" style="margin-bottom:12px" onclick="addWorkRow()">+ 작품 추가</button>
+        <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.8rem;color:#856404">
+          ⚠️ <b>다른 기기/브라우저에서 안 보이는 이유:</b> 여기서 직접 추가한 작품은 이 브라우저의 로컬 저장소에만 저장됩니다. 모든 기기에서 보이려면 <b>구글시트 'works' 시트에 입력</b>하세요. 구글시트 데이터는 페이지 로드 시 자동 반영됩니다.
+        </div>
         <table class="admin-table">
           <thead><tr><th>이미지 링크</th><th>작품 제목</th><th>학생 이름</th><th>설명</th><th>분류(태그)</th><th>날짜</th><th>관리</th></tr></thead>
           <tbody id="worksBody"></tbody>
@@ -3573,6 +3733,98 @@ input, textarea, select { font-family: var(--sans); }
           <option value="">학생 선택...</option>
         </select>
         <div id="portfolioView"></div>
+      </div>
+
+      <!-- 수업·도전 이력 (관리자) -->
+      <div id="admin-tab-history" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">수업 · 도전 이력 관리</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="table-action-btn primary" onclick="openAdminHistoryForm()">+ 개별 추가</button>
+            <button class="table-action-btn" onclick="openAdminHistoryBulk()">📋 일괄 업로드</button>
+          </div>
+        </div>
+
+        <!-- 학생 선택 -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <label class="form-label" style="margin:0;white-space:nowrap">학생 선택</label>
+          <select class="form-input" id="adminHistoryStudentSel" style="max-width:200px" onchange="renderAdminHistory()">
+            <option value="">-- 학생 선택 --</option>
+          </select>
+          <select class="form-input" id="adminHistoryYearSel" style="max-width:120px" onchange="renderAdminHistory()">
+            <option value="">연도 전체</option>
+          </select>
+          <select class="form-input" id="adminHistoryMonthSel" style="max-width:120px" onchange="renderAdminHistory()">
+            <option value="">월 전체</option>
+          </select>
+        </div>
+
+        <!-- 개별 추가 폼 -->
+        <div id="adminHistoryForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">수업·도전 이력 추가</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">학생</label>
+              <select class="form-input" id="ah_student"></select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">날짜</label>
+              <input class="form-input" id="ah_date" type="date">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">종류</label>
+              <select class="form-input" id="ah_type">
+                <option value="수업이수">수업 이수</option>
+                <option value="대회출전">대회 출전</option>
+                <option value="수상·자격증">수상·자격증</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">내용</label>
+            <input class="form-input" id="ah_title" type="text" placeholder="과정명 / 대회명 / 수상명">
+          </div>
+          <div class="form-group">
+            <label class="form-label">상세 (기간·주최·레벨 등)</label>
+            <input class="form-input" id="ah_detail" type="text" placeholder="24주 완료 / 교육부 주최 / LV.3">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="table-action-btn primary" onclick="saveAdminHistory()">저장</button>
+            <button class="table-action-btn" onclick="document.getElementById('adminHistoryForm').style.display='none'">취소</button>
+          </div>
+        </div>
+
+        <!-- 일괄 업로드 폼 -->
+        <div id="adminHistoryBulk" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:8px">일괄 업로드 (연도/월별)</div>
+          <p style="font-size:0.82rem;color:var(--ink4);margin-bottom:12px">
+            아래 형식으로 입력하면 여러 학생의 이력을 한 번에 추가합니다.<br>
+            <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:0.78rem">학생이름, 날짜(YYYY-MM-DD), 종류, 내용, 상세</code>
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">연도</label>
+              <select class="form-input" id="bulk_year"></select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">월 (선택)</label>
+              <select class="form-input" id="bulk_month">
+                <option value="">전체</option>
+                ${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}월</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <textarea class="form-input form-textarea" id="bulk_text" rows="6"
+            placeholder="홍길동, 2025-03-15, 수업이수, Python 기초 과정 이수, 24주 완료&#10;김철수, 2025-05-20, 대회출전, 전국 SW 경진대회, 교육부 주최&#10;이영희, 2025-08-10, 수상·자격증, COS PRO 3급, YBM"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="table-action-btn primary" onclick="saveBulkHistory()">일괄 저장</button>
+            <button class="table-action-btn" onclick="document.getElementById('adminHistoryBulk').style.display='none'">취소</button>
+          </div>
+        </div>
+
+        <!-- 이력 목록 -->
+        <div id="adminHistoryList"></div>
       </div>
 
       <!-- 교육/상담일지 -->
@@ -3802,6 +4054,10 @@ function switchLevel(id, tabEl){
     document.querySelectorAll('.level-tab').forEach(t=>t.classList.remove('active'));
     tabEl.classList.add('active');
   }
+  // 트랙 노드 활성화
+  document.querySelectorAll('.track-node').forEach(n=>n.classList.remove('active-lv'));
+  const trackNode=document.getElementById('track-'+id);
+  if(trackNode) trackNode.classList.add('active-lv');
 }
 
 /* ═══════════════════════════════════
@@ -4159,30 +4415,22 @@ function renderGallery(){
   const photos=DB.get('gallery',[]);
   const el=document.getElementById('galleryGrid');
   if(!el) return;
-  if(!photos.length){
-    el.innerHTML='<div style="color:var(--ink4);padding:3rem;font-size:0.9rem">등록된 사진이 없습니다.</div>';
+  const valid=photos.filter(p=>p.url);
+  if(!valid.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:3rem;font-size:0.9rem;grid-column:1/-1;text-align:center">등록된 사진이 없습니다.</div>';
     return;
   }
-  // 마퀴: 사진 2배 복사해서 끊김 없이 반복
-  const validPhotos=photos.filter(p=>p.url);
-  const doubled=[...validPhotos,...validPhotos];
-  el.innerHTML=doubled.map(p=>`
-    <div class="gallery-marquee-item">
-      <div class="gallery-marquee-img-wrap">
-        <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s">
-      </div>
-      ${p.desc?`<div class="gallery-marquee-label">${p.desc}</div>`:''}
+  el.innerHTML=valid.map(p=>`
+    <div style="border-radius:10px;overflow:hidden;background:#f0f0ec;aspect-ratio:4/3;position:relative;box-shadow:0 2px 10px rgba(0,0,0,0.08)">
+      <img src="${toPreviewUrl(p.url)}" alt="${p.desc||''}"
+        style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s"
+        onerror="this.parentElement.style.display='none'"
+        onmouseover="this.style.transform='scale(1.04)'"
+        onmouseout="this.style.transform='scale(1)'">
+      ${p.desc?`<div style="position:absolute;bottom:0;left:0;right:0;padding:8px 10px;background:linear-gradient(transparent,rgba(0,0,0,0.55));color:white;font-size:0.78rem">${p.desc}</div>`:''}
     </div>`).join('');
-  // 사진 수에 따라 속도 조절 (많을수록 천천히)
-  const speed=Math.max(20, validPhotos.length*5);
-  el.style.animationDuration=speed+'s';
 }
-function slideGallery(dir){
-  const photos=DB.get('gallery',[]);
-  const total=Math.ceil(photos.length/GALLERY_PER);
-  galleryPage=Math.max(0,Math.min(galleryPage+dir,total-1));
-  renderGallery();
-}
+function slideGallery(dir){ renderGallery(); }
 
 /* 공지/소식 */
 let currentNewsTag='전체';
@@ -4416,6 +4664,7 @@ function renderAdminTab(tab){
     works:renderAdminWorks,
     gallery:renderAdminGallery,
     portfolios:renderPortfolioSelect,
+    history:renderAdminHistoryTab,
     logs:renderAdminLogs,
     dashboard:renderAdminDashboard
   };
@@ -4441,6 +4690,12 @@ function renderAdminStudents(){
     <td><select onchange="updateStudent(${i},'level',this.value)">
       ${['LV.1 Sense','LV.2 Spark','LV.3 Probe','LV.4 Build','LV.5 Master'].map(l=>`<option ${s.level===l?'selected':''}>${l}</option>`).join('')}
     </select></td>
+    <td style="text-align:center">
+      <label style="display:flex;align-items:center;gap:4px;justify-content:center;cursor:pointer;font-size:0.8rem">
+        <input type="checkbox" ${s.pdfAllowed?'checked':''} onchange="updateStudent(${i},'pdfAllowed',this.checked);alert('PDF 권한이 '+(this.checked?'허용':'차단')+'되었습니다.')">
+        ${s.pdfAllowed?'<span style="color:var(--g2)">허용</span>':'<span style="color:var(--ink4)">차단</span>'}
+      </label>
+    </td>
     <td style="white-space:nowrap">
       <button class="table-action-btn" onclick="saveStudentRow(${i})">저장</button>
       <button class="table-action-btn danger" onclick="deleteStudent(${i})">삭제</button>
@@ -4463,9 +4718,12 @@ function deleteStudent(i){
 }
 function addStudentRow(){
   const students=DB.get('students',[]);
-  students.push({id:'',pw:'1234',name:'',school:'',grade:'',birth:'',cls:'',level:'LV.1 Sense',slam:[false,false,false,false,false],reports:[],dream:''});
+  students.unshift({id:'',pw:'1234',name:'',school:'',grade:'',birth:'',cls:'',level:'LV.1 Sense',slam:[false,false,false,false,false],reports:[],dream:''});
   DB.set('students',students);
   renderAdminStudents();
+  // 맨 위 행으로 스크롤
+  const tb=document.getElementById('studentsBody');
+  if(tb&&tb.firstElementChild) tb.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function yearUpAll(){
   if(!confirm('모든 학생을 1학년씩 올리겠습니까?')) return;
@@ -4512,7 +4770,14 @@ function updateTeacherCls(i,sel){
 function updateTeacher(i,k,v){const a=DB.get('teachers',[]);if(a[i])a[i][k]=v;DB.set('teachers',a);}
 function saveTeacherRow(i){renderAdminTeachers();alert('저장됨');}
 function deleteTeacher(i){if(!confirm('삭제?'))return;const a=DB.get('teachers',[]);a.splice(i,1);DB.set('teachers',a);renderAdminTeachers();}
-function addTeacherRow(){const a=DB.get('teachers',[]);a.push({id:'',pw:'1234',name:'',cls:''});DB.set('teachers',a);renderAdminTeachers();}
+function addTeacherRow(){
+  const a=DB.get('teachers',[]);
+  a.unshift({id:'',pw:'1234',name:'',cls:''});
+  DB.set('teachers',a);
+  renderAdminTeachers();
+  const tb=document.getElementById('teachersBody');
+  if(tb&&tb.firstElementChild) tb.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+}
 
 /* 전달사항 */
 function renderAdminNotice(){
@@ -4533,7 +4798,7 @@ function renderAdminNotice(){
 function updateNotice(i,k,v){const a=DB.get('notices',[]);if(a[i])a[i][k]=v;DB.set('notices',a);}
 function saveNoticeRow(i){renderAdminNotice();alert('저장됨');}
 function deleteNotice(i){if(!confirm('삭제?'))return;const a=DB.get('notices',[]);a.splice(i,1);DB.set('notices',a);renderAdminNotice();}
-function addNoticeRow(){const a=DB.get('notices',[]);a.push({date:new Date().toLocaleDateString('ko'),target:'전체',content:''});DB.set('notices',a);renderAdminNotice();}
+function addNoticeRow(){const a=DB.get('notices',[]);a.unshift({date:new Date().toLocaleDateString('ko'),target:'전체',content:''});DB.set('notices',a);renderAdminNotice();const el=document.getElementById('noticeList');if(el&&el.firstElementChild)el.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});}
 
 /* 공지/소식 */
 function renderAdminNews(){
@@ -4554,7 +4819,7 @@ function renderAdminNews(){
 function updateNews(i,k,v){const a=DB.get('news',[]);if(a[i])a[i][k]=v;DB.set('news',a);}
 function saveNewsRow(i){renderAdminNews();alert('저장됨');}
 function deleteNews(i){if(!confirm('삭제?'))return;const a=DB.get('news',[]);a.splice(i,1);DB.set('news',a);renderAdminNews();}
-function addNewsRow(){const a=DB.get('news',[]);a.push({date:new Date().toLocaleDateString('ko'),tag:'공지',title:'',content:''});DB.set('news',a);renderAdminNews();}
+function addNewsRow(){const a=DB.get('news',[]);a.unshift({date:new Date().toLocaleDateString('ko'),tag:'공지',title:'',content:''});DB.set('news',a);renderAdminNews();const el=document.getElementById('newsList');if(el&&el.firstElementChild)el.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});}
 
 /* 수상실적 */
 const AWARD_CAT_ICONS={
@@ -4622,7 +4887,7 @@ function renderAdminWorks(){
 function updateWork(i,k,v){const a=DB.get('works',[]);if(a[i])a[i][k]=v;DB.set('works',a);}
 function saveWorkRow(i){renderAdminWorks();alert('저장됨');}
 function deleteWork(i){if(!confirm('삭제?'))return;const a=DB.get('works',[]);a.splice(i,1);DB.set('works',a);renderAdminWorks();}
-function addWorkRow(){const a=DB.get('works',[]);a.push({img:'',title:'',student:'',desc:'',tag:'',date:''});DB.set('works',a);renderAdminWorks();}
+function addWorkRow(){const a=DB.get('works',[]);a.unshift({img:'',title:'',student:'',desc:'',tag:'',date:'',emoji:'💻'});DB.set('works',a);renderAdminWorks();const tb=document.querySelector('#worksTable tbody');if(tb&&tb.firstElementChild)tb.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});}
 
 /* 탐구현장 */
 function renderAdminGallery(){
@@ -4967,6 +5232,24 @@ function downloadPortfolioPDF(){
         ${slamNotes[i]?`<div class="slam-note">${slamNotes[i]}</div>`:''}
       </div>`).join('')}
     </div>
+
+    <h2>수업 · 도전 이력 (${(s.history||[]).length}건)</h2>
+    ${(s.history||[]).length
+      ? `<table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin-bottom:16px">
+          <thead><tr style="background:#f4f6f2">
+            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
+            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
+            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">내용</th>
+            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">상세</th>
+          </tr></thead>
+          <tbody>${(s.history||[]).map(r=>`<tr>
+            <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.date||''}</td>
+            <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.type||''}</td>
+            <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r.title}</td>
+            <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.detail||'-'}</td>
+          </tr>`).join('')}</tbody>
+         </table>`
+      : '<div style="color:#9a9a94;padding:8px 0;margin-bottom:16px">없음</div>'}
 
     <h2>자격증 · 수상이력 (${stuAwards.length}건)</h2>
     ${awardsHtml}
@@ -5368,6 +5651,174 @@ function adminSaveReport(sid, idx, type){
   alert('보고서가 수정되었습니다!');
 }
 
+/* ═══ 관리자 수업·도전 이력 ═══ */
+function renderAdminHistoryTab(){
+  const students=DB.get('students',[]);
+  // 학생 선택 드롭다운 채우기
+  const sel=document.getElementById('adminHistoryStudentSel');
+  if(sel){
+    const cur=sel.value;
+    sel.innerHTML='<option value="">-- 학생 선택 --</option>'+
+      students.map(s=>`<option value="${s.id}" ${s.id===cur?'selected':''}>${s.name}</option>`).join('');
+  }
+  // 연도 드롭다운
+  const yrSel=document.getElementById('adminHistoryYearSel');
+  if(yrSel){
+    const curYr=yrSel.value;
+    const yr=new Date().getFullYear();
+    yrSel.innerHTML='<option value="">연도 전체</option>'+
+      Array.from({length:6},(_,i)=>yr-i).map(y=>`<option value="${y}" ${String(y)===curYr?'selected':''}>${y}년</option>`).join('');
+  }
+  // 월 드롭다운
+  const moSel=document.getElementById('adminHistoryMonthSel');
+  if(moSel&&!moSel.children.length){
+    moSel.innerHTML='<option value="">월 전체</option>'+
+      Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${i+1}월</option>`).join('');
+  }
+  // bulk_year 채우기
+  const byEl=document.getElementById('bulk_year');
+  if(byEl&&!byEl.children.length){
+    const yr=new Date().getFullYear();
+    byEl.innerHTML=Array.from({length:6},(_,i)=>yr-i).map(y=>`<option>${y}</option>`).join('');
+  }
+  renderAdminHistory();
+}
+function renderAdminHistory(){
+  const el=document.getElementById('adminHistoryList');
+  if(!el) return;
+  const sid=document.getElementById('adminHistoryStudentSel')?.value;
+  const yr=document.getElementById('adminHistoryYearSel')?.value;
+  const mo=document.getElementById('adminHistoryMonthSel')?.value;
+  if(!sid){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">학생을 선택해 주세요.</div>';return;}
+  const students=DB.get('students',[]);
+  const s=students.find(x=>x.id===sid);
+  if(!s){el.innerHTML='';return;}
+  let records=[...(s.history||[])];
+  if(yr) records=records.filter(r=>(r.date||'').startsWith(yr));
+  if(mo) records=records.filter(r=>{const d=r.date||'';return d.length>=7&&d.slice(5,7)===mo;});
+  records.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const typeIcon={수업이수:'✅',대회출전:'🏁','수상·자격증':'🏆',기타:'📌'};
+  if(!records.length){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">이력이 없습니다.</div>';return;}
+  el.innerHTML=`<div style="margin-bottom:8px;font-size:0.82rem;color:var(--ink4)">${s.name} 학생 · ${records.length}건</div>`+
+    records.map(r=>`
+      <div class="edu-log-item" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span>${typeIcon[r.type]||'📌'}</span>
+            <span style="font-size:0.72rem;background:var(--g5);color:var(--g2);padding:2px 8px;border-radius:20px">${r.type}</span>
+            <span style="font-size:0.78rem;color:var(--ink4)">${r.date||''}</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="table-action-btn" onclick="adminEditHistoryRow('${sid}',${r.id})">편집</button>
+            <button class="table-action-btn danger" onclick="adminDeleteHistory('${sid}',${r.id})">삭제</button>
+          </div>
+        </div>
+        <div style="font-weight:500;font-size:0.9rem" id="ahrow_${r.id}">${r.title}</div>
+        ${r.detail?`<div style="font-size:0.8rem;color:var(--ink3)">${r.detail}</div>`:''}
+      </div>`).join('');
+}
+function openAdminHistoryForm(){
+  const students=DB.get('students',[]);
+  const ahSel=document.getElementById('ah_student');
+  if(ahSel) ahSel.innerHTML=students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('ah_date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('adminHistoryForm').style.display='block';
+}
+function openAdminHistoryBulk(){
+  document.getElementById('adminHistoryBulk').style.display='block';
+}
+function saveAdminHistory(){
+  const sid=document.getElementById('ah_student').value;
+  const rec={
+    id:Date.now(),
+    date:document.getElementById('ah_date').value,
+    type:document.getElementById('ah_type').value,
+    title:document.getElementById('ah_title').value.trim(),
+    detail:document.getElementById('ah_detail').value.trim()
+  };
+  if(!rec.title){alert('내용을 입력해주세요.');return;}
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0){alert('학생을 찾을 수 없습니다.');return;}
+  if(!students[idx].history) students[idx].history=[];
+  students[idx].history.unshift(rec);
+  DB.set('students',students);
+  document.getElementById('adminHistoryForm').style.display='none';
+  // 해당 학생 선택 후 렌더
+  const sel=document.getElementById('adminHistoryStudentSel');
+  if(sel) sel.value=sid;
+  renderAdminHistory();
+  alert('저장되었습니다!');
+}
+function saveBulkHistory(){
+  const text=document.getElementById('bulk_text').value.trim();
+  if(!text){alert('내용을 입력해주세요.');return;}
+  const students=DB.get('students',[]);
+  const lines=text.split('\n').filter(l=>l.trim());
+  let saved=0, failed=[];
+  lines.forEach(line=>{
+    const parts=line.split(',').map(p=>p.trim());
+    if(parts.length<4){failed.push(line);return;}
+    const [name,date,type,title,detail='']=parts;
+    const idx=students.findIndex(s=>s.name===name);
+    if(idx<0){failed.push(`"${name}" 학생 없음`);return;}
+    if(!students[idx].history) students[idx].history=[];
+    students[idx].history.unshift({id:Date.now()+saved,date,type,title,detail});
+    saved++;
+  });
+  DB.set('students',students);
+  document.getElementById('adminHistoryBulk').style.display='none';
+  document.getElementById('bulk_text').value='';
+  renderAdminHistoryTab();
+  alert(`${saved}건 저장완료${failed.length?'\n실패: '+failed.join(', '):''}`);
+}
+function adminDeleteHistory(sid, id){
+  if(!confirm('삭제하시겠습니까?')) return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx>=0){
+    students[idx].history=(students[idx].history||[]).filter(r=>r.id!==id);
+    DB.set('students',students);
+  }
+  renderAdminHistory();
+}
+function adminEditHistoryRow(sid, id){
+  const students=DB.get('students',[]);
+  const s=students.find(x=>x.id===sid);
+  if(!s) return;
+  const r=(s.history||[]).find(x=>x.id===id);
+  if(!r) return;
+  const el=document.getElementById(`ahrow_${id}`);
+  if(!el) return;
+  el.parentElement.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+      <input class="form-input" id="ahe_date_${id}" value="${r.date||''}" type="date" style="font-size:0.82rem">
+      <select class="form-input" id="ahe_type_${id}" style="font-size:0.82rem">
+        ${['수업이수','대회출전','수상·자격증','기타'].map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+      <div></div>
+    </div>
+    <input class="form-input" id="ahe_title_${id}" value="${(r.title||'').replace(/"/g,'&quot;')}" placeholder="내용" style="margin-bottom:6px">
+    <input class="form-input" id="ahe_detail_${id}" value="${(r.detail||'').replace(/"/g,'&quot;')}" placeholder="상세" style="margin-bottom:8px">
+    <div style="display:flex;gap:6px">
+      <button class="table-action-btn primary" onclick="adminSaveHistoryRow('${sid}',${id})">저장</button>
+      <button class="table-action-btn" onclick="renderAdminHistory()">취소</button>
+    </div>`;
+}
+function adminSaveHistoryRow(sid, id){
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0) return;
+  const hi=(students[idx].history||[]).findIndex(r=>r.id===id);
+  if(hi<0) return;
+  students[idx].history[hi].date=document.getElementById(`ahe_date_${id}`).value;
+  students[idx].history[hi].type=document.getElementById(`ahe_type_${id}`).value;
+  students[idx].history[hi].title=document.getElementById(`ahe_title_${id}`).value;
+  students[idx].history[hi].detail=document.getElementById(`ahe_detail_${id}`).value;
+  DB.set('students',students);
+  renderAdminHistory();
+}
+
 /* ═══ Q-Grand Slam 학생 포털 연동 (근거 표시) ═══ */
 function renderStudentSlam(){
   const el=document.getElementById('studentSlamGrid');
@@ -5427,6 +5878,8 @@ function switchPortalTab(portal, tab, el){
   if(portal==='student'){
     if(tab==='classlog') renderStudentClassLogs();
     if(tab==='awards') renderStudentAwards();
+    if(tab==='history') renderStudentHistory();
+    if(tab==='pdf') renderPdfTabBtn();
   }
   // 강사 탭 — 각 탭 전환 시 해당 렌더 함수 실행
   if(portal==='teacher'){
@@ -5544,6 +5997,101 @@ function renderStudentAwards(){
       ${a.org?`<div style="font-size:0.82rem;color:var(--ink3)">주최: ${a.org}</div>`:''}
       ${a.memo?`<div style="font-size:0.82rem;color:var(--ink4);margin-top:2px">${a.memo}</div>`:''}
     </div>`).join('');
+}
+
+/* ═══ 학생포털 수업·도전 이력 ═══ */
+let currentHistoryFilter='전체';
+function openStudentHistoryForm(){
+  document.getElementById('studentHistoryForm').style.display='block';
+  document.getElementById('sh_date').value=new Date().toISOString().slice(0,10);
+}
+function closeStudentHistoryForm(){
+  document.getElementById('studentHistoryForm').style.display='none';
+}
+function filterHistory(type, btn){
+  currentHistoryFilter=type;
+  document.querySelectorAll('#historyFilterRow button').forEach(b=>{
+    b.style.background=''; b.style.color='';
+  });
+  if(btn){ btn.style.background='var(--g2)'; btn.style.color='white'; }
+  renderStudentHistory();
+}
+function saveStudentHistory(){
+  if(!currentUser) return;
+  const rec={
+    id:Date.now(),
+    date:document.getElementById('sh_date').value,
+    type:document.getElementById('sh_type').value,
+    title:document.getElementById('sh_title').value.trim(),
+    detail:document.getElementById('sh_detail').value.trim(),
+    memo:document.getElementById('sh_memo').value.trim()
+  };
+  if(!rec.title){alert('내용을 입력해주세요.');return;}
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===currentUser.id);
+  if(idx>=0){
+    if(!students[idx].history) students[idx].history=[];
+    students[idx].history.unshift(rec);
+    currentUser=students[idx];
+    DB.set('students',students);
+  }
+  ['sh_title','sh_detail','sh_memo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  closeStudentHistoryForm();
+  renderStudentHistory();
+  alert('저장되었습니다!');
+}
+function deleteStudentHistory(id){
+  if(!confirm('삭제하시겠습니까?')) return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===currentUser.id);
+  if(idx>=0){
+    students[idx].history=(students[idx].history||[]).filter(r=>r.id!==id);
+    currentUser=students[idx];
+    DB.set('students',students);
+  }
+  renderStudentHistory();
+}
+function renderStudentHistory(){
+  const el=document.getElementById('studentHistoryList');
+  if(!el||!currentUser) return;
+  let records=currentUser.history||[];
+  if(currentHistoryFilter!=='전체') records=records.filter(r=>r.type===currentHistoryFilter);
+  const typeIcon={수업이수:'✅',대회출전:'🏁','수상·자격증':'🏆',기타:'📌'};
+  const typeBg={수업이수:'rgba(55,138,221,0.1)',대회출전:'rgba(186,117,23,0.1)','수상·자격증':'rgba(29,158,117,0.1)',기타:'rgba(136,135,128,0.1)'};
+  if(!records.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 기록이 없습니다. 위 버튼을 눌러 추가해보세요!</div>';
+    return;
+  }
+  el.innerHTML=records.map(r=>`
+    <div class="edu-log-item" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:1rem">${typeIcon[r.type]||'📌'}</span>
+          <span style="font-size:0.72rem;padding:2px 10px;border-radius:20px;background:${typeBg[r.type]||'rgba(0,0,0,0.05)'};font-weight:600;color:var(--ink2)">${r.type}</span>
+          <span style="font-size:0.75rem;color:var(--ink4)">${r.date||''}</span>
+        </div>
+        <button class="table-action-btn danger" style="font-size:0.72rem" onclick="deleteStudentHistory(${r.id})">삭제</button>
+      </div>
+      <div style="font-weight:600;font-size:0.95rem;margin-bottom:2px">${r.title}</div>
+      ${r.detail?`<div style="font-size:0.82rem;color:var(--ink3)">${r.detail}</div>`:''}
+      ${r.memo?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:2px">${r.memo}</div>`:''}
+    </div>`).join('');
+}
+
+/* PDF 허용 여부 체크 및 버튼 렌더 */
+function renderPdfTabBtn(){
+  const el=document.getElementById('pdfBtnArea');
+  if(!el||!currentUser) return;
+  if(currentUser.pdfAllowed){
+    el.innerHTML=`<button class="pdf-download-btn" onclick="downloadPortfolioPDF()">📄 포트폴리오 PDF 다운로드</button>`;
+  } else {
+    el.innerHTML=`
+      <div style="background:#f4f6f2;border-radius:8px;padding:20px;text-align:center;color:var(--ink4)">
+        <div style="font-size:1.5rem;margin-bottom:8px">🔒</div>
+        <div style="font-size:0.9rem;font-weight:500;color:var(--ink3);margin-bottom:4px">PDF 다운로드 잠금 중</div>
+        <div style="font-size:0.82rem">선생님이 포트폴리오를 확인하고 허용하면 다운로드가 활성화됩니다.</div>
+      </div>`;
+  }
 }
 
 /* ═══ 작품 관리 (날짜 date-input 버전 - 위 함수와 통합) ═══ */
@@ -5850,6 +6398,9 @@ function loadFromSheets() {
 document.addEventListener('DOMContentLoaded',()=>{
   initData();
   loadFromSheets();
+  // 프로그램 트랙 초기 활성화
+  const initTrack=document.getElementById('track-lv1');
+  if(initTrack) initTrack.classList.add('active-lv');
   renderMain();
   renderCharacters();
 

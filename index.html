@@ -1102,6 +1102,11 @@ input, textarea, select { font-family: var(--sans); }
 .lv-card-right{background:white;padding:28px 32px;display:flex;flex-direction:column;gap:14px;}
 .lv-target{font-size:0.8rem;color:var(--ink4);font-weight:500;}
 .lv-summary{font-size:1.05rem;font-weight:600;color:var(--ink);line-height:1.5;}
+.lv-mobile-br{display:inline;}
+@media(max-width:640px){
+  .lv-mobile-br::before{content:'\A';white-space:pre;}
+  .lv-summary-sm{font-size:0.88rem !important;line-height:1.4;}
+}
 .lv-tags{display:flex;flex-wrap:wrap;gap:6px;}
 .lv-tag{background:#f0f4f0;color:var(--ink2);font-size:0.76rem;padding:4px 12px;border-radius:20px;font-weight:500;border:1px solid rgba(0,0,0,0.07);}
 .lv-goals{display:flex;flex-direction:column;gap:6px;}
@@ -2684,14 +2689,11 @@ input, textarea, select { font-family: var(--sans); }
           </p>
         </div>
         <div style="margin-top:auto;padding-top:48px;display:flex;flex-direction:column;gap:2rem">
-          <p style="color:var(--ink3);line-height:2.2;font-size:0.95rem;font-family:var(--sans);margin:0">
-            큐비아는 단순히 코딩 문법을 가르치는 학원이 아닙니다.<br>
-            <strong>스스로 질문하고, 코드로 탐구하고, 결과물로 증명하는</strong> 과정을<br> 통해
-            아이가 직접 문제를 발견하고 해결하는 힘을 기릅니다.
+          <p style="color:var(--ink3);line-height:2.2;font-size:0.95rem;font-family:var(--sans);margin:0;word-break:keep-all">
+            큐비아는 단순히 코딩 문법을 가르치는 학원이 아닙니다. <strong>스스로 질문하고, 코드로 탐구하고, 결과물로 증명하는</strong> 과정을 통해 아이가 직접 문제를 발견하고 해결하는 힘을 기릅니다.
           </p>
-          <p style="color:var(--ink3);line-height:2.2;font-size:0.95rem;font-family:var(--sans);margin:0">
-            코딩은 도구입니다. 큐비아에서 코딩은 <em>생각을 현실로 만드는 <br>언어</em>이며,
-            탐구는 그 언어를 의미 있게 쓰는 방법입니다.
+          <p style="color:var(--ink3);line-height:2.2;font-size:0.95rem;font-family:var(--sans);margin:0;word-break:keep-all">
+            코딩은 도구입니다. 큐비아에서 코딩은 <em>생각을 현실로 만드는 언어</em>이며, 탐구는 그 언어를 의미 있게 쓰는 방법입니다.
           </p>
         </div>
       </div>
@@ -2929,7 +2931,7 @@ input, textarea, select { font-family: var(--sans); }
         </div>
         <div class="lv-card-right">
           <div class="lv-target">📅 초등 2 ~ 4학년</div>
-          <div class="lv-summary">알고리즘 사고를 프로그램으로 구현하는 본격 코딩</div>
+          <div class="lv-summary lv-summary-sm">알고리즘 사고를 프로그램으로 구현하는 코딩</div>
           <div class="lv-tags">
             <span class="lv-tag">엔트리</span>
             <span class="lv-tag">로봇 코딩</span>
@@ -2989,7 +2991,7 @@ input, textarea, select { font-family: var(--sans); }
         </div>
         <div class="lv-card-right">
           <div class="lv-target">📅 초등 6학년 ~ 중등</div>
-          <div class="lv-summary">AI 학습 원리를 직접 실험하고 결과물로 증명</div>
+          <div class="lv-summary lv-summary-sm">AI 학습 원리를 직접 실험하고 결과물로 증명</div>
           <div class="lv-tags">
             <span class="lv-tag">Python 기초</span>
             <span class="lv-tag">AI·머신러닝</span>
@@ -3019,7 +3021,7 @@ input, textarea, select { font-family: var(--sans); }
         </div>
         <div class="lv-card-right">
           <div class="lv-target">📅 중등 ~</div>
-          <div class="lv-summary">Python 기반 SW 역량을 종합 완성, SW경진대회 도전</div>
+          <div class="lv-summary">Python 기반 SW 역량을 종합 완성,<span class="lv-mobile-br"> </span>SW경진대회 도전</div>
           <div class="lv-tags">
             <span class="lv-tag">Python 심화</span>
             <span class="lv-tag">알고리즘</span>

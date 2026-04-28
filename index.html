@@ -2273,9 +2273,20 @@ input, textarea, select { font-family: var(--sans); }
   color: rgba(255,255,255,0.72);
   line-height: 1.8;
   padding-bottom: 6px;
-  padding-left: 24px;
-  border-left: 3px solid var(--gold);
   word-break: keep-all;
+}
+/* BI/캐릭터 헤더 내 brand-quote 모바일 — 세로 금색 바 제거 */
+@media (max-width: 768px) {
+  #page-characters .brand-quote {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+@media (min-width: 769px) {
+  .s-header-right {
+    border-left: 3px solid var(--gold);
+    padding-left: 24px;
+  }
 }
 
 /* 탐구현장 마퀴 외부 컨테이너 */

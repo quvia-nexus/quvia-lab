@@ -1550,6 +1550,110 @@ input, textarea, select { font-family: var(--sans); }
 .edu-log-class { font-size: 0.78rem; font-weight: 500; color: var(--g2); }
 .edu-log-content { font-size: 0.88rem; color: var(--ink2); line-height: 1.6; }
 
+/* 월별 그룹 헤더 */
+.classlog-month-group { margin-bottom: 28px; }
+.classlog-month-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.classlog-month-label {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--g1);
+  white-space: nowrap;
+}
+.classlog-month-line {
+  flex: 1; height: 1px; background: var(--border2);
+}
+.classlog-month-confirm-badge {
+  font-size: 0.72rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px;
+  white-space: nowrap;
+}
+.classlog-month-confirm-badge.done {
+  background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;
+}
+.classlog-month-confirm-badge.pending {
+  background: #fff3e0; color: #e65100; border: 1px solid #ffcc80;
+}
+
+/* 학부모 피드백 박스 */
+.parent-feedback-box {
+  margin-top: 14px;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9fbf9;
+}
+.parent-feedback-header {
+  background: var(--g5);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.84rem; font-weight: 600; color: var(--g1);
+}
+.parent-feedback-body { padding: 14px 16px; }
+.parent-confirm-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px; flex-wrap: wrap;
+}
+.btn-confirm-done {
+  padding: 7px 18px;
+  background: var(--g1); color: white;
+  border: none; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.btn-confirm-done:hover { background: var(--g2); }
+.btn-confirm-done.confirmed {
+  background: #e8f5e9; color: #2e7d32;
+  border: 1px solid #a5d6a7; cursor: default;
+}
+.confirm-status-text { font-size: 0.8rem; color: var(--ink4); }
+.parent-reply-area { margin-top: 4px; }
+.parent-reply-input {
+  width: 100%; border: 1px solid var(--border2); border-radius: 6px;
+  padding: 8px 12px; font-size: 0.84rem; font-family: var(--sans);
+  resize: vertical; min-height: 64px; outline: none;
+  transition: border-color 0.2s; box-sizing: border-box;
+}
+.parent-reply-input:focus { border-color: var(--g3); }
+.btn-reply-send {
+  margin-top: 6px; padding: 6px 16px;
+  background: var(--g2); color: white;
+  border: none; border-radius: 6px;
+  font-size: 0.8rem; font-weight: 600;
+  cursor: pointer;
+}
+.btn-reply-send:hover { background: var(--g1); }
+.parent-reply-done {
+  background: white; border: 1px solid var(--border2); border-radius: 6px;
+  padding: 8px 12px; font-size: 0.84rem; color: var(--ink2);
+  white-space: pre-line; margin-bottom: 6px;
+}
+.parent-reply-edit-btn {
+  font-size: 0.76rem; color: var(--ink4);
+  background: none; border: 1px solid var(--border2);
+  border-radius: 4px; padding: 3px 8px; cursor: pointer;
+}
+
+/* 관리자 교육일지 학부모 응답 뱃지 */
+.feedback-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.7rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+  margin-left: 6px;
+}
+.feedback-badge.confirmed { background: #e8f5e9; color: #2e7d32; }
+.feedback-badge.replied   { background: #e3f2fd; color: #1565c0; }
+.feedback-badge.pending   { background: #f5f5f5; color: #9e9e9e; }
+.admin-feedback-reply-box {
+  margin-top: 8px; padding: 8px 12px;
+  background: #e3f2fd; border-radius: 6px;
+  font-size: 0.82rem; color: #1a237e; border-left: 3px solid #1565c0;
+  white-space: pre-line;
+}
+
 /* ═══════════════════════════════════
    관리자 포털
 ═══════════════════════════════════ */
@@ -4184,6 +4288,16 @@ input, textarea, select { font-family: var(--sans); }
 
       <!-- 교육/상담일지 -->
       <div id="admin-tab-logs" class="portal-tab">
+        <!-- 학생 필터 -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <label class="form-label" style="margin:0;white-space:nowrap">학생 선택</label>
+          <select class="form-input" id="adminLogsStudentFilter" style="max-width:200px" onchange="renderAdminLogs()">
+            <option value="">전체 학생</option>
+          </select>
+          <select class="form-input" id="adminLogsMonthFilter" style="max-width:150px" onchange="renderAdminLogs()">
+            <option value="">월 전체</option>
+          </select>
+        </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div style="font-weight:600;font-size:1rem">교육일지</div>
           <div style="font-size:0.78rem;color:var(--ink4)">강사가 작성한 모든 일지 · 편집/삭제 가능</div>
@@ -5568,40 +5682,122 @@ function updateStudentSlam(id,idx,val){
 
 /* 교육/상담일지 */
 function renderAdminLogs(){
+  // ── 필터 셀렉트 초기화 ──────────────────────────────────
+  const stuSel=document.getElementById('adminLogsStudentFilter');
+  const mthSel=document.getElementById('adminLogsMonthFilter');
+  if(stuSel){
+    const students=DB.get('students',[]);
+    const prev=stuSel.value;
+    stuSel.innerHTML='<option value="">전체 학생</option>'+
+      students.map(s=>`<option value="${s.id}" ${s.id===prev?'selected':''}>${s.name}</option>`).join('');
+  }
+  if(mthSel){
+    const edu=DB.get('edulogs',[]);
+    const months=new Set();
+    edu.forEach(l=>{ if(l.date&&l.date.length>=7) months.add(l.date.slice(0,7)); });
+    const prev=mthSel.value;
+    const sorted=[...months].sort((a,b)=>b.localeCompare(a));
+    mthSel.innerHTML='<option value="">월 전체</option>'+
+      sorted.map(m=>{
+        const [y,mo]=m.split('-');
+        return `<option value="${m}" ${m===prev?'selected':''}>${y}년 ${parseInt(mo)}월</option>`;
+      }).join('');
+  }
+
+  const filterSid=stuSel?stuSel.value:'';
+  const filterMth=mthSel?mthSel.value:'';
+  const students=DB.get('students',[]);
+  const stuMap={};
+  students.forEach(s=>stuMap[s.id]=s.name);
+
+  // ── 교육일지 ──────────────────────────────────────────────
   const el1=document.getElementById('adminEduLogs');
   const el2=document.getElementById('adminConsultLogs');
-  const edu=DB.get('edulogs',[]);
-  const con=DB.get('consultlogs',[]);
+  let edu=DB.get('edulogs',[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  if(filterSid) edu=edu.filter(l=>(l.students||[]).includes(filterSid));
+  if(filterMth) edu=edu.filter(l=>(l.date||'').startsWith(filterMth));
 
   if(el1){
     if(!edu.length){
-      el1.innerHTML='<div style="color:var(--ink4);padding:24px;text-align:center;font-size:0.88rem">강사 포털에서 교육일지를 작성하면 여기에 표시됩니다.</div>';
+      el1.innerHTML='<div style="color:var(--ink4);padding:24px;text-align:center;font-size:0.88rem">'+(filterSid||filterMth?'조건에 맞는 교육일지가 없습니다.':'강사 포털에서 교육일지를 작성하면 여기에 표시됩니다.')+'</div>';
     } else {
-      el1.innerHTML=edu.slice().reverse().map(l=>`
-        <div class="edu-log-item" id="admedu_${l.id}" style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-            <div>
+      el1.innerHTML=edu.map(l=>{
+        // 이 일지를 받은 학생별 피드백 수집
+        const targetStudents=(l.students||[]);
+        const fbSummary=targetStudents.map(sid=>{
+          const ym=(l.date||'').slice(0,7);
+          const fbKey='fb_'+sid+'_'+ym;
+          const fb=DB.get(fbKey,null);
+          const sName=stuMap[sid]||sid;
+          if(!fb||(!fb.confirmed&&!fb.reply)) return {sid,sName,status:'pending',fb};
+          if(fb.reply) return {sid,sName,status:'replied',fb};
+          return {sid,sName,status:'confirmed',fb};
+        });
+
+        const confirmedCount=fbSummary.filter(f=>f.status!=='pending').length;
+        const repliedCount=fbSummary.filter(f=>f.status==='replied').length;
+
+        // 피드백 뱃지 요약
+        const summaryBadges=confirmedCount===0
+          ?`<span class="feedback-badge pending">미확인 ${targetStudents.length}명</span>`
+          :`<span class="feedback-badge confirmed">확인 ${confirmedCount}명</span>`+
+           (repliedCount?`<span class="feedback-badge replied">답장 ${repliedCount}명</span>`:'');
+
+        // 학생별 피드백 상세 (특정 학생 필터 시 또는 펼치기)
+        const fbDetail=fbSummary.map(f=>{
+          const statusLabel=f.status==='replied'?'💬 답장있음':f.status==='confirmed'?'✅ 확인완료':'⏳ 미확인';
+          const badgeCls=f.status==='replied'?'replied':f.status==='confirmed'?'confirmed':'pending';
+          return `<div style="display:flex;flex-direction:column;gap:4px;padding:6px 0;border-bottom:1px dashed var(--border)">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:0.82rem;font-weight:500">${f.sName}</span>
+              <span class="feedback-badge ${badgeCls}">${statusLabel}</span>
+              ${f.fb&&f.fb.confirmedAt?`<span style="font-size:0.72rem;color:var(--ink4)">${f.fb.confirmedAt.slice(0,10)} 확인</span>`:''}
+            </div>
+            ${f.fb&&f.fb.reply?`<div class="admin-feedback-reply-box">💬 "${f.fb.reply}"<span style="font-size:0.72rem;color:#5c7bb5;margin-left:8px">${f.fb.repliedAt?f.fb.repliedAt.slice(0,10):''}</span></div>`:''}
+          </div>`;
+        }).join('');
+
+        const detailId='fbdetail_'+l.id;
+
+        return `<div class="edu-log-item" id="admedu_${l.id}" style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <span style="font-size:0.8rem;color:var(--ink4)">${l.date||''}</span>
-              <span style="font-size:0.8rem;color:var(--g2);margin-left:10px">${l.cls||''}</span>
-              <span style="font-size:0.75rem;color:var(--ink4);margin-left:6px">작성: ${l.teacher||''}</span>
+              <span style="font-size:0.8rem;color:var(--g2);font-weight:500">${l.cls||''}</span>
+              <span style="font-size:0.75rem;color:var(--ink4)">작성: ${l.teacher||''}</span>
+              ${summaryBadges}
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0">
               <button class="table-action-btn" onclick="adminEditEduLog(${l.id})">편집</button>
               <button class="table-action-btn danger" onclick="adminDeleteEduLog(${l.id})">삭제</button>
             </div>
           </div>
-          <div style="font-size:0.75rem;color:var(--ink4);margin-bottom:6px">학생: ${(l.students||[]).join(', ')||'-'}</div>
-          <div id="admedu_content_${l.id}" style="font-size:0.88rem;color:var(--ink2);white-space:pre-line">${l.content||''}</div>
-          ${l.note?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:4px">특이사항: ${l.note}</div>`:''}
-        </div>`).join('');
+          <div style="font-size:0.75rem;color:var(--ink4);margin-bottom:6px">학생: ${targetStudents.map(sid=>stuMap[sid]||sid).join(', ')||'-'}</div>
+          <div id="admedu_content_${l.id}" style="font-size:0.88rem;color:var(--ink2);white-space:pre-line;margin-bottom:8px">${l.content||''}</div>
+          ${l.note?`<div style="font-size:0.8rem;color:var(--ink4);margin-bottom:8px">특이사항: ${l.note}</div>`:''}
+          <button onclick="toggleFbDetail('${detailId}')"
+            style="font-size:0.76rem;color:var(--g2);background:none;border:1px solid var(--border2);border-radius:4px;padding:3px 10px;cursor:pointer">
+            📋 학부모 확인 현황 보기/숨기기
+          </button>
+          <div id="${detailId}" style="display:none;margin-top:8px;border:1px solid var(--border);border-radius:6px;padding:8px 12px;background:#fafafa">
+            ${fbDetail||'<div style="font-size:0.82rem;color:var(--ink4)">해당 학생 없음</div>'}
+          </div>
+        </div>`;
+      }).join('');
     }
   }
 
+  // ── 상담일지 (기존 유지 + 학생 필터) ─────────────────────
+  let con=DB.get('consultlogs',[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(filterSid) con=con.filter(l=>{ const s=students.find(st=>st.id===filterSid); return s&&l.student===s.name; });
+  if(filterMth) con=con.filter(l=>(l.date||'').startsWith(filterMth));
+
   if(el2){
     if(!con.length){
-      el2.innerHTML='<div style="color:var(--ink4);padding:24px;text-align:center;font-size:0.88rem">강사 포털에서 상담일지를 작성하면 여기에 표시됩니다.</div>';
+      el2.innerHTML='<div style="color:var(--ink4);padding:24px;text-align:center;font-size:0.88rem">'+(filterSid||filterMth?'조건에 맞는 상담일지가 없습니다.':'강사 포털에서 상담일지를 작성하면 여기에 표시됩니다.')+'</div>';
     } else {
-      el2.innerHTML=con.slice().reverse().map(l=>`
+      el2.innerHTML=con.map(l=>`
         <div class="edu-log-item" id="admcon_${l.id}" style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
             <div>
@@ -5619,6 +5815,11 @@ function renderAdminLogs(){
         </div>`).join('');
     }
   }
+}
+
+function toggleFbDetail(id){
+  const el=document.getElementById(id);
+  if(el) el.style.display=el.style.display==='none'?'block':'none';
 }
 
 function adminDeleteEduLog(id){
@@ -6048,15 +6249,143 @@ function deleteConsultLog(id){if(!confirm('삭제?'))return;DB.set('consultlogs'
 /* ═══ 학생 수업결과 탭 ═══ */
 function renderStudentClassLogs(){
   if(!currentUser) return;
-  const el=document.getElementById('studentClassLogs');if(!el)return;
-  const logs=DB.get('edulogs',[]).filter(l=>(l.students||[]).includes(currentUser.id));
-  el.innerHTML=logs.length?logs.map(l=>`
-    <div class="edu-log-item">
-      <div class="edu-log-header"><span class="edu-log-date">${l.date}</span><span class="edu-log-class">${l.cls}</span></div>
-      <div class="edu-log-content">${l.content}</div>
-      ${l.note?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:4px">메모: ${l.note}</div>`:''}
-    </div>`).join('')
-    :'<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 등록된 수업결과가 없습니다.</div>';
+  const el=document.getElementById('studentClassLogs'); if(!el) return;
+  const sid=currentUser.id;
+  const logs=DB.get('edulogs',[]).filter(l=>(l.students||[]).includes(sid));
+
+  if(!logs.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 등록된 수업결과가 없습니다.</div>';
+    return;
+  }
+
+  // 날짜 내림차순 정렬 후 월별 그룹핑
+  const sorted=[...logs].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const monthMap={};
+  sorted.forEach(l=>{
+    const ym=l.date?l.date.slice(0,7):'기타';
+    if(!monthMap[ym]) monthMap[ym]=[];
+    monthMap[ym].push(l);
+  });
+
+  el.innerHTML=Object.keys(monthMap).sort((a,b)=>b.localeCompare(a)).map(ym=>{
+    const groupLogs=monthMap[ym];
+    // 이 월의 피드백 상태 (한 명의 학생 → 월별 하나의 피드백 객체)
+    const fbKey='fb_'+sid+'_'+ym;
+    const fb=DB.get(fbKey,null)||{confirmed:false, confirmedAt:'', reply:'', repliedAt:''};
+    const allConfirmed=fb.confirmed;
+
+    // 월 표시 (YYYY-MM → YYYY년 M월)
+    const [y,m]=ym.split('-');
+    const monthLabel=ym==='기타'?'기타':`${y}년 ${parseInt(m)}월`;
+
+    // 수업결과 카드 (최대 표시, 통상 4개)
+    const cards=groupLogs.map(l=>`
+      <div class="edu-log-item" style="margin-bottom:8px">
+        <div class="edu-log-header">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="edu-log-date">${l.date||''}</span>
+            <span class="edu-log-class">${l.cls||''}</span>
+          </div>
+        </div>
+        <div class="edu-log-content" style="white-space:pre-line">${l.content||''}</div>
+        ${l.note?`<div style="font-size:0.78rem;color:var(--ink4);margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)">📎 ${l.note}</div>`:''}
+      </div>`).join('');
+
+    // 학부모 확인/답장 UI
+    const confirmBtnHtml=fb.confirmed
+      ?`<button class="btn-confirm-done confirmed" disabled>✅ 확인완료</button>
+        <span class="confirm-status-text">${fb.confirmedAt?fb.confirmedAt.slice(0,10)+' 확인':''}</span>`
+      :`<button class="btn-confirm-done" onclick="parentConfirm('${ym}')">확인완료</button>
+        <span class="confirm-status-text">읽으신 후 확인 버튼을 눌러주세요</span>`;
+
+    const replyHtml=fb.reply
+      ?`<div class="parent-reply-done">${fb.reply}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          <span style="font-size:0.75rem;color:var(--ink4)">${fb.repliedAt?fb.repliedAt.slice(0,10)+' 작성':''}</span>
+          <button class="parent-reply-edit-btn" onclick="parentReplyEdit('${ym}')">수정</button>
+        </div>`
+      :`<div id="replyForm_${ym.replace('-','_')}">
+          <textarea class="parent-reply-input" id="replyInput_${ym.replace('-','_')}" placeholder="선생님께 전하실 말씀을 남겨주세요…"></textarea>
+          <button class="btn-reply-send" onclick="parentReplySend('${ym}')">답장 보내기</button>
+        </div>`;
+
+    return `<div class="classlog-month-group">
+      <div class="classlog-month-header">
+        <span class="classlog-month-label">📅 ${monthLabel}</span>
+        <span class="classlog-month-line"></span>
+        <span class="classlog-month-confirm-badge ${allConfirmed?'done':'pending'}">
+          ${allConfirmed?'✅ 확인완료':'⏳ 미확인'}
+        </span>
+      </div>
+      ${cards}
+      <div class="parent-feedback-box">
+        <div class="parent-feedback-header">
+          💬 학부모 확인 &amp; 답장
+        </div>
+        <div class="parent-feedback-body">
+          <div class="parent-confirm-row">${confirmBtnHtml}</div>
+          <div class="parent-reply-area">${replyHtml}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// 학부모 확인완료
+function parentConfirm(ym){
+  if(!currentUser) return;
+  const fbKey='fb_'+currentUser.id+'_'+ym;
+  const fb=DB.get(fbKey,null)||{confirmed:false,confirmedAt:'',reply:'',repliedAt:''};
+  fb.confirmed=true;
+  fb.confirmedAt=new Date().toISOString();
+  DB.set(fbKey,fb);
+  renderStudentClassLogs();
+}
+
+// 학부모 답장 저장
+function parentReplySend(ym){
+  if(!currentUser) return;
+  const key=ym.replace('-','_');
+  const input=document.getElementById('replyInput_'+key);
+  if(!input) return;
+  const text=input.value.trim();
+  if(!text){ alert('내용을 입력해주세요.'); return; }
+  const fbKey='fb_'+currentUser.id+'_'+ym;
+  const fb=DB.get(fbKey,null)||{confirmed:false,confirmedAt:'',reply:'',repliedAt:''};
+  fb.reply=text;
+  fb.repliedAt=new Date().toISOString();
+  // 답장하면 자동으로 확인완료 처리
+  if(!fb.confirmed){ fb.confirmed=true; fb.confirmedAt=fb.repliedAt; }
+  DB.set(fbKey,fb);
+  renderStudentClassLogs();
+}
+
+// 학부모 답장 수정 (텍스트 영역 재표시)
+function parentReplyEdit(ym){
+  if(!currentUser) return;
+  const fbKey='fb_'+currentUser.id+'_'+ym;
+  const fb=DB.get(fbKey,null)||{};
+  const key=ym.replace('-','_');
+  // 해당 answer div를 form으로 교체
+  const replyArea=document.querySelector(`[data-reply-area="${ym}"]`);
+  // 가장 간단하게: 전체 재렌더 대신 해당 영역만 교체
+  const allAreas=document.querySelectorAll('.parent-reply-area');
+  allAreas.forEach(area=>{
+    if(area.innerHTML.includes('replyInput_'+key)||area.innerHTML.includes('parent-reply-done')){
+      // 이 월의 답장 영역 찾기
+      if(area.closest('.classlog-month-group')&&
+         area.closest('.classlog-month-group').querySelector('.classlog-month-label').textContent.includes(
+           ym.split('-')[0]+'년 '+parseInt(ym.split('-')[1])+'월'
+         )){
+        area.innerHTML=`<div id="replyForm_${key}">
+          <textarea class="parent-reply-input" id="replyInput_${key}">${fb.reply||''}</textarea>
+          <button class="btn-reply-send" onclick="parentReplySend('${ym}')">수정 완료</button>
+        </div>`;
+      }
+    }
+  });
+  // fallback: 전체 재렌더
+  if(!document.getElementById('replyInput_'+key)) renderStudentClassLogs();
 }
 
 /* ═══ 탐구보고서 편집 기능 ═══ */

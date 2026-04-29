@@ -3897,6 +3897,7 @@ input, textarea, select { font-family: var(--sans); }
             엑셀로 일괄 등록
             <input type="file" accept=".xlsx,.csv" style="display:none" onchange="importStudentsExcel(this)">
           </label>
+          <button class="table-action-btn" onclick="downloadStudentTemplate()" title="엑셀 작성 양식을 내려받습니다">📥 등록 양식 다운로드</button>
           <button class="year-up-btn" onclick="yearUpAll()">전체 학년 올리기 (+1학년)</button>
         </div>
         <div style="overflow-x:auto">
@@ -5092,7 +5093,225 @@ function yearUpAll(){
   renderAdminStudents();
   alert('완료!');
 }
-function importStudentsExcel(input){alert('엑셀 업로드: CSV 형식(이름,학교,학년,생년월일,클래스,아이디,비밀번호)으로 저장 후 업로드해주세요.');}
+function importStudentsExcel(input){
+  var file = input.files[0];
+  if(!file){ return; }
+  input.value = ''; // 같은 파일 재업로드 가능하도록 초기화
+
+  var ext = file.name.split('.').pop().toLowerCase();
+
+  // ── CSV 처리 ──────────────────────────────────────────
+  if(ext === 'csv'){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var text = e.target.result;
+      // BOM 제거 (Excel CSV는 UTF-8 BOM 포함 가능)
+      text = text.replace(/^\uFEFF/, '');
+      var rows = parseImportCSV(text);
+      showImportPreview(rows);
+    };
+    reader.readAsText(file, 'UTF-8');
+    return;
+  }
+
+  // ── XLSX 처리 (SheetJS CDN 동적 로드) ─────────────────
+  if(ext === 'xlsx' || ext === 'xls'){
+    loadSheetJS(function(){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        try {
+          var wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var raw = XLSX.utils.sheet_to_csv(ws);
+          var rows = parseImportCSV(raw);
+          showImportPreview(rows);
+        } catch(err){
+          alert('엑셀 파일을 읽는 데 실패했습니다.\n' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+    return;
+  }
+
+  alert('지원하지 않는 파일 형식입니다.\n.xlsx 또는 .csv 파일을 올려주세요.');
+}
+
+// SheetJS 동적 로드
+function loadSheetJS(cb){
+  if(window.XLSX){ cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload = cb;
+  s.onerror = function(){ alert('SheetJS 라이브러리 로드 실패.\nCSV(.csv)로 변환 후 다시 시도해주세요.'); };
+  document.head.appendChild(s);
+}
+
+// CSV 파싱 (따옴표·쉼표·줄바꿈 처리)
+function parseImportCSV(text){
+  var lines = text.trim().split(/\r?\n/);
+  if(lines.length < 2) return [];
+  function parseLine(line){
+    var result=[], cur='', inQ=false;
+    for(var i=0;i<line.length;i++){
+      var c=line[i];
+      if(c==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+      else if(c===','&&!inQ){ result.push(cur.trim()); cur=''; }
+      else cur+=c;
+    }
+    result.push(cur.trim());
+    return result.map(function(v){return v.replace(/^"|"$/g,'').trim();});
+  }
+  var headers = parseLine(lines[0]);
+  return lines.slice(1).map(function(line){
+    if(!line.trim()) return null;
+    var vals = parseLine(line);
+    var obj = {};
+    headers.forEach(function(h,i){ obj[h] = vals[i]||''; });
+    return obj;
+  }).filter(Boolean);
+}
+
+// 컬럼 매핑 (한글/영문 헤더 모두 인식)
+function mapStudentRow(obj){
+  function pick(){
+    for(var i=0;i<arguments.length;i++){
+      if(obj[arguments[i]]!==undefined && obj[arguments[i]]!=='') return obj[arguments[i]];
+    }
+    return '';
+  }
+  return {
+    name:   pick('이름','name','학생명','성명'),
+    school: pick('학교','school','학교명'),
+    grade:  pick('학년','grade'),
+    birth:  pick('생년월일','birth','생일'),
+    cls:    pick('클래스','class','cls','반'),
+    id:     pick('아이디','id','ID','학번'),
+    pw:     pick('비밀번호','password','pw','패스워드') || '1234',
+    level:  pick('레벨','level') || 'LV.1 Sense',
+    slam:   [false,false,false,false,false],
+    reports:[],
+    dream:  pick('꿈','dream') || ''
+  };
+}
+
+// 미리보기 모달
+function showImportPreview(rawRows){
+  var students = rawRows.map(mapStudentRow).filter(function(s){ return s.name; });
+  if(!students.length){
+    alert('인식된 학생 데이터가 없습니다.\n첫 번째 행이 헤더(이름, 학교, 학년 …)인지 확인해주세요.');
+    return;
+  }
+
+  var modal = document.getElementById('importPreviewModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'importPreviewModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:4000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
+    document.body.appendChild(modal);
+  }
+
+  var rowsHtml = students.map(function(s, i){
+    var dup = DB.get('students',[]).some(function(ex){ return ex.id && ex.id === s.id; });
+    return '<tr style="'+(dup?'background:#fff3cd;':'')+'">'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6;text-align:center">'+(i+1)+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.name||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.school||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.grade||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.birth||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.cls||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.id||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(s.pw||'-')+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #dee2e6">'+(dup?'<span style="color:#856404;font-weight:600">⚠ ID중복</span>':'<span style="color:#155724">✓</span>')+'</td>'+
+      '</tr>';
+  }).join('');
+
+  var dupCount = students.filter(function(s){ return DB.get('students',[]).some(function(ex){return ex.id&&ex.id===s.id;}); }).length;
+
+  modal.innerHTML =
+    '<div style="background:white;border-radius:12px;max-width:860px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.25)">'+
+    '<div style="background:#2d4a2d;color:white;padding:16px 20px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">'+
+    '<div><div style="font-weight:700;font-size:1rem">학생 일괄 등록 미리보기</div>'+
+    '<div style="font-size:0.8rem;opacity:0.8;margin-top:2px">총 '+students.length+'명 인식'+
+    (dupCount?' · <span style="color:#ffc107">⚠ ID 중복 '+dupCount+'명</span>':'')+'</div></div>'+
+    '<button onclick="document.getElementById(\'importPreviewModal\').remove()" style="background:none;border:none;color:white;font-size:1.3rem;cursor:pointer">✕</button>'+
+    '</div>'+
+    '<div style="overflow-y:auto;flex:1;padding:16px 20px">'+
+    (dupCount?'<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:0.84rem;color:#856404">⚠ 노란색 행은 기존에 같은 아이디가 있는 학생입니다. <b>덮어쓰기</b>하거나 <b>건너뛰기</b>를 선택할 수 있습니다.</div>':'') +
+    '<div style="overflow-x:auto">'+
+    '<table style="width:100%;border-collapse:collapse;font-size:0.82rem">'+
+    '<thead><tr>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d;text-align:center">#</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">이름</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">학교</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">학년</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">생년월일</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">클래스</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">아이디</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">비밀번호</th>'+
+    '<th style="background:#4a6e4a;color:white;padding:7px 8px;border:1px solid #2d4a2d">상태</th>'+
+    '</tr></thead>'+
+    '<tbody>'+rowsHtml+'</tbody>'+
+    '</table></div></div>'+
+    '<div style="padding:14px 20px;border-top:1px solid #dee2e6;display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap">'+
+    '<button onclick="confirmImportStudents(\'skip\')" style="padding:9px 20px;background:#2d4a2d;color:white;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;cursor:pointer">✅ 등록 확정 (중복 건너뜀)</button>'+
+    (dupCount?'<button onclick="confirmImportStudents(\'overwrite\')" style="padding:9px 20px;background:#e65100;color:white;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;cursor:pointer">⚠ 등록 확정 (중복 덮어쓰기)</button>':'') +
+    '<button onclick="document.getElementById(\'importPreviewModal\').remove()" style="padding:9px 20px;background:white;color:#444;border:1px solid #ccc;border-radius:6px;font-size:0.88rem;cursor:pointer">취소</button>'+
+    '<a href="#" onclick="downloadStudentTemplate();return false;" style="padding:9px 20px;background:#f0f4ff;color:#1a3a7a;border:1px solid #b0c4f0;border-radius:6px;font-size:0.84rem;cursor:pointer;text-decoration:none">📥 양식 다운로드</a>'+
+    '</div></div>';
+
+  // 미리보기용 데이터 임시 저장
+  modal._students = students;
+}
+
+// 등록 확정
+function confirmImportStudents(dupMode){
+  var modal = document.getElementById('importPreviewModal');
+  if(!modal||!modal._students) return;
+  var newStudents = modal._students;
+  var existing = DB.get('students',[]);
+  var added=0, skipped=0, overwritten=0;
+
+  newStudents.forEach(function(s){
+    var dupIdx = existing.findIndex(function(ex){ return ex.id && ex.id===s.id; });
+    if(dupIdx >= 0){
+      if(dupMode === 'overwrite'){
+        // 기존 학생 데이터 보존(reports, slam 등) + 기본정보만 덮어쓰기
+        existing[dupIdx] = Object.assign({}, existing[dupIdx], {
+          name:s.name, school:s.school, grade:s.grade,
+          birth:s.birth, cls:s.cls, pw:s.pw, level:s.level||existing[dupIdx].level
+        });
+        overwritten++;
+      } else {
+        skipped++;
+      }
+    } else {
+      existing.push(s);
+      added++;
+    }
+  });
+
+  DB.set('students', existing);
+  modal.remove();
+  renderAdminStudents();
+
+  var msg = '등록 완료!\n\n신규 추가: '+added+'명';
+  if(overwritten) msg += '\n덮어쓰기: '+overwritten+'명';
+  if(skipped) msg += '\n건너뜀(중복): '+skipped+'명';
+  alert(msg);
+}
+
+// 엑셀 양식 다운로드 (CSV)
+function downloadStudentTemplate(){
+  var bom = '\uFEFF';
+  var header = '이름,학교,학년,생년월일,클래스,아이디,비밀번호\n';
+  var sample = '홍길동,큐비아중학교,2학년,2012-05-01,화요일반,hong123,1234\n';
+  var blob = new Blob([bom+header+sample], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '학생등록양식.csv';
+  a.click();
+}
 
 /* 강사 관리 */
 function renderAdminTeachers(){

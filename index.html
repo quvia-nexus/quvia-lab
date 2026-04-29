@@ -1701,6 +1701,215 @@ input, textarea, select { font-family: var(--sans); }
 }
 
 /* ═══════════════════════════════════
+   급여명세서
+═══════════════════════════════════ */
+.payroll-list-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.payroll-list-item:hover { background: var(--g6); border-color: var(--g4); }
+.payroll-list-meta { font-size: 0.78rem; color: var(--ink4); margin-top: 2px; }
+.payroll-list-amount { font-weight: 600; color: var(--g1); font-size: 1rem; }
+.payroll-badge {
+  display: inline-block;
+  background: var(--g5);
+  color: var(--g1);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  margin-left: 8px;
+}
+
+/* 급여명세서 작성 폼 */
+.payroll-form-wrap {
+  background: var(--white);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  max-width: 680px;
+}
+.payroll-sheet-title {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  background: #4472c4;
+  color: white;
+  padding: 10px 0;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 0;
+}
+.payroll-header-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #b0bec5;
+  border-top: none;
+}
+.payroll-header-cell {
+  display: flex;
+  align-items: center;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  border-right: 1px solid #b0bec5;
+}
+.payroll-header-cell:last-child { border-right: none; }
+.payroll-header-label { font-weight: 600; color: #1e3a5f; min-width: 48px; }
+.payroll-header-input {
+  border: none;
+  background: transparent;
+  font-size: 0.88rem;
+  flex: 1;
+  outline: none;
+  color: var(--ink);
+}
+.payroll-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+  font-size: 0.85rem;
+}
+.payroll-table th {
+  background: #4472c4;
+  color: white;
+  padding: 7px 10px;
+  text-align: center;
+  font-weight: 600;
+  border: 1px solid #2e5ea6;
+}
+.payroll-table td {
+  padding: 5px 8px;
+  border: 1px solid #cfd8dc;
+  text-align: center;
+  vertical-align: middle;
+}
+.payroll-table td input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: center;
+  font-size: 0.84rem;
+  outline: none;
+  color: var(--ink);
+}
+.payroll-table tr:nth-child(even) td { background: #f0f4ff; }
+.payroll-subtotal {
+  background: #4472c4 !important;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  padding: 8px 10px;
+  border: 1px solid #2e5ea6 !important;
+}
+.payroll-subtotal-val {
+  background: #e8f0e8 !important;
+  font-weight: 700;
+  color: #1a3a1a;
+  text-align: center;
+  border: 1px solid #b0c8b0 !important;
+}
+.payroll-section-header {
+  background: #4472c4;
+  color: white;
+  font-weight: 700;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  border: 1px solid #2e5ea6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.payroll-deduct-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #cfd8dc;
+  border-top: none;
+}
+.payroll-deduct-cell {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 0.84rem;
+  border-right: 1px solid #cfd8dc;
+  gap: 8px;
+}
+.payroll-deduct-cell:last-child { border-right: none; }
+.payroll-deduct-label { color: #444; min-width: 90px; }
+.payroll-deduct-input {
+  border: none;
+  border-bottom: 1px solid #b0bec5;
+  background: transparent;
+  font-size: 0.84rem;
+  flex: 1;
+  outline: none;
+  text-align: right;
+  color: var(--ink);
+}
+.payroll-deduct-sum {
+  background: #388e3c;
+  color: white;
+  font-weight: 700;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  border: 1px solid #256029;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.payroll-final-section {
+  border: 2px solid #4472c4;
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+  margin-top: -1px;
+}
+.payroll-final-header {
+  background: #4472c4;
+  color: white;
+  font-weight: 700;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.payroll-final-val {
+  background: #f7f9f6;
+  padding: 12px 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--g1);
+  text-align: right;
+}
+
+/* 급여명세서 뷰어 (강사 포털) */
+.payroll-view-card {
+  background: var(--white);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.payroll-view-header {
+  background: #4472c4;
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.payroll-view-title { font-weight: 700; font-size: 1rem; letter-spacing: 0.08em; }
+.payroll-view-meta { font-size: 0.8rem; opacity: 0.85; }
+.payroll-view-body { padding: 18px 20px; }
+
+/* ═══════════════════════════════════
    모바일 반응형 (768px 이하)
 ═══════════════════════════════════ */
 @media (max-width: 768px) {
@@ -3557,6 +3766,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('teacher','edulog',this)">교육일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('teacher','consult',this)">상담일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('teacher','students',this)">학생 현황</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('teacher','payslip',this)">💰 급여명세서</div>
     </div>
     <div class="portal-content">
       <div id="teacher-tab-notice" class="portal-tab active">
@@ -3608,6 +3818,11 @@ input, textarea, select { font-family: var(--sans); }
       <div id="teacher-tab-students" class="portal-tab">
         <div id="teacherStudentList"></div>
       </div>
+      <!-- 급여명세서 (강사) -->
+      <div id="teacher-tab-payslip" class="portal-tab">
+        <div style="font-weight:600;font-size:1rem;margin-bottom:16px">내 급여명세서</div>
+        <div id="teacherPayslipList"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -3654,6 +3869,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','portfolios',this)">포트폴리오 확인</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','history',this)">수업·도전 이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','logs',this)">교육/상담일지</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','payroll',this)">💰 급여명세서</div>
     </div>
     <div class="portal-content">
 
@@ -3863,6 +4079,106 @@ input, textarea, select { font-family: var(--sans); }
 
         <!-- 이력 목록 -->
         <div id="adminHistoryList"></div>
+      </div>
+
+      <!-- 급여명세서 (관리자) -->
+      <div id="admin-tab-payroll" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">강사 급여명세서</div>
+          <button class="table-action-btn primary" onclick="openPayrollForm()">+ 새 명세서 작성</button>
+        </div>
+
+        <!-- 강사 필터 -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <label class="form-label" style="margin:0;white-space:nowrap">강사 선택</label>
+          <select class="form-input" id="payrollTeacherFilter" style="max-width:200px" onchange="renderAdminPayrollList()">
+            <option value="">전체 강사</option>
+          </select>
+          <select class="form-input" id="payrollYearFilter" style="max-width:130px" onchange="renderAdminPayrollList()">
+            <option value="">연도 전체</option>
+          </select>
+        </div>
+
+        <!-- 명세서 작성 폼 -->
+        <div id="payrollFormWrap" style="display:none" class="payroll-form-wrap" style="margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+            <div style="font-weight:600;font-size:1rem">급여명세서 작성</div>
+            <button class="table-action-btn" onclick="closePayrollForm()">✕ 닫기</button>
+          </div>
+
+          <!-- 명세서 헤더 -->
+          <div class="payroll-sheet-title">급 &nbsp;여 &nbsp;명 &nbsp;세 &nbsp;서</div>
+          <div class="payroll-header-row">
+            <div class="payroll-header-cell">
+              <span class="payroll-header-label">강사명</span>
+              <select class="payroll-header-input" id="pr_teacher" style="border:none;background:transparent;font-size:0.88rem;outline:none;flex:1">
+                <option value="">강사 선택...</option>
+              </select>
+            </div>
+            <div class="payroll-header-cell">
+              <span class="payroll-header-label">지급월</span>
+              <input class="payroll-header-input" id="pr_month" type="month">
+            </div>
+          </div>
+
+          <!-- 수업내역 테이블 -->
+          <table class="payroll-table" id="payrollRows" style="margin-top:0">
+            <thead>
+              <tr>
+                <th style="width:110px">날짜</th>
+                <th style="width:70px">요일</th>
+                <th style="width:100px">수업시간(H)</th>
+                <th>금액(원)</th>
+                <th style="width:120px">비고</th>
+                <th style="width:38px"></th>
+              </tr>
+            </thead>
+            <tbody id="payrollRowsBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" class="payroll-subtotal">소 &nbsp;계</td>
+                <td class="payroll-subtotal-val" id="pr_total_hours">0</td>
+                <td class="payroll-subtotal-val" id="pr_subtotal" colspan="2">0</td>
+                <td style="border:1px solid #cfd8dc"></td>
+              </tr>
+            </tfoot>
+          </table>
+          <div style="margin:6px 0">
+            <button class="table-action-btn" onclick="addPayrollRow()" style="font-size:0.78rem">+ 행 추가</button>
+          </div>
+
+          <!-- 공제내역 -->
+          <div class="payroll-section-header" style="margin-top:14px">▶ &nbsp;공제 내역</div>
+          <div id="payrollDeductWrap"></div>
+          <div style="margin:6px 0">
+            <button class="table-action-btn" onclick="addPayrollDeduct()" style="font-size:0.78rem">+ 공제 항목 추가</button>
+          </div>
+          <div class="payroll-deduct-sum">
+            <span>공제 합계</span>
+            <span id="pr_deduct_total">0 원</span>
+          </div>
+
+          <!-- 최종 지급액 -->
+          <div class="payroll-final-section" style="margin-top:14px">
+            <div class="payroll-final-header">▶ &nbsp;최종 지급액</div>
+            <div class="payroll-final-val" id="pr_final">0 원</div>
+          </div>
+
+          <!-- 메모 -->
+          <div class="form-group" style="margin-top:16px">
+            <label class="form-label">메모 (선택)</label>
+            <textarea class="form-input form-textarea" id="pr_memo" rows="2" placeholder="특이사항 등"></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="table-action-btn primary" onclick="savePayroll()">💾 임시저장</button>
+            <button onclick="saveAndSendPayroll()" style="padding:8px 18px;background:#2e7d32;color:white;border:none;border-radius:6px;font-size:0.84rem;font-weight:600;cursor:pointer">📤 저장 후 바로 전송</button>
+            <button class="table-action-btn" onclick="closePayrollForm()">취소</button>
+          </div>
+        </div>
+
+        <!-- 명세서 목록 -->
+        <div id="adminPayrollList"></div>
       </div>
 
       <!-- 교육/상담일지 -->
@@ -5883,6 +6199,7 @@ function renderTeacherPortal(){
   renderEduLogs();
   renderConsultLogs();
   renderTeacherStudents();
+  renderTeacherPayslip();
 }
 
 /* ═══ 학생 포털 렌더 (수정) ═══ */
@@ -5925,7 +6242,10 @@ function switchPortalTab(portal, tab, el){
     if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
     if(tab==='consult')  renderConsultLogs();
     if(tab==='students') renderTeacherStudents();
+    if(tab==='payslip')  renderTeacherPayslip();
   }
+  // 관리자 급여명세서 탭
+  if(portal==='admin' && tab==='payroll') initPayrollAdminTab();
 }
 
 /* ═══ 학생 보고서 목록 클릭 ═══ */
@@ -6194,6 +6514,421 @@ function sendKakaoConsult() {
   window.open('http://pf.kakao.com/_vDLtG/chat?msg=' + text, '_blank');
 }
 
+/* ═══════════════════════════════════
+   급여명세서 기능
+═══════════════════════════════════ */
+
+function fmtMoney(v){ return Number(v||0).toLocaleString('ko-KR'); }
+function parseMoney(v){ return parseInt((v||'').toString().replace(/[^0-9]/g,''))||0; }
+
+function openPayrollForm(existingId){
+  var wrap = document.getElementById('payrollFormWrap');
+  if(!wrap) return;
+  wrap.style.display = 'block';
+  wrap.scrollIntoView({behavior:'smooth', block:'start'});
+  var sel = document.getElementById('pr_teacher');
+  var teachers = DB.get('teachers', []);
+  sel.innerHTML = '<option value="">강사 선택...</option>' +
+    teachers.map(function(t){ return '<option value="'+t.id+'">'+t.name+'</option>'; }).join('');
+  if(!existingId){
+    document.getElementById('pr_month').value = new Date().toISOString().slice(0,7);
+    document.getElementById('pr_memo').value = '';
+    document.getElementById('payrollRowsBody').innerHTML = '';
+    for(var i=0;i<3;i++) addPayrollRow();
+    document.getElementById('payrollDeductWrap').innerHTML = '';
+    addPayrollDeduct('소득세(3.3%)');
+    addPayrollDeduct('기타 공제');
+    calcPayroll();
+    wrap.dataset.editId = '';
+  } else {
+    var payrolls = DB.get('payrolls',[]);
+    var pr = payrolls.find(function(p){return p.id===existingId;});
+    if(!pr) return;
+    wrap.dataset.editId = existingId;
+    document.getElementById('pr_teacher').value = pr.teacherId;
+    document.getElementById('pr_month').value = pr.month;
+    document.getElementById('pr_memo').value = pr.memo||'';
+    document.getElementById('payrollRowsBody').innerHTML = '';
+    (pr.rows||[]).forEach(function(r){ addPayrollRow(r); });
+    document.getElementById('payrollDeductWrap').innerHTML = '';
+    (pr.deducts||[]).forEach(function(d){ addPayrollDeduct(d.label, d.amount); });
+    calcPayroll();
+  }
+}
+
+function closePayrollForm(){
+  var wrap = document.getElementById('payrollFormWrap');
+  if(wrap) wrap.style.display = 'none';
+}
+
+function addPayrollRow(data){
+  var tbody = document.getElementById('payrollRowsBody');
+  if(!tbody) return;
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="date" onchange="autoWeekday(this)" oninput="calcPayroll()" value="'+(data&&data.date||'')+'"></td>'+
+    '<td><input type="text" style="width:40px" readonly value="'+(data&&data.day||'')+'"></td>'+
+    '<td><input type="number" min="0" step="0.5" oninput="calcPayroll()" style="width:65px" value="'+(data&&data.hours||'')+'"></td>'+
+    '<td><input type="text" oninput="formatMoneyInput(this);calcPayroll()" value="'+(data&&data.amount?fmtMoney(data.amount):'')+'"></td>'+
+    '<td><input type="text" value="'+(data&&data.note||'')+'"></td>'+
+    '<td><button onclick="this.closest(\'tr\').remove();calcPayroll()" style="background:none;border:none;color:#e57373;font-size:1rem;cursor:pointer;padding:0 4px">✕</button></td>';
+  tbody.appendChild(tr);
+}
+
+function autoWeekday(input){
+  var tr = input.closest('tr');
+  if(!tr) return;
+  var dayInput = tr.querySelectorAll('input')[1];
+  if(!input.value){ dayInput.value=''; return; }
+  var d = new Date(input.value);
+  var days = ['일','월','화','수','목','금','토'];
+  dayInput.value = days[d.getDay()];
+  calcPayroll();
+}
+
+function addPayrollDeduct(label, amount){
+  var wrap = document.getElementById('payrollDeductWrap');
+  if(!wrap) return;
+  var div = document.createElement('div');
+  div.className = 'payroll-deduct-row';
+  div.innerHTML =
+    '<div class="payroll-deduct-cell" style="grid-column:1/3;gap:8px;flex-wrap:wrap">'+
+    '<input type="text" placeholder="공제 항목명" value="'+(label||'')+'"'+
+    ' style="border:none;border-bottom:1px solid #b0bec5;background:transparent;font-size:0.84rem;outline:none;min-width:120px;flex:1;color:var(--ink)"'+
+    ' oninput="calcPayroll()">'+
+    '<input type="text" placeholder="금액" value="'+(amount?fmtMoney(amount):'')+'"'+
+    ' style="border:none;border-bottom:1px solid #b0bec5;background:transparent;font-size:0.84rem;outline:none;width:120px;text-align:right;color:var(--ink)"'+
+    ' oninput="formatMoneyInput(this);calcPayroll()">'+
+    '<span style="font-size:0.78rem;color:var(--ink4)">원</span>'+
+    '<button onclick="this.closest(\'.payroll-deduct-row\').remove();calcPayroll()"'+
+    ' style="background:none;border:none;color:#e57373;font-size:0.9rem;cursor:pointer;padding:0 4px">✕</button>'+
+    '</div>';
+  wrap.appendChild(div);
+}
+
+function formatMoneyInput(el){
+  var raw = el.value.replace(/[^0-9]/g,'');
+  if(raw) el.value = Number(raw).toLocaleString('ko-KR');
+}
+
+function calcPayroll(){
+  var tbody = document.getElementById('payrollRowsBody');
+  if(!tbody) return;
+  var totalHours=0, subtotal=0;
+  tbody.querySelectorAll('tr').forEach(function(tr){
+    var inputs = tr.querySelectorAll('input');
+    var h = parseFloat(inputs[2].value)||0;
+    var a = parseMoney(inputs[3].value);
+    totalHours += h; subtotal += a;
+  });
+  var thEl=document.getElementById('pr_total_hours');
+  var stEl=document.getElementById('pr_subtotal');
+  if(thEl) thEl.textContent = totalHours;
+  if(stEl) stEl.textContent = fmtMoney(subtotal);
+  var deductTotal=0;
+  document.querySelectorAll('#payrollDeductWrap .payroll-deduct-row').forEach(function(row){
+    var inputs=row.querySelectorAll('input');
+    if(inputs.length>=2) deductTotal+=parseMoney(inputs[1].value);
+  });
+  var dtEl=document.getElementById('pr_deduct_total');
+  if(dtEl) dtEl.textContent = fmtMoney(deductTotal)+' 원';
+  var fnEl=document.getElementById('pr_final');
+  if(fnEl) fnEl.textContent = fmtMoney(subtotal-deductTotal)+' 원';
+}
+
+function savePayroll(){
+  var teacherId=document.getElementById('pr_teacher').value;
+  var month=document.getElementById('pr_month').value;
+  if(!teacherId){ alert('강사를 선택해주세요.'); return; }
+  if(!month){ alert('지급월을 선택해주세요.'); return; }
+  var teachers=DB.get('teachers',[]);
+  var teacher=teachers.find(function(t){return t.id===teacherId;});
+  var tbody=document.getElementById('payrollRowsBody');
+  var rows=[], subtotal=0;
+  tbody.querySelectorAll('tr').forEach(function(tr){
+    var inputs=tr.querySelectorAll('input');
+    var date=inputs[0].value, day=inputs[1].value;
+    var hours=parseFloat(inputs[2].value)||0;
+    var amount=parseMoney(inputs[3].value);
+    var note=inputs[4].value;
+    if(date||hours||amount){ rows.push({date:date,day:day,hours:hours,amount:amount,note:note}); }
+    subtotal+=amount;
+  });
+  var deducts=[], deductTotal=0;
+  document.querySelectorAll('#payrollDeductWrap .payroll-deduct-row').forEach(function(row){
+    var inputs=row.querySelectorAll('input');
+    if(inputs.length>=2){
+      var lbl=inputs[0].value, amt=parseMoney(inputs[1].value);
+      if(lbl){ deducts.push({label:lbl,amount:amt}); deductTotal+=amt; }
+    }
+  });
+  var finalAmount=subtotal-deductTotal;
+  var memo=document.getElementById('pr_memo').value;
+  var editId=document.getElementById('payrollFormWrap').dataset.editId;
+  var payrolls=DB.get('payrolls',[]);
+  if(editId){
+    var idx=payrolls.findIndex(function(p){return p.id===editId;});
+    if(idx>=0){
+      // 편집 시 status는 유지하되, 내용이 변경됐으면 sent→draft_modified(수정됨)로 표시
+      var prevStatus = payrolls[idx].status || 'draft';
+      var nextStatus = prevStatus === 'sent' ? 'sent_modified' : prevStatus;
+      payrolls[idx]=Object.assign({},payrolls[idx],{teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:nextStatus,updatedAt:new Date().toISOString()});
+    }
+  } else {
+    payrolls.push({id:'pr_'+Date.now(),teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'draft',createdAt:new Date().toISOString()});
+  }
+  DB.set('payrolls',payrolls);
+  alert('임시저장 되었습니다.\n강사 포털에 공개하려면 목록에서 [전송] 버튼을 눌러주세요.');
+  closePayrollForm();
+  renderAdminPayrollList();
+}
+
+function renderAdminPayrollList(){
+  var el=document.getElementById('adminPayrollList');
+  if(!el) return;
+  var payrolls=DB.get('payrolls',[]);
+  var tFilter=document.getElementById('payrollTeacherFilter');
+  var yFilter=document.getElementById('payrollYearFilter');
+  var teacherFilter=tFilter?tFilter.value:'';
+  var yearFilter=yFilter?yFilter.value:'';
+  var list=payrolls.slice().sort(function(a,b){return b.month.localeCompare(a.month);});
+  if(teacherFilter) list=list.filter(function(p){return p.teacherId===teacherFilter;});
+  if(yearFilter) list=list.filter(function(p){return p.month.startsWith(yearFilter);});
+  if(!list.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">작성된 급여명세서가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML=list.map(function(p){
+    var status = p.status||'draft';
+    // 상태 배지 설정
+    var badgeHtml = '';
+    if(status==='sent'){
+      badgeHtml = '<span style="display:inline-block;background:#2e7d32;color:white;font-size:0.68rem;font-weight:600;padding:2px 9px;border-radius:20px;margin-left:8px">✅ 전송됨</span>';
+    } else if(status==='sent_modified'){
+      badgeHtml = '<span style="display:inline-block;background:#e65100;color:white;font-size:0.68rem;font-weight:600;padding:2px 9px;border-radius:20px;margin-left:8px">⚠ 수정됨 (재전송 필요)</span>';
+    } else {
+      badgeHtml = '<span style="display:inline-block;background:#78909c;color:white;font-size:0.68rem;font-weight:600;padding:2px 9px;border-radius:20px;margin-left:8px">임시저장</span>';
+    }
+    // 전송 버튼
+    var sendBtn = '';
+    if(status==='sent'){
+      sendBtn = '<button class="table-action-btn" onclick="unsendPayroll(\''+p.id+'\')" style="border-color:#e57373;color:#e57373">전송 취소</button>';
+    } else {
+      var btnLabel = status==='sent_modified' ? '📤 재전송' : '📤 전송';
+      var btnStyle = status==='sent_modified'
+        ? 'background:#e65100;color:white;border-color:#e65100;font-weight:600'
+        : 'background:#2e7d32;color:white;border-color:#2e7d32;font-weight:600';
+      sendBtn = '<button class="table-action-btn" onclick="sendPayroll(\''+p.id+'\')" style="'+btnStyle+'">'+btnLabel+'</button>';
+    }
+    return '<div class="payroll-list-item" style="'+(status==='sent_modified'?'border-color:#e65100;':'')+'">'
+      +'<div>'
+      +'<div style="font-weight:600;font-size:0.95rem">'+(p.teacherName||p.teacherId)
+      +' <span class="payroll-badge">'+p.month+'</span>'
+      +badgeHtml+'</div>'
+      +'<div class="payroll-list-meta">수업 '+(p.rows?p.rows.length:0)+'건 · 공제 '+fmtMoney(p.deductTotal)+'원</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:12px">'
+      +'<div class="payroll-list-amount">실지급 '+fmtMoney(p.finalAmount)+'원</div>'
+      +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+      +'<button class="table-action-btn" onclick="viewPayrollDetail(\''+p.id+'\')">상세보기</button>'
+      +'<button class="table-action-btn" onclick="openPayrollForm(\''+p.id+'\')">편집</button>'
+      +sendBtn
+      +'<button class="table-action-btn danger" onclick="deletePayroll(\''+p.id+'\')">삭제</button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+// 저장 + 바로 전송 (한 번에)
+function saveAndSendPayroll(){
+  // savePayroll 내부 alert를 우회해서 조용히 저장 후 전송
+  var teacherId=document.getElementById('pr_teacher').value;
+  var month=document.getElementById('pr_month').value;
+  if(!teacherId){ alert('강사를 선택해주세요.'); return; }
+  if(!month){ alert('지급월을 선택해주세요.'); return; }
+  var teachers=DB.get('teachers',[]);
+  var teacher=teachers.find(function(t){return t.id===teacherId;});
+  var tbody=document.getElementById('payrollRowsBody');
+  var rows=[], subtotal=0;
+  tbody.querySelectorAll('tr').forEach(function(tr){
+    var inputs=tr.querySelectorAll('input');
+    var date=inputs[0].value, day=inputs[1].value;
+    var hours=parseFloat(inputs[2].value)||0;
+    var amount=parseMoney(inputs[3].value);
+    var note=inputs[4].value;
+    if(date||hours||amount){ rows.push({date:date,day:day,hours:hours,amount:amount,note:note}); }
+    subtotal+=amount;
+  });
+  var deducts=[], deductTotal=0;
+  document.querySelectorAll('#payrollDeductWrap .payroll-deduct-row').forEach(function(row){
+    var inputs=row.querySelectorAll('input');
+    if(inputs.length>=2){
+      var lbl=inputs[0].value, amt=parseMoney(inputs[1].value);
+      if(lbl){ deducts.push({label:lbl,amount:amt}); deductTotal+=amt; }
+    }
+  });
+  var finalAmount=subtotal-deductTotal;
+  var memo=document.getElementById('pr_memo').value;
+  var editId=document.getElementById('payrollFormWrap').dataset.editId;
+  var payrolls=DB.get('payrolls',[]);
+  var now=new Date().toISOString();
+  if(editId){
+    var idx=payrolls.findIndex(function(p){return p.id===editId;});
+    if(idx>=0){
+      payrolls[idx]=Object.assign({},payrolls[idx],{teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'sent',sentAt:now,updatedAt:now});
+    }
+  } else {
+    payrolls.push({id:'pr_'+Date.now(),teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'sent',sentAt:now,createdAt:now});
+  }
+  DB.set('payrolls',payrolls);
+  closePayrollForm();
+  renderAdminPayrollList();
+  alert('강사 포털에 급여명세서를 전송했습니다.');
+}
+
+// 전송: status를 'sent'로 변경 → 강사 포털에서 확인 가능
+function sendPayroll(id){
+  var payrolls=DB.get('payrolls',[]);
+  var idx=payrolls.findIndex(function(p){return p.id===id;});
+  if(idx<0) return;
+  payrolls[idx].status='sent';
+  payrolls[idx].sentAt=new Date().toISOString();
+  DB.set('payrolls',payrolls);
+  alert('강사 포털에 급여명세서를 전송했습니다.');
+  renderAdminPayrollList();
+}
+
+// 전송 취소: status를 'draft'로 되돌림 → 강사 포털에서 숨김
+function unsendPayroll(id){
+  if(!confirm('전송을 취소하면 강사 포털에서 해당 명세서가 숨겨집니다.\n계속하시겠습니까?')) return;
+  var payrolls=DB.get('payrolls',[]);
+  var idx=payrolls.findIndex(function(p){return p.id===id;});
+  if(idx<0) return;
+  payrolls[idx].status='draft';
+  delete payrolls[idx].sentAt;
+  DB.set('payrolls',payrolls);
+  alert('전송이 취소되었습니다.');
+  renderAdminPayrollList();
+}
+
+function deletePayroll(id){
+  if(!confirm('삭제하시겠습니까?')) return;
+  DB.set('payrolls', DB.get('payrolls',[]).filter(function(p){return p.id!==id;}));
+  renderAdminPayrollList();
+}
+
+function viewPayrollDetail(id){
+  var payrolls=DB.get('payrolls',[]);
+  var pr=payrolls.find(function(p){return p.id===id;});
+  if(!pr) return;
+  showPayrollModal(pr);
+}
+
+function showPayrollModal(pr){
+  var modal=document.getElementById('payrollModal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='payrollModal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
+    modal.onclick=function(e){if(e.target===modal)modal.remove();};
+    document.body.appendChild(modal);
+  }
+  var totalHours=(pr.rows||[]).reduce(function(s,r){return s+(parseFloat(r.hours)||0);},0);
+  var rowsHtml=(pr.rows||[]).map(function(r){
+    return '<tr>'+
+      '<td style="padding:5px 8px;border:1px solid #cfd8dc;text-align:center">'+r.date+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #cfd8dc;text-align:center">'+r.day+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #cfd8dc;text-align:center">'+r.hours+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #cfd8dc;text-align:right">'+fmtMoney(r.amount)+'</td>'+
+      '<td style="padding:5px 8px;border:1px solid #cfd8dc;text-align:center">'+r.note+'</td>'+
+      '</tr>';
+  }).join('');
+  var deductsHtml=(pr.deducts||[]).map(function(d){
+    return '<div style="display:flex;justify-content:space-between;padding:6px 14px;border-bottom:1px solid #eee;font-size:0.84rem"><span>'+d.label+'</span><span>'+fmtMoney(d.amount)+' 원</span></div>';
+  }).join('');
+  modal.innerHTML=
+    '<div style="background:white;border-radius:12px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.25)">'+
+    '<div style="background:#4472c4;color:white;padding:16px 20px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center">'+
+    '<span style="font-weight:700;font-size:1rem;letter-spacing:0.1em">급 여 명 세 서</span>'+
+    '<button onclick="document.getElementById(\'payrollModal\').remove()" style="background:none;border:none;color:white;font-size:1.3rem;cursor:pointer">✕</button>'+
+    '</div>'+
+    '<div style="padding:20px">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #b0bec5;border-radius:4px;margin-bottom:0">'+
+    '<div style="padding:8px 14px;border-right:1px solid #b0bec5;font-size:0.88rem"><b style="color:#1e3a5f">강사명</b>&nbsp;&nbsp;'+(pr.teacherName||pr.teacherId)+'</div>'+
+    '<div style="padding:8px 14px;font-size:0.88rem"><b style="color:#1e3a5f">지급월</b>&nbsp;&nbsp;'+pr.month+'</div>'+
+    '</div>'+
+    '<table style="width:100%;border-collapse:collapse;font-size:0.84rem">'+
+    '<thead><tr>'+
+    '<th style="background:#4472c4;color:white;padding:7px 10px;text-align:center;border:1px solid #2e5ea6">날짜</th>'+
+    '<th style="background:#4472c4;color:white;padding:7px 10px;text-align:center;border:1px solid #2e5ea6">요일</th>'+
+    '<th style="background:#4472c4;color:white;padding:7px 10px;text-align:center;border:1px solid #2e5ea6">수업시간(H)</th>'+
+    '<th style="background:#4472c4;color:white;padding:7px 10px;text-align:center;border:1px solid #2e5ea6">금액(원)</th>'+
+    '<th style="background:#4472c4;color:white;padding:7px 10px;text-align:center;border:1px solid #2e5ea6">비고</th>'+
+    '</tr></thead>'+
+    '<tbody>'+rowsHtml+'</tbody>'+
+    '<tfoot><tr>'+
+    '<td colspan="2" style="background:#4472c4;color:white;font-weight:700;text-align:center;padding:7px;border:1px solid #2e5ea6">소 계</td>'+
+    '<td style="background:#e8f0e8;font-weight:700;text-align:center;padding:7px;border:1px solid #b0c8b0">'+totalHours+'</td>'+
+    '<td colspan="2" style="background:#e8f0e8;font-weight:700;text-align:right;padding:7px;border:1px solid #b0c8b0">'+fmtMoney(pr.subtotal)+'</td>'+
+    '</tr></tfoot></table>'+
+    '<div style="background:#4472c4;color:white;font-weight:700;padding:8px 14px;font-size:0.88rem;margin-top:14px">▶ &nbsp;공제 내역</div>'+
+    '<div style="border:1px solid #cfd8dc;border-top:none">'+(deductsHtml||'<div style="padding:8px 14px;color:#999;font-size:0.84rem">공제 내역 없음</div>')+'</div>'+
+    '<div style="background:#388e3c;color:white;font-weight:700;padding:8px 14px;display:flex;justify-content:space-between">'+
+    '<span>공제 합계</span><span>'+fmtMoney(pr.deductTotal)+' 원</span></div>'+
+    '<div style="border:2px solid #4472c4;margin-top:14px;border-radius:0 0 8px 8px">'+
+    '<div style="background:#4472c4;color:white;font-weight:700;padding:8px 14px">▶ &nbsp;최종 지급액</div>'+
+    '<div style="padding:14px;font-size:1.2rem;font-weight:700;color:#2d4a2d;text-align:right">'+fmtMoney(pr.finalAmount)+' 원</div>'+
+    '</div>'+
+    (pr.memo?'<div style="margin-top:12px;padding:10px 14px;background:#f7f9f6;border-radius:6px;font-size:0.84rem;color:#555">📝 '+pr.memo+'</div>':'')+
+    '</div></div>';
+}
+
+function renderTeacherPayslip(){
+  var el=document.getElementById('teacherPayslipList');
+  if(!el||!currentUser) return;
+  // sent 또는 sent_modified(수정됨)인 것만 강사에게 표시
+  var payrolls=DB.get('payrolls',[]).filter(function(p){
+    return p.teacherId===currentUser.id && (p.status==='sent' || p.status==='sent_modified');
+  }).sort(function(a,b){return b.month.localeCompare(a.month);});
+  if(!payrolls.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">발급된 급여명세서가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML=payrolls.map(function(p){
+    var modifiedBadge = p.status==='sent_modified'
+      ? '<span style="display:inline-block;background:#e65100;color:white;font-size:0.65rem;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:8px">수정 중 (미확정)</span>'
+      : '';
+    return '<div class="payroll-view-card" style="'+(p.status==='sent_modified'?'border:1px solid #e65100;':'')+'">'
+      +'<div class="payroll-view-header" style="'+(p.status==='sent_modified'?'background:#e65100;':'')+'">'
+      +'<div>'
+      +'<div class="payroll-view-title">급 여 명 세 서 &nbsp;— '+p.month+modifiedBadge+'</div>'
+      +'<div class="payroll-view-meta">수업 '+(p.rows?p.rows.length:0)+'건 · 공제 '+fmtMoney(p.deductTotal)+'원'
+      +(p.sentAt?' · '+p.sentAt.slice(0,10)+' 발급':'')+' </div>'
+      +'</div>'
+      +'<div>'
+      +'<div style="font-size:1.1rem;font-weight:700">실지급 '+fmtMoney(p.finalAmount)+'원</div>'
+      +'<button onclick="viewPayrollDetail(\''+p.id+'\')" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;border-radius:5px;padding:4px 12px;font-size:0.78rem;cursor:pointer;margin-top:6px">상세보기</button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+function initPayrollAdminTab(){
+  var teachers=DB.get('teachers',[]);
+  var tSel=document.getElementById('payrollTeacherFilter');
+  if(tSel){
+    tSel.innerHTML='<option value="">전체 강사</option>'+
+      teachers.map(function(t){return '<option value="'+t.id+'">'+t.name+'</option>';}).join('');
+  }
+  var ySel=document.getElementById('payrollYearFilter');
+  if(ySel){
+    var years=new Set();
+    DB.get('payrolls',[]).forEach(function(p){if(p.month)years.add(p.month.slice(0,4));});
+    var cur=new Date().getFullYear();
+    years.add(String(cur)); years.add(String(cur-1));
+    ySel.innerHTML='<option value="">연도 전체</option>'+
+      Array.from(years).sort(function(a,b){return b-a;}).map(function(y){return '<option value="'+y+'">'+y+'년</option>';}).join('');
+  }
+  renderAdminPayrollList();
+}
 
 /* ═══════════════════════════════════
    구글 시트 연동 (공개 데이터)

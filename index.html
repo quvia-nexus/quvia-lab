@@ -1631,6 +1631,20 @@ input, textarea, select { font-family: var(--sans); }
   padding: 8px 12px; font-size: 0.84rem; color: var(--ink2);
   white-space: pre-line; margin-bottom: 6px;
 }
+.btn-reply-toggle {
+  padding: 7px 16px;
+  background: white;
+  color: var(--g1);
+  border: 1.5px solid var(--g3);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-reply-toggle:hover {
+  background: var(--g5);
+}
 .parent-reply-edit-btn {
   font-size: 0.76rem; color: var(--ink4);
   background: none; border: 1px solid var(--border2);
@@ -6163,21 +6177,86 @@ function renderEduLogs(){
   const logs=DB.get('edulogs',[]).filter(l=>l.teacher===currentUser.id);
   const el=document.getElementById('eduLogList');
   if(!el) return;
-  el.innerHTML=logs.length?logs.map((l,i)=>`
-    <div class="edu-log-item" id="elog_${l.id}">
+  const students=DB.get('students',[]);
+  const stuMap={};
+  students.forEach(s=>stuMap[s.id]=s.name);
+
+  if(!logs.length){
+    el.innerHTML='<div style="color:var(--ink4)">작성한 교육일지가 없습니다.</div>';
+    return;
+  }
+
+  el.innerHTML=logs.map((l,i)=>{
+    const ym=(l.date||'').slice(0,7);
+    const targetSids=l.students||[];
+
+    // 학생별 피드백 수집
+    const fbList=targetSids.map(sid=>{
+      const fbKey='fb_'+sid+'_'+ym;
+      const fb=DB.get(fbKey,null);
+      const name=stuMap[sid]||sid;
+      if(!fb||(!fb.confirmed&&!fb.reply)) return {name,status:'pending',fb:null};
+      if(fb.reply) return {name,status:'replied',fb};
+      return {name,status:'confirmed',fb};
+    });
+
+    const confirmedCnt=fbList.filter(f=>f.status!=='pending').length;
+    const repliedCnt=fbList.filter(f=>f.status==='replied').length;
+    const total=fbList.length;
+
+    // 요약 뱃지
+    const summaryHtml=total===0?''
+      :`<span class="feedback-badge ${confirmedCnt===0?'pending':repliedCnt>0?'replied':'confirmed'}">
+          ${confirmedCnt===0?`⏳ 미확인 ${total}명`
+            :repliedCnt>0?`💬 답장 ${repliedCnt}명 / 확인 ${confirmedCnt}명`
+            :`✅ 확인 ${confirmedCnt}/${total}명`}
+        </span>`;
+
+    // 학생별 상세 피드백 (펼침)
+    const fbDetailHtml=fbList.map(f=>{
+      const badgeCls=f.status==='replied'?'replied':f.status==='confirmed'?'confirmed':'pending';
+      const label=f.status==='replied'?'💬 답장있음':f.status==='confirmed'?'✅ 확인완료':'⏳ 미확인';
+      return `<div style="padding:6px 0;border-bottom:1px dashed var(--border);last-child:border:none">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:0.82rem;font-weight:500;min-width:60px">${f.name}</span>
+          <span class="feedback-badge ${badgeCls}">${label}</span>
+          ${f.fb&&f.fb.confirmedAt?`<span style="font-size:0.72rem;color:var(--ink4)">${f.fb.confirmedAt.slice(0,10)} 확인</span>`:''}
+        </div>
+        ${f.fb&&f.fb.reply
+          ?`<div class="admin-feedback-reply-box" style="margin-top:4px">💬 "${f.fb.reply.replace(/\n/g,' ')}"
+              <span style="font-size:0.72rem;color:#5c7bb5;margin-left:8px">${f.fb.repliedAt?f.fb.repliedAt.slice(0,10):''}</span>
+            </div>`:''}
+      </div>`;
+    }).join('');
+
+    const detailId='telog_fb_'+l.id;
+
+    return `<div class="edu-log-item" id="elog_${l.id}">
       <div class="edu-log-header">
-        <span class="edu-log-date">${l.date}</span>
-        <span class="edu-log-class">${l.cls}</span>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="edu-log-date">${l.date}</span>
+          <span class="edu-log-class">${l.cls}</span>
+          ${summaryHtml}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="table-action-btn" onclick="editEduLog(${l.id})">편집</button>
           <button class="table-action-btn danger" onclick="deleteEduLog(${l.id})">삭제</button>
         </div>
       </div>
       <div class="edu-log-content" id="elog_content_${l.id}">${l.content}</div>
       ${l.note?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:6px">특이사항: <span id="elog_note_${l.id}">${l.note}</span></div>`:''}
-      <div style="font-size:0.75rem;color:var(--ink4);margin-top:4px">대상: ${(l.students||[]).length}명</div>
-    </div>`).join('')
-    :'<div style="color:var(--ink4)">작성한 교육일지가 없습니다.</div>';
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+        <span style="font-size:0.75rem;color:var(--ink4)">대상: ${targetSids.map(sid=>stuMap[sid]||sid).join(', ')||'-'} (${total}명)</span>
+        ${total>0?`<button onclick="toggleFbDetail('${detailId}')"
+          style="font-size:0.74rem;color:var(--g2);background:none;border:1px solid var(--border2);border-radius:4px;padding:2px 9px;cursor:pointer">
+          📋 학부모 확인 현황
+        </button>`:''}
+      </div>
+      ${total>0?`<div id="${detailId}" style="display:none;margin-top:8px;border:1px solid var(--border);border-radius:6px;padding:8px 12px;background:#fafbfa">
+        ${fbDetailHtml}
+      </div>`:''}
+    </div>`;
+  }).join('');
 }
 function editEduLog(id){
   const logs=DB.get('edulogs',[]);
@@ -6292,21 +6371,33 @@ function renderStudentClassLogs(){
       </div>`).join('');
 
     // 학부모 확인/답장 UI
+    const key=ym.replace('-','_');
     const confirmBtnHtml=fb.confirmed
       ?`<button class="btn-confirm-done confirmed" disabled>✅ 확인완료</button>
         <span class="confirm-status-text">${fb.confirmedAt?fb.confirmedAt.slice(0,10)+' 확인':''}</span>`
       :`<button class="btn-confirm-done" onclick="parentConfirm('${ym}')">확인완료</button>
         <span class="confirm-status-text">읽으신 후 확인 버튼을 눌러주세요</span>`;
 
-    const replyHtml=fb.reply
-      ?`<div class="parent-reply-done">${fb.reply}</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+    // 답장 영역: 이미 작성된 경우 내용 표시 + 수정/답장쓰기 버튼
+    const replyAreaHtml=fb.reply
+      ?`<div class="parent-reply-done">${fb.reply.replace(/\n/g,'<br>')}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
           <span style="font-size:0.75rem;color:var(--ink4)">${fb.repliedAt?fb.repliedAt.slice(0,10)+' 작성':''}</span>
-          <button class="parent-reply-edit-btn" onclick="parentReplyEdit('${ym}')">수정</button>
+          <button class="parent-reply-edit-btn" onclick="parentToggleReplyForm('${ym}')">✏️ 수정</button>
+        </div>
+        <div id="replyForm_${key}" style="display:none;margin-top:10px">
+          <textarea class="parent-reply-input" id="replyInput_${key}" placeholder="선생님께 전하실 말씀이 있으시면 여기에 남겨주세요. 가정에서의 변화나 응원의 한마디도 큰 힘이 됩니다 🌱">${fb.reply||''}</textarea>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn-reply-send" onclick="parentReplySend('${ym}')">수정 완료</button>
+            <button class="parent-reply-edit-btn" onclick="parentToggleReplyForm('${ym}')">취소</button>
+          </div>
         </div>`
-      :`<div id="replyForm_${ym.replace('-','_')}">
-          <textarea class="parent-reply-input" id="replyInput_${ym.replace('-','_')}" placeholder="선생님께 전하실 말씀을 남겨주세요…"></textarea>
-          <button class="btn-reply-send" onclick="parentReplySend('${ym}')">답장 보내기</button>
+      :`<div id="replyForm_${key}" style="display:none;margin-top:10px">
+          <textarea class="parent-reply-input" id="replyInput_${key}" placeholder="선생님께 전하실 말씀이 있으시면 여기에 남겨주세요. 가정에서의 변화나 응원의 한마디도 큰 힘이 됩니다 🌱"></textarea>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn-reply-send" onclick="parentReplySend('${ym}')">답장 보내기</button>
+            <button class="parent-reply-edit-btn" onclick="parentToggleReplyForm('${ym}')">취소</button>
+          </div>
         </div>`;
 
     return `<div class="classlog-month-group">
@@ -6323,8 +6414,13 @@ function renderStudentClassLogs(){
           💬 학부모 확인 &amp; 답장
         </div>
         <div class="parent-feedback-body">
-          <div class="parent-confirm-row">${confirmBtnHtml}</div>
-          <div class="parent-reply-area">${replyHtml}</div>
+          <div class="parent-confirm-row">
+            ${confirmBtnHtml}
+            <button class="btn-reply-toggle" onclick="parentToggleReplyForm('${ym}')" id="replyToggleBtn_${key}">
+              ${fb.reply?'💬 답장 보기':'✏️ 답장쓰기'}
+            </button>
+          </div>
+          <div class="parent-reply-area">${replyAreaHtml}</div>
         </div>
       </div>
     </div>`;
@@ -6360,32 +6456,17 @@ function parentReplySend(ym){
   renderStudentClassLogs();
 }
 
-// 학부모 답장 수정 (텍스트 영역 재표시)
-function parentReplyEdit(ym){
-  if(!currentUser) return;
-  const fbKey='fb_'+currentUser.id+'_'+ym;
-  const fb=DB.get(fbKey,null)||{};
+// 답장쓰기 토글 (버튼 클릭 시 폼 열기/닫기)
+function parentToggleReplyForm(ym){
   const key=ym.replace('-','_');
-  // 해당 answer div를 form으로 교체
-  const replyArea=document.querySelector(`[data-reply-area="${ym}"]`);
-  // 가장 간단하게: 전체 재렌더 대신 해당 영역만 교체
-  const allAreas=document.querySelectorAll('.parent-reply-area');
-  allAreas.forEach(area=>{
-    if(area.innerHTML.includes('replyInput_'+key)||area.innerHTML.includes('parent-reply-done')){
-      // 이 월의 답장 영역 찾기
-      if(area.closest('.classlog-month-group')&&
-         area.closest('.classlog-month-group').querySelector('.classlog-month-label').textContent.includes(
-           ym.split('-')[0]+'년 '+parseInt(ym.split('-')[1])+'월'
-         )){
-        area.innerHTML=`<div id="replyForm_${key}">
-          <textarea class="parent-reply-input" id="replyInput_${key}">${fb.reply||''}</textarea>
-          <button class="btn-reply-send" onclick="parentReplySend('${ym}')">수정 완료</button>
-        </div>`;
-      }
-    }
-  });
-  // fallback: 전체 재렌더
-  if(!document.getElementById('replyInput_'+key)) renderStudentClassLogs();
+  const form=document.getElementById('replyForm_'+key);
+  if(!form) return;
+  const isOpen=form.style.display!=='none';
+  form.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    const inp=document.getElementById('replyInput_'+key);
+    if(inp) inp.focus();
+  }
 }
 
 /* ═══ 탐구보고서 편집 기능 ═══ */

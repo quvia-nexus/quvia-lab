@@ -7252,7 +7252,7 @@ function calcPayroll(){
   });
   var thEl=document.getElementById('pr_total_hours');
   var stEl=document.getElementById('pr_subtotal');
-  if(thEl) thEl.textContent = totalHours;
+  if(thEl) thEl.textContent = parseFloat(totalHours.toFixed(10));
   if(stEl) stEl.textContent = fmtMoney(subtotal);
   var deductTotal=0;
   document.querySelectorAll('#payrollDeductWrap .payroll-deduct-row').forEach(function(row){
@@ -7461,7 +7461,7 @@ function showPayrollModal(pr){
     modal.onclick=function(e){if(e.target===modal)modal.remove();};
     document.body.appendChild(modal);
   }
-  var totalHours=(pr.rows||[]).reduce(function(s,r){return s+(parseFloat(r.hours)||0);},0);
+  var totalHours=parseFloat((pr.rows||[]).reduce(function(s,r){return s+(parseFloat(r.hours)||0);},0).toFixed(10));
   var rowsHtml=(pr.rows||[]).map(function(r){
     return '<tr>'+
       '<td style="padding:5px 8px;border:1px solid #cfd8dc;text-align:center">'+r.date+'</td>'+

@@ -4375,9 +4375,6 @@ input, textarea, select { font-family: var(--sans); }
 </footer>
 
 <script type="module">
-/* ═══════════════════════════════════
-   Firebase 초기화
-═══════════════════════════════════ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -4392,34 +4389,40 @@ const firebaseConfig = {
 const _fbApp = initializeApp(firebaseConfig);
 const _db = getFirestore(_fbApp);
 
+// Firebase 함수들을 window에 등록해서 일반 스크립트에서 접근 가능하게
+window._fbSetDoc = (k, v) => setDoc(doc(_db,'quvia',k), {value: v}).catch(e=>console.error('FB write:',e));
+window._fbGetAll = async () => {
+  const keys = ['students','teachers','classes','payrolls','awards','news','works','gallery','notices','edulogs','consultlogs'];
+  let synced = 0;
+  for(const k of keys){
+    try {
+      const snap = await getDoc(doc(_db,'quvia',k));
+      if(snap.exists()){
+        localStorage.setItem('qv_'+k, JSON.stringify(snap.data().value));
+        synced++;
+      }
+    } catch(e){ console.warn('FB read err:',k,e); }
+  }
+  return synced;
+};
+window._fbReady = true;
+window.dispatchEvent(new Event('fbReady'));
+</script>
+
+<script>
 /* ═══════════════════════════════════
-   DB (Firebase Firestore + localStorage 캐시)
-   - 읽기: Firestore 우선, 실패시 localStorage
-   - 쓰기: Firestore + localStorage 동시 저장
+   DB (localStorage + Firebase)
 ═══════════════════════════════════ */
 const DB = {
-  get: (k, d=[]) => {
-    try { const v=localStorage.getItem('qv_'+k); return v?JSON.parse(v):d; } catch { return d; }
+  get:(k,d=[])=>{try{const v=localStorage.getItem('qv_'+k);return v?JSON.parse(v):d;}catch{return d;}},
+  set:(k,v)=>{
+    try{localStorage.setItem('qv_'+k,JSON.stringify(v));}catch(e){console.error(e);}
+    if(window._fbSetDoc) window._fbSetDoc(k,v);
+    else window.addEventListener('fbReady',()=>window._fbSetDoc(k,v),{once:true});
   },
-  set: (k, v) => {
-    try { localStorage.setItem('qv_'+k, JSON.stringify(v)); } catch(e) { console.error(e); }
-    setDoc(doc(_db,'quvia',k), {value: v}).catch(e=>console.error('FB write err:',e));
-  },
-  // Firestore에서 모든 데이터 동기화
-  syncFromCloud: async () => {
-    const keys = ['students','teachers','classes','payrolls','awards','news','works','gallery','notices','edulogs','consultlogs'];
-    let synced = 0;
-    for(const k of keys){
-      try {
-        const snap = await getDoc(doc(_db,'quvia',k));
-        if(snap.exists()){
-          const v = snap.data().value;
-          localStorage.setItem('qv_'+k, JSON.stringify(v));
-          synced++;
-        }
-      } catch(e){ console.warn('FB read err:',k,e); }
-    }
-    return synced;
+  syncFromCloud: async ()=>{
+    if(window._fbGetAll) return await window._fbGetAll();
+    return new Promise(res=>window.addEventListener('fbReady',async()=>res(await window._fbGetAll()),{once:true}));
   }
 };
 

@@ -7837,19 +7837,9 @@ function loadFromSheets() {
   }
 })();
 
-document.addEventListener('DOMContentLoaded', async ()=>{
+document.addEventListener('DOMContentLoaded', ()=>{
   initData();
-  // Firebase에서 최신 데이터 동기화
-  try {
-    const synced = await DB.syncFromCloud();
-    if(synced > 0) {
-      console.log('Firebase 동기화 완료:', synced+'개 항목');
-      renderAdminDashboard && renderAdminDashboard();
-    }
-  } catch(e){ console.warn('Firebase 동기화 실패 (오프라인?)', e); }
-
   loadFromSheets();
-  // 프로그램 트랙 초기 활성화
   const initTrack=document.getElementById('track-lv1');
   if(initTrack) initTrack.classList.add('active-lv');
   renderMain();
@@ -7867,6 +7857,22 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   }
   window.addEventListener('scroll', updateNav, {passive:true});
   updateNav();
+
+  // Firebase 준비 후 클라우드 동기화 (module 스크립트보다 늦게 실행될 수 있으므로 이벤트로 처리)
+  const doSync = async () => {
+    try {
+      const synced = await DB.syncFromCloud();
+      if(synced > 0){
+        console.log('Firebase 동기화 완료:', synced+'개 항목');
+        if(typeof renderAdminDashboard==='function') renderAdminDashboard();
+        if(typeof renderTeacherPortal==='function') renderTeacherPortal();
+        if(typeof renderTeacherPayslip==='function') renderTeacherPayslip();
+        if(typeof renderAdminPayrollList==='function') renderAdminPayrollList();
+      }
+    } catch(e){ console.warn('Firebase 동기화 실패:', e); }
+  };
+  if(window._fbReady) doSync();
+  else window.addEventListener('fbReady', doSync, {once:true});
 });
 </script>
 </body>

@@ -4374,14 +4374,53 @@ input, textarea, select { font-family: var(--sans); }
   </div>
 </footer>
 
-<script>
+<script type="module">
 /* ═══════════════════════════════════
-   DB (localStorage)
+   Firebase 초기화
+═══════════════════════════════════ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCu3LVdeQbdxSL1mq3NM_DUpuMe9wRv-1Q",
+  authDomain: "quvia-lab.firebaseapp.com",
+  projectId: "quvia-lab",
+  storageBucket: "quvia-lab.firebasestorage.app",
+  messagingSenderId: "903924466655",
+  appId: "1:903924466655:web:7650922b063723212a7a6a"
+};
+const _fbApp = initializeApp(firebaseConfig);
+const _db = getFirestore(_fbApp);
+
+/* ═══════════════════════════════════
+   DB (Firebase Firestore + localStorage 캐시)
+   - 읽기: Firestore 우선, 실패시 localStorage
+   - 쓰기: Firestore + localStorage 동시 저장
 ═══════════════════════════════════ */
 const DB = {
-  get:(k,d=[])=>{try{const v=localStorage.getItem('qv_'+k);return v?JSON.parse(v):d;}catch{return d;}},
-  // cardnews 기본값
-  set:(k,v)=>{try{localStorage.setItem('qv_'+k,JSON.stringify(v));}catch(e){console.error(e);}}
+  get: (k, d=[]) => {
+    try { const v=localStorage.getItem('qv_'+k); return v?JSON.parse(v):d; } catch { return d; }
+  },
+  set: (k, v) => {
+    try { localStorage.setItem('qv_'+k, JSON.stringify(v)); } catch(e) { console.error(e); }
+    setDoc(doc(_db,'quvia',k), {value: v}).catch(e=>console.error('FB write err:',e));
+  },
+  // Firestore에서 모든 데이터 동기화
+  syncFromCloud: async () => {
+    const keys = ['students','teachers','classes','payrolls','awards','news','works','gallery','notices','edulogs','consultlogs'];
+    let synced = 0;
+    for(const k of keys){
+      try {
+        const snap = await getDoc(doc(_db,'quvia',k));
+        if(snap.exists()){
+          const v = snap.data().value;
+          localStorage.setItem('qv_'+k, JSON.stringify(v));
+          synced++;
+        }
+      } catch(e){ console.warn('FB read err:',k,e); }
+    }
+    return synced;
+  }
 };
 
 /* ═══════════════════════════════════
@@ -5897,7 +5936,7 @@ function adminSaveConsultLog(id){
 
 /* 데이터 내보내기/가져오기 */
 function exportData(){
-  const data={students:DB.get('students',[]),teachers:DB.get('teachers',[]),awards:DB.get('awards',[]),news:DB.get('news',[]),works:DB.get('works',[]),gallery:DB.get('gallery',[]),notices:DB.get('notices',[]),edulogs:DB.get('edulogs',[]),consultlogs:DB.get('consultlogs',[])};
+  const data={students:DB.get('students',[]),teachers:DB.get('teachers',[]),classes:DB.get('classes',[]),payrolls:DB.get('payrolls',[]),awards:DB.get('awards',[]),news:DB.get('news',[]),works:DB.get('works',[]),gallery:DB.get('gallery',[]),notices:DB.get('notices',[]),edulogs:DB.get('edulogs',[]),consultlogs:DB.get('consultlogs',[])};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='quvia_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();
 }
@@ -5906,7 +5945,6 @@ function importData(input){
   const reader=new FileReader();
   reader.onload=function(e){
     var text=e.target.result||'';
-    // BOM 제거
     if(text.charCodeAt(0)===0xFEFF) text=text.slice(1);
     text=text.trim();
     var data;
@@ -5921,7 +5959,6 @@ function importData(input){
     var keys=Object.keys(data);
     if(!confirm('데이터를 불러옵니까?\n항목: '+keys.join(', '))){return;}
     keys.forEach(function(k){ DB.set(k,data[k]); });
-    if(!data.classes) DB.set('classes',[]);
     alert('가져오기 완료! '+keys.length+'개 항목 로드됨');
     renderAdminDashboard();
   };
@@ -7797,8 +7834,17 @@ function loadFromSheets() {
   }
 })();
 
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
   initData();
+  // Firebase에서 최신 데이터 동기화
+  try {
+    const synced = await DB.syncFromCloud();
+    if(synced > 0) {
+      console.log('Firebase 동기화 완료:', synced+'개 항목');
+      renderAdminDashboard && renderAdminDashboard();
+    }
+  } catch(e){ console.warn('Firebase 동기화 실패 (오프라인?)', e); }
+
   loadFromSheets();
   // 프로그램 트랙 초기 활성화
   const initTrack=document.getElementById('track-lv1');

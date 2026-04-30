@@ -5018,6 +5018,14 @@ function doTeacherLogin(){
   currentUser=t; currentRole='teacher';
   updateNavUserUI();
   showPage('teacher');
+  // 로그인 시 Firebase 최신 데이터 동기화 후 포털 갱신
+  DB.syncFromCloud().then(function(){
+    // 동기화 후 currentUser 정보도 최신 teachers에서 갱신
+    var fresh=DB.get('teachers',[]).find(function(x){return x.id===id;});
+    if(fresh) currentUser=fresh;
+    if(typeof renderTeacherPortal==='function') renderTeacherPortal();
+    if(typeof renderTeacherPayslip==='function') renderTeacherPayslip();
+  }).catch(function(){});
 }
 
 function doAdminLogin(){
@@ -5030,6 +5038,10 @@ function doAdminLogin(){
     const rb=document.getElementById('adminReturnBtn');
     if(rb) rb.style.display='block';
     showPage('admin');
+    // 로그인 시 Firebase 최신 데이터 동기화 후 관리자 화면 갱신
+    DB.syncFromCloud().then(function(){
+      if(typeof renderAdminDashboard==='function') renderAdminDashboard();
+    }).catch(function(){});
   } else {
     document.getElementById('adminLoginErr').classList.add('show');
   }

@@ -4474,16 +4474,8 @@ function initData(){
     DB.set('awards_ver',AWARDS_VER);
   }
 
-  // 학생 (없으면 테스트 계정)
-  if(!DB.get('students',null)){
-    DB.set('students',[
-      {id:'quvia01',pw:'1234',name:'테스트학생',school:'대구초등학교',grade:'5학년',birth:'2014-03-15',cls:'A반',level:'LV.3 Probe',slam:[false,false,false,false,false],dream:'',reports:[]}
-    ]);
-  }
-  // 강사
-  if(!DB.get('teachers',null)){
-    DB.set('teachers',[{id:'tquvia',pw:'1234',name:'테스트강사',cls:'A반'}]);
-  }
+  // 학생/강사는 Firebase에서 동기화하므로 로컬 초기화 생략
+  // (Firebase 동기화 전 localStorage가 비어있어도 덮어쓰지 않음)
   // 공지
   if(!DB.get('news',null)){
     DB.set('news',[
@@ -7850,14 +7842,7 @@ function loadFromSheets() {
 })();
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  initData();
-  loadFromSheets();
-  const initTrack=document.getElementById('track-lv1');
-  if(initTrack) initTrack.classList.add('active-lv');
-  renderMain();
-  renderCharacters();
-
-  // 네비 투명/불투명 전환 (히어로 스크롤)
+  // 네비 투명/불투명 전환 (Firebase와 무관하게 즉시 실행)
   const nav = document.getElementById('nav');
   function updateNav(){
     const mainActive = document.getElementById('page-main').classList.contains('active');
@@ -7870,18 +7855,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('scroll', updateNav, {passive:true});
   updateNav();
 
-  // Firebase 준비 후 클라우드 동기화 (module 스크립트보다 늦게 실행될 수 있으므로 이벤트로 처리)
+  // Firebase 동기화를 먼저 완료한 뒤 initData 실행 (순서 중요!)
+  // → Firebase 동기화 전에 initData가 실행되면 빈 localStorage를 기본값으로 덮어씌움
   const doSync = async () => {
     try {
-      const synced = await DB.syncFromCloud();
-      if(synced > 0){
-        console.log('Firebase 동기화 완료:', synced+'개 항목');
-        if(typeof renderAdminDashboard==='function') renderAdminDashboard();
-        if(typeof renderTeacherPortal==='function') renderTeacherPortal();
-        if(typeof renderTeacherPayslip==='function') renderTeacherPayslip();
-        if(typeof renderAdminPayrollList==='function') renderAdminPayrollList();
-      }
-    } catch(e){ console.warn('Firebase 동기화 실패:', e); }
+      await DB.syncFromCloud();
+      console.log('Firebase 동기화 완료');
+    } catch(e){ console.warn('Firebase 동기화 실패(오프라인?):', e); }
+    initData();
+    loadFromSheets();
+    const initTrack=document.getElementById('track-lv1');
+    if(initTrack) initTrack.classList.add('active-lv');
+    renderMain();
+    renderCharacters();
   };
   if(window._fbReady) doSync();
   else window.addEventListener('fbReady', doSync, {once:true});

@@ -2950,6 +2950,9 @@ input, textarea, select { font-family: var(--sans); }
       <div class="event-popup-badge" id="evPopupBadge">🎉 이벤트</div>
       <div class="event-popup-title" id="evPopupTitle"></div>
     </div>
+    <div id="evPopupImgWrap" style="display:none">
+      <img id="evPopupImg" style="width:100%;max-height:200px;object-fit:cover;display:block">
+    </div>
     <div class="event-popup-body" id="evPopupContent"></div>
     <div class="event-popup-footer">
       <button class="event-popup-btn-main" id="evPopupGoBtn" onclick="goEventNews()">자세히 보기 →</button>
@@ -4392,6 +4395,21 @@ input, textarea, select { font-family: var(--sans); }
           <div class="form-group">
             <label class="form-label">연결할 공지 제목 (선택 — 공지/소식에 등록된 글 제목과 정확히 일치)</label>
             <input class="form-input" id="ev_newsTitle" placeholder="2025년 여름방학 특강 신청 안내">
+          </div>
+          <div class="form-group">
+            <label class="form-label">이벤트 이미지 (선택 — 권장 가로 400px 이하)</label>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <label style="cursor:pointer;padding:8px 14px;background:var(--g6);border:1px solid var(--border2);border-radius:8px;font-size:0.83rem">
+                📷 이미지 선택
+                <input type="file" accept="image/*" id="ev_imgFile" style="display:none" onchange="previewEventImg(this)">
+              </label>
+              <span style="font-size:0.78rem;color:var(--ink4)">jpg/png/gif · 1MB 이하 권장</span>
+              <button type="button" class="table-action-btn" onclick="clearEventImg()" style="font-size:0.78rem">이미지 제거</button>
+            </div>
+            <div id="ev_imgPreview" style="margin-top:10px;display:none">
+              <img id="ev_imgPreviewEl" style="max-width:100%;max-height:180px;border-radius:8px;border:1px solid var(--border2)">
+            </div>
+            <input type="hidden" id="ev_img">
           </div>
           <div style="display:flex;gap:8px">
             <button class="table-action-btn primary" onclick="saveEvent()">저장</button>
@@ -8408,6 +8426,11 @@ function initEventPopup(){
   document.getElementById('evPopupBadge').textContent = _activeEvent.badge || '🎉 이벤트';
   document.getElementById('evPopupTitle').textContent = _activeEvent.title;
   document.getElementById('evPopupContent').textContent = _activeEvent.content;
+  // 이미지
+  const imgWrap = document.getElementById('evPopupImgWrap');
+  const imgEl   = document.getElementById('evPopupImg');
+  if(_activeEvent.img){ imgEl.src = _activeEvent.img; imgWrap.style.display='block'; }
+  else { imgWrap.style.display='none'; }
   const goBtn = document.getElementById('evPopupGoBtn');
   if(_activeEvent.newsTitle){ goBtn.style.display=''; }
   else { goBtn.textContent = '닫기'; goBtn.onclick = closeEventPopup; }
@@ -8471,6 +8494,8 @@ function openEventForm(){
   document.getElementById('ev_end').value='';
   document.getElementById('ev_content').value='';
   document.getElementById('ev_newsTitle').value='';
+  document.getElementById('ev_img').value='';
+  document.getElementById('ev_imgPreview').style.display='none';
   document.getElementById('eventFormTitle').textContent='이벤트 추가';
   document.getElementById('eventForm').style.display='block';
 }
@@ -8485,11 +8510,44 @@ function editEvent(i){
   document.getElementById('ev_end').value=e.end||'';
   document.getElementById('ev_content').value=e.content||'';
   document.getElementById('ev_newsTitle').value=e.newsTitle||'';
+  document.getElementById('ev_img').value=e.img||'';
+  const prev = document.getElementById('ev_imgPreview');
+  if(e.img){ document.getElementById('ev_imgPreviewEl').src=e.img; prev.style.display='block'; }
+  else { prev.style.display='none'; }
   document.getElementById('eventFormTitle').textContent='이벤트 수정';
   document.getElementById('eventForm').style.display='block';
 }
 
-function saveEvent(){
+/* 이벤트 이미지 미리보기 & Base64 압축 저장 */
+function previewEventImg(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const original = e.target.result;
+    // Canvas로 압축 (최대 가로 420px, 품질 0.75)
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 420;
+      const scale = img.width > MAX ? MAX / img.width : 1;
+      const canvas = document.createElement('canvas');
+      canvas.width  = Math.round(img.width  * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.75);
+      document.getElementById('ev_img').value = compressed;
+      document.getElementById('ev_imgPreviewEl').src = compressed;
+      document.getElementById('ev_imgPreview').style.display = 'block';
+    };
+    img.src = original;
+  };
+  reader.readAsDataURL(file);
+}
+function clearEventImg(){
+  document.getElementById('ev_img').value = '';
+  document.getElementById('ev_imgPreview').style.display = 'none';
+  document.getElementById('ev_imgFile').value = '';
+}
   try {
     const title   = document.getElementById('ev_title')?.value.trim();
     const start   = document.getElementById('ev_start')?.value;
@@ -8506,7 +8564,8 @@ function saveEvent(){
     if(start > end){ alert('종료일이 시작일보다 빠를 수 없어요.'); return; }
 
     const events = getEvents();
-    const entry  = { title, start, end, content, badge, newsTitle };
+    const entry  = { title, start, end, content, badge, newsTitle,
+                      img: document.getElementById('ev_img').value || '' };
 
     if(idxStr !== ''){
       events[parseInt(idxStr)] = entry;

@@ -2780,7 +2780,87 @@ input, textarea, select { font-family: var(--sans); }
   }
 }
 
-/* ═══ 학부모 리뷰 팝업 ═══ */
+/* ═══ 이벤트 팝업 ═══ */
+#eventPopupWrap {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#eventPopupWrap.hidden { display: none; }
+.event-popup-box {
+  background: #fff;
+  border-radius: 20px;
+  max-width: 420px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn {
+  from { opacity:0; transform:scale(0.85) translateY(20px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+.event-popup-header {
+  background: var(--g1);
+  padding: 20px 20px 16px;
+  color: #fff;
+}
+.event-popup-badge {
+  display: inline-block;
+  background: #00e06e;
+  color: #0a1a0a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+.event-popup-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+.event-popup-body {
+  padding: 18px 20px;
+  font-size: 0.9rem;
+  color: var(--ink2);
+  line-height: 1.7;
+  word-break: keep-all;
+}
+.event-popup-footer {
+  padding: 0 20px 20px;
+  display: flex;
+  gap: 10px;
+}
+.event-popup-btn-main {
+  flex: 1;
+  padding: 12px;
+  background: var(--g1);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.event-popup-btn-main:hover { background: var(--g2); }
+.event-popup-btn-close {
+  padding: 12px 16px;
+  background: var(--g6);
+  color: var(--ink3);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+</style>
 #reviewPopup {
   position: fixed;
   bottom: 24px;
@@ -2864,7 +2944,20 @@ input, textarea, select { font-family: var(--sans); }
 </head>
 <body>
 
-<!-- ═══ 학부모 리뷰 팝업 ═══ -->
+<!-- ═══ 이벤트 팝업 ═══ -->
+<div id="eventPopupWrap" class="hidden">
+  <div class="event-popup-box">
+    <div class="event-popup-header">
+      <div class="event-popup-badge" id="evPopupBadge">🎉 이벤트</div>
+      <div class="event-popup-title" id="evPopupTitle"></div>
+    </div>
+    <div class="event-popup-body" id="evPopupContent"></div>
+    <div class="event-popup-footer">
+      <button class="event-popup-btn-main" id="evPopupGoBtn" onclick="goEventNews()">자세히 보기 →</button>
+      <button class="event-popup-btn-close" onclick="closeEventPopup()">닫기</button>
+    </div>
+  </div>
+</div>
 <div id="reviewPopup" class="hidden">
   <div class="review-popup-header">
     ⭐ 학부모 리뷰
@@ -4079,6 +4172,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','notice',this)">전달사항</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','content',this)">🌐 홈페이지 콘텐츠</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','reviews',this)">⭐ 학부모 리뷰</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','events',this)">📣 이벤트 팝업</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','portfolios',this)">포트폴리오 확인</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','history',this)">수업·도전 이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','logs',this)">교육/상담일지</div>
@@ -4258,6 +4352,56 @@ input, textarea, select { font-family: var(--sans); }
           <option value="">학생 선택...</option>
         </select>
         <div id="portfolioView"></div>
+      </div>
+
+      <!-- 📣 이벤트 팝업 관리 -->
+      <div id="admin-tab-events" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">📣 이벤트 팝업 관리</div>
+          <button class="table-action-btn primary" onclick="openEventForm()">+ 이벤트 추가</button>
+        </div>
+        <p style="font-size:0.83rem;color:var(--ink4);margin-bottom:16px">
+          이벤트 기간 중 홈 화면에 팝업이 표시됩니다. 팝업 클릭 시 공지/소식 탭의 해당 게시글로 이동합니다.
+        </p>
+
+        <!-- 이벤트 추가/수정 폼 -->
+        <div id="eventForm" style="display:none;margin-bottom:16px" class="card">
+          <div style="font-weight:500;margin-bottom:12px" id="eventFormTitle">이벤트 추가</div>
+          <input type="hidden" id="ev_id">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">이벤트 제목</label>
+              <input class="form-input" id="ev_title" placeholder="여름방학 특강 할인 이벤트">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">배지 텍스트</label>
+              <input class="form-input" id="ev_badge" placeholder="🎉 이벤트" maxlength="15">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">시작일</label>
+              <input class="form-input" type="date" id="ev_start">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">종료일</label>
+              <input class="form-input" type="date" id="ev_end">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">팝업 본문 내용</label>
+            <textarea class="form-input form-textarea" id="ev_content" rows="3" placeholder="7월 특강 등록 시 10% 할인! 자세한 내용을 확인해보세요."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">연결할 공지 제목 (선택 — 공지/소식에 등록된 글 제목과 정확히 일치)</label>
+            <input class="form-input" id="ev_newsTitle" placeholder="2025년 여름방학 특강 신청 안내">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="table-action-btn primary" onclick="saveEvent()">저장</button>
+            <button class="table-action-btn" onclick="document.getElementById('eventForm').style.display='none'">취소</button>
+          </div>
+        </div>
+
+        <!-- 이벤트 목록 -->
+        <div id="eventList"></div>
       </div>
 
       <!-- 수업·도전 이력 (관리자) -->
@@ -4574,7 +4718,13 @@ const _db = getFirestore(_fbApp);
 // Firebase 함수들을 window에 등록해서 일반 스크립트에서 접근 가능하게
 window._fbSetDoc = (k, v) => setDoc(doc(_db,'quvia',k), {value: v}).catch(e=>console.error('FB write:',e));
 window._fbGetAll = async () => {
-  const keys = ['students','teachers','classes','payrolls','awards','news','works','gallery','notices','edulogs','consultlogs'];
+  const keys = [
+    'students','teachers','classes','payrolls',
+    'awards','news','works','gallery',
+    'notices','edulogs','consultlogs',
+    'reviews','reviewPopupOn',
+    'eventPopups','histories'
+  ];
   let synced = 0;
   for(const k of keys){
     try {
@@ -4677,6 +4827,7 @@ function initData(){
    로그인 상태
 ═══════════════════════════════════ */
 let currentUser=null, currentRole=null;
+let _currentAdminTab=null, _currentTeacherTab=null, _currentStudentTab=null;
 
 function updateNavUserUI(){
   const info=document.getElementById('navUserInfo');
@@ -5374,14 +5525,33 @@ function renderAdminTab(tab){
     awards:renderAdminAwards,
     works:renderAdminWorks,
     gallery:renderAdminGallery,
-    content:()=>{},  // 링크 버튼만 있어서 렌더 불필요
+    content:()=>{},
     reviews:renderAdminReviews,
     portfolios:renderPortfolioSelect,
     history:renderAdminHistoryTab,
     logs:renderAdminLogs,
-    dashboard:renderAdminDashboard
+    dashboard:renderAdminDashboard,
+    payroll:renderAdminPayrollTab,
+    events:renderAdminEvents
   };
   if(renders[tab]) renders[tab]();
+}
+
+// Firebase 동기화 후 현재 강사 탭 재렌더링용
+function renderTeacherTab(tab){
+  if(tab==='notice')   renderTeacherNotices();
+  if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
+  if(tab==='consult')  renderConsultLogs();
+  if(tab==='students') renderTeacherStudents();
+  if(tab==='payslip')  renderTeacherPayslip();
+}
+
+// Firebase 동기화 후 현재 학생 탭 재렌더링용
+function renderStudentTab(tab){
+  if(tab==='classlog') renderStudentClassLogs();
+  if(tab==='awards')   renderStudentAwards();
+  if(tab==='history')  renderStudentHistory();
+  if(tab==='pdf')      renderPdfTabBtn();
 }
 
 /* 학생 관리 */
@@ -7229,6 +7399,10 @@ function switchPortalTab(portal, tab, el){
   const t=document.getElementById(`${portal}-tab-${tab}`);
   if(t) t.classList.add('active');
   if(el) el.classList.add('active');
+  // 현재 열린 탭 추적 (Firebase 동기화 후 재렌더링용)
+  if(portal==='admin') _currentAdminTab=tab;
+  if(portal==='teacher') _currentTeacherTab=tab;
+  if(portal==='student') _currentStudentTab=tab;
   // 관리자 탭
   if(portal==='admin') renderAdminTab(tab);
   // 학생 탭
@@ -8190,6 +8364,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     try {
       await DB.syncFromCloud();
       console.log('Firebase 동기화 완료');
+      // 동기화 완료 후 현재 열린 포털 탭 자동 재렌더링
+      // → PC에서 저장한 데이터가 모바일에서도 바로 보임
+      if(currentRole === 'admin' && _currentAdminTab) renderAdminTab(_currentAdminTab);
+      else if(currentRole === 'teacher' && _currentTeacherTab) renderTeacherTab(_currentTeacherTab);
+      else if(currentRole === 'student' && _currentStudentTab) renderStudentTab(_currentStudentTab);
+      // 리뷰 팝업 & 이벤트 팝업 재초기화
+      initReviewPopup();
+      initEventPopup();
     } catch(e){ console.warn('Firebase 동기화 실패(오프라인?):', e); }
     initData();
     loadFromSheets();
@@ -8207,6 +8389,139 @@ document.addEventListener('DOMContentLoaded', ()=>{
 ═══════════════════════════════════ */
 let _reviewIdx = 0;
 let _reviewTimer = null;
+
+/* ═══════════════════════════════════
+   이벤트 팝업
+═══════════════════════════════════ */
+function getEvents(){ return DB.get('eventPopups',[]); }
+
+let _activeEvent = null;
+
+function initEventPopup(){
+  const today = new Date().toISOString().slice(0,10);
+  const events = getEvents();
+  _activeEvent = events.find(e => e.start <= today && today <= e.end) || null;
+  const wrap = document.getElementById('eventPopupWrap');
+  if(!wrap) return;
+  if(!_activeEvent){ wrap.classList.add('hidden'); return; }
+  document.getElementById('evPopupBadge').textContent = _activeEvent.badge || '🎉 이벤트';
+  document.getElementById('evPopupTitle').textContent = _activeEvent.title;
+  document.getElementById('evPopupContent').textContent = _activeEvent.content;
+  const goBtn = document.getElementById('evPopupGoBtn');
+  if(_activeEvent.newsTitle){ goBtn.style.display=''; }
+  else { goBtn.textContent = '닫기'; goBtn.onclick = closeEventPopup; }
+  wrap.classList.remove('hidden');
+}
+
+function closeEventPopup(){
+  document.getElementById('eventPopupWrap').classList.add('hidden');
+}
+
+function goEventNews(){
+  closeEventPopup();
+  showPage('news');
+  // 해당 공지 제목 하이라이트
+  setTimeout(()=>{
+    if(!_activeEvent?.newsTitle) return;
+    const items = document.querySelectorAll('.news-item-title, .news-title');
+    items.forEach(el=>{
+      if(el.textContent.includes(_activeEvent.newsTitle)){
+        el.closest('[class*="news"]')?.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    });
+  }, 400);
+}
+
+/* 관리자 — 이벤트 탭 */
+function renderAdminEvents(){
+  const events = getEvents();
+  const today = new Date().toISOString().slice(0,10);
+  const list = document.getElementById('eventList');
+  if(!list) return;
+  if(!events.length){
+    list.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">등록된 이벤트가 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = events.map((e,i)=>{
+    const active = e.start <= today && today <= e.end;
+    return `<div class="edu-log-item" style="margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;${active?'border-left:3px solid #00e06e;':''}">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:10px;background:${active?'#e8f5e9':'#f5f5f5'};color:${active?'#2d7a2d':'#888'}">${active?'🟢 진행중':'⚫ 비활성'}</span>
+          <strong>${e.badge||''} ${e.title}</strong>
+        </div>
+        <div style="font-size:0.8rem;color:var(--ink4);margin-bottom:4px">기간: ${e.start} ~ ${e.end}</div>
+        <div style="font-size:0.85rem;color:var(--ink2)">${e.content}</div>
+        ${e.newsTitle?`<div style="font-size:0.78rem;color:var(--g3);margin-top:4px">📎 연결 공지: ${e.newsTitle}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="table-action-btn" onclick="editEvent(${i})">편집</button>
+        <button class="table-action-btn danger" onclick="deleteEvent(${i})">삭제</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEventForm(){
+  document.getElementById('ev_id').value='';
+  document.getElementById('ev_title').value='';
+  document.getElementById('ev_badge').value='🎉 이벤트';
+  document.getElementById('ev_start').value='';
+  document.getElementById('ev_end').value='';
+  document.getElementById('ev_content').value='';
+  document.getElementById('ev_newsTitle').value='';
+  document.getElementById('eventFormTitle').textContent='이벤트 추가';
+  document.getElementById('eventForm').style.display='block';
+}
+
+function editEvent(i){
+  const e = getEvents()[i];
+  if(!e) return;
+  document.getElementById('ev_id').value=i;
+  document.getElementById('ev_title').value=e.title||'';
+  document.getElementById('ev_badge').value=e.badge||'🎉 이벤트';
+  document.getElementById('ev_start').value=e.start||'';
+  document.getElementById('ev_end').value=e.end||'';
+  document.getElementById('ev_content').value=e.content||'';
+  document.getElementById('ev_newsTitle').value=e.newsTitle||'';
+  document.getElementById('eventFormTitle').textContent='이벤트 수정';
+  document.getElementById('eventForm').style.display='block';
+}
+
+function saveEvent(){
+  const title = document.getElementById('ev_title').value.trim();
+  const start = document.getElementById('ev_start').value;
+  const end   = document.getElementById('ev_end').value;
+  const content= document.getElementById('ev_content').value.trim();
+  if(!title||!start||!end||!content){ alert('제목, 기간, 내용을 모두 입력해주세요.'); return; }
+  if(start>end){ alert('종료일이 시작일보다 빨라요.'); return; }
+  const events = getEvents();
+  const idxStr = document.getElementById('ev_id').value;
+  const entry = {
+    title, start, end, content,
+    badge: document.getElementById('ev_badge').value.trim()||'🎉 이벤트',
+    newsTitle: document.getElementById('ev_newsTitle').value.trim()
+  };
+  if(idxStr!==''){
+    events[parseInt(idxStr)] = entry;
+  } else {
+    events.push(entry);
+  }
+  DB.set('eventPopups', events);
+  document.getElementById('eventForm').style.display='none';
+  renderAdminEvents();
+  initEventPopup();
+  alert('이벤트가 저장됐습니다!');
+}
+
+function deleteEvent(i){
+  if(!confirm('이벤트를 삭제하시겠습니까?')) return;
+  const events = getEvents();
+  events.splice(i,1);
+  DB.set('eventPopups',events);
+  renderAdminEvents();
+  initEventPopup();
+}
 
 function getReviews(){ return DB.get('reviews', []); }
 
@@ -8326,6 +8641,8 @@ function deleteReview(i){
 document.addEventListener('DOMContentLoaded', ()=>{
   // 리뷰 팝업 — 홈 진입 시 표시 (3초 후)
   setTimeout(initReviewPopup, 3000);
+  // 이벤트 팝업 — 1초 후 표시 (리뷰 팝업보다 우선)
+  setTimeout(initEventPopup, 1000);
 });
 </script>
 </body>

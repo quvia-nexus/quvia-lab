@@ -8548,6 +8548,8 @@ function clearEventImg(){
   document.getElementById('ev_imgPreview').style.display = 'none';
   document.getElementById('ev_imgFile').value = '';
 }
+
+function saveEvent(){
   try {
     const title   = document.getElementById('ev_title')?.value.trim();
     const start   = document.getElementById('ev_start')?.value;

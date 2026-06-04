@@ -8364,20 +8364,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
       await DB.syncFromCloud();
       console.log('Firebase 동기화 완료');
       // 동기화 완료 후 현재 열린 포털 탭 자동 재렌더링
-      // → PC에서 저장한 데이터가 모바일에서도 바로 보임
       if(currentRole === 'admin' && _currentAdminTab) renderAdminTab(_currentAdminTab);
       else if(currentRole === 'teacher' && _currentTeacherTab) renderTeacherTab(_currentTeacherTab);
       else if(currentRole === 'student' && _currentStudentTab) renderStudentTab(_currentStudentTab);
-      // 리뷰 팝업 & 이벤트 팝업 재초기화
-      initReviewPopup();
-      initEventPopup();
     } catch(e){ console.warn('Firebase 동기화 실패(오프라인?):', e); }
+    // ↓ Firebase 성공/실패 무관하게 항상 실행
     initData();
     loadFromSheets();
     const initTrack=document.getElementById('track-lv1');
     if(initTrack) initTrack.classList.add('active-lv');
     renderMain();
     renderCharacters();
+    // 팝업은 데이터 준비 완료 후 초기화
+    initEventPopup();
+    setTimeout(initReviewPopup, 800); // 이벤트 팝업 닫힌 후 약간 늦게
   };
   if(window._fbReady) doSync();
   else window.addEventListener('fbReady', doSync, {once:true});
@@ -8397,6 +8397,8 @@ function getEvents(){ return DB.get('eventPopups',[]); }
 let _activeEvent = null;
 
 function initEventPopup(){
+  // 포털 안에 있을 때는 팝업 표시 안 함
+  if(currentRole) return;
   const today = new Date().toISOString().slice(0,10);
   const events = getEvents();
   _activeEvent = events.find(e => e.start <= today && today <= e.end) || null;
@@ -8488,29 +8490,39 @@ function editEvent(i){
 }
 
 function saveEvent(){
-  const title = document.getElementById('ev_title').value.trim();
-  const start = document.getElementById('ev_start').value;
-  const end   = document.getElementById('ev_end').value;
-  const content= document.getElementById('ev_content').value.trim();
-  if(!title||!start||!end||!content){ alert('제목, 기간, 내용을 모두 입력해주세요.'); return; }
-  if(start>end){ alert('종료일이 시작일보다 빨라요.'); return; }
-  const events = getEvents();
-  const idxStr = document.getElementById('ev_id').value;
-  const entry = {
-    title, start, end, content,
-    badge: document.getElementById('ev_badge').value.trim()||'🎉 이벤트',
-    newsTitle: document.getElementById('ev_newsTitle').value.trim()
-  };
-  if(idxStr!==''){
-    events[parseInt(idxStr)] = entry;
-  } else {
-    events.push(entry);
+  try {
+    const title   = document.getElementById('ev_title')?.value.trim();
+    const start   = document.getElementById('ev_start')?.value;
+    const end     = document.getElementById('ev_end')?.value;
+    const content = document.getElementById('ev_content')?.value.trim();
+    const badge   = document.getElementById('ev_badge')?.value.trim() || '🎉 이벤트';
+    const newsTitle = document.getElementById('ev_newsTitle')?.value.trim() || '';
+    const idxStr  = document.getElementById('ev_id')?.value ?? '';
+
+    if(!title)  { alert('이벤트 제목을 입력해주세요.'); return; }
+    if(!start)  { alert('시작일을 선택해주세요.'); return; }
+    if(!end)    { alert('종료일을 선택해주세요.'); return; }
+    if(!content){ alert('팝업 본문 내용을 입력해주세요.'); return; }
+    if(start > end){ alert('종료일이 시작일보다 빠를 수 없어요.'); return; }
+
+    const events = getEvents();
+    const entry  = { title, start, end, content, badge, newsTitle };
+
+    if(idxStr !== ''){
+      events[parseInt(idxStr)] = entry;
+    } else {
+      events.push(entry);
+    }
+
+    DB.set('eventPopups', events);
+    document.getElementById('eventForm').style.display = 'none';
+    renderAdminEvents();
+    initEventPopup();
+    alert(`✅ 이벤트 저장 완료!\n제목: ${title}\n기간: ${start} ~ ${end}`);
+  } catch(err) {
+    console.error('saveEvent 오류:', err);
+    alert('저장 중 오류가 발생했습니다.\n' + err.message);
   }
-  DB.set('eventPopups', events);
-  document.getElementById('eventForm').style.display='none';
-  renderAdminEvents();
-  initEventPopup();
-  alert('이벤트가 저장됐습니다!');
 }
 
 function deleteEvent(i){
@@ -8636,13 +8648,7 @@ function deleteReview(i){
   renderAdminReviews();
 }
 
-// 관리자 탭 렌더러 등록
-document.addEventListener('DOMContentLoaded', ()=>{
-  // 리뷰 팝업 — 홈 진입 시 표시 (3초 후)
-  setTimeout(initReviewPopup, 3000);
-  // 이벤트 팝업 — 1초 후 표시 (리뷰 팝업보다 우선)
-  setTimeout(initEventPopup, 1000);
-});
+// 팝업 초기화는 doSync 내부에서 처리
 </script>
 </body>
 </html>

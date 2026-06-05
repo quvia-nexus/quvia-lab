@@ -2951,7 +2951,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="event-popup-title" id="evPopupTitle"></div>
     </div>
     <div id="evPopupImgWrap" style="display:none">
-      <img id="evPopupImg" style="width:100%;max-height:200px;object-fit:cover;display:block">
+      <img id="evPopupImg" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.parentElement.style.display='none'">
     </div>
     <div class="event-popup-body" id="evPopupContent"></div>
     <div class="event-popup-footer">
@@ -8517,12 +8517,14 @@ function editEvent(i){
 /* 구글 드라이브 링크 → 직접 이미지 URL 변환 */
 function driveUrlToImg(url){
   if(!url) return '';
-  // https://drive.google.com/file/d/FILE_ID/view... 형식
+  // FILE_ID 추출
   const m = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
-  if(m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-  // 이미 uc?export=view 형식이면 그대로
-  if(url.includes('uc?export=view')) return url;
-  // 그 외 일반 URL은 그대로 사용
+  const id = m ? m[1] : null;
+  if(id){
+    // thumbnail URL — 최신 구글 드라이브 정책에서 가장 안정적
+    return `https://drive.google.com/thumbnail?id=${id}&sz=w800`;
+  }
+  // 이미 변환된 URL이거나 일반 URL이면 그대로
   return url;
 }
 

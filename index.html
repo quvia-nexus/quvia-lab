@@ -5550,7 +5550,7 @@ function renderAdminTab(tab){
     history:renderAdminHistoryTab,
     logs:renderAdminLogs,
     dashboard:renderAdminDashboard,
-    payroll:renderAdminPayrollTab,
+    payroll:initPayrollAdminTab,
     events:renderAdminEvents
   };
   if(renders[tab]) renders[tab]();
@@ -6366,8 +6366,12 @@ function importData(input){
     var keys=Object.keys(data);
     if(!confirm('데이터를 불러옵니까?\n항목: '+keys.join(', '))){return;}
     keys.forEach(function(k){ DB.set(k,data[k]); });
-    alert('가져오기 완료! '+keys.length+'개 항목 로드됨');
+    alert('가져오기 완료! '+keys.length+'개 항목 로드됨\n\nFirebase에 자동 업로드 중...');
     renderAdminDashboard();
+    // 가져오기 후 자동으로 Firebase에 업로드
+    setTimeout(function(){
+      uploadAllToFirebase();
+    }, 500);
   };
   reader.onerror=function(){ alert('파일 읽기 오류: '+reader.error); };
   reader.readAsText(file,'UTF-8');

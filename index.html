@@ -4190,13 +4190,16 @@ input, textarea, select { font-family: var(--sans); }
           <div class="admin-stat"><div class="admin-stat-label">강사</div><div class="admin-stat-value" id="statTeachers">0</div></div>
           <div class="admin-stat"><div class="admin-stat-label">수상실적</div><div class="admin-stat-value" id="statAwards">0</div></div>
         </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
           <button class="table-action-btn primary" onclick="exportData()">데이터 내보내기 (JSON)</button>
           <label class="table-action-btn" style="cursor:pointer">
             데이터 가져오기 (JSON)
             <input type="file" accept=".json,application/json,text/plain" style="display:none" onchange="importData(this)">
           </label>
+          <button class="table-action-btn" style="background:#1a3a6a;color:#fff;border-color:#1a3a6a"
+            onclick="uploadAllToFirebase()">☁️ Firebase 전체 업로드</button>
         </div>
+        <div id="firebaseUploadStatus" style="margin-top:10px;font-size:0.83rem;color:var(--ink4)"></div>
       </div>
 
       <!-- 학생 관리 -->
@@ -4731,7 +4734,7 @@ const _db = getFirestore(_fbApp);
 
 // Firebase 함수들을 window에 등록해서 일반 스크립트에서 접근 가능하게
 window._fbSetDoc = (k, v) => {
-  setDoc(doc(_db,'quvia',k), {value: v}).catch(e=>console.error('FB write:',e));
+  return setDoc(doc(_db,'quvia',k), {value: v}).catch(e=>console.error('FB write:',e));
 };
 window._fbGetAll = async () => {
   const keys = [
@@ -6312,6 +6315,33 @@ function adminSaveConsultLog(id){
 }
 
 /* 데이터 내보내기/가져오기 */
+/* ☁️ localStorage → Firebase 전체 강제 업로드 */
+async function uploadAllToFirebase(){
+  const keys = [
+    'students','teachers','classes','payrolls',
+    'awards','news','works','gallery',
+    'notices','edulogs','consultlogs',
+    'reviews','reviewPopupOn','eventPopups','histories'
+  ];
+  const statusEl = document.getElementById('firebaseUploadStatus');
+  if(statusEl) statusEl.innerHTML = '⏳ Firebase에 업로드 중...';
+
+  let ok=0, skip=0;
+  for(const k of keys){
+    const val = DB.get(k, null);
+    if(val !== null){
+      try{
+        await window._fbSetDoc(k, val);
+        ok++;
+      } catch(e){ console.error('upload err:', k, e); }
+    } else { skip++; }
+  }
+
+  const msg = `✅ ${ok}개 키 업로드 완료 (빈 항목 ${skip}개 건너뜀)`;
+  if(statusEl) statusEl.innerHTML = msg;
+  alert(msg + '\n\n이제 다른 기기에서도 데이터가 보입니다!');
+}
+
 function exportData(){
   const data={students:DB.get('students',[]),teachers:DB.get('teachers',[]),classes:DB.get('classes',[]),payrolls:DB.get('payrolls',[]),awards:DB.get('awards',[]),news:DB.get('news',[]),works:DB.get('works',[]),gallery:DB.get('gallery',[]),notices:DB.get('notices',[]),edulogs:DB.get('edulogs',[]),consultlogs:DB.get('consultlogs',[])};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -8418,8 +8448,14 @@ function getEvents(){ return DB.get('eventPopups',[]); }
 let _activeEvent = null;
 
 function initEventPopup(){
-  // 포털 안에 있을 때는 팝업 표시 안 함
-  if(currentRole) return;
+  // 포털 탭 안에 있을 때만 차단 (홈 화면에서는 항상 표시)
+  const adminPage = document.getElementById('page-admin');
+  const teacherPage = document.getElementById('page-teacher');
+  const studentPage = document.getElementById('page-student');
+  const inPortal = (adminPage?.classList.contains('active')) ||
+                   (teacherPage?.classList.contains('active')) ||
+                   (studentPage?.classList.contains('active'));
+  if(inPortal) return;
   const today = new Date().toISOString().slice(0,10);
   const events = getEvents();
   _activeEvent = events.find(e => e.start <= today && today <= e.end) || null;

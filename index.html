@@ -4031,10 +4031,11 @@ input, textarea, select { font-family: var(--sans); }
       <!-- PDF -->
       <div id="student-tab-pdf" class="portal-tab">
         <div class="card" style="margin-bottom:16px">
-          <div class="card-title">포트폴리오 PDF 다운로드</div>
+          <div class="card-title">포트폴리오 미리보기 · 저장</div>
           <p style="font-size:0.88rem;color:var(--ink3);margin-bottom:16px;line-height:1.7">
-            지금까지의 탐구보고서, Q-Grand Slam 현황, 수업·도전 이력, 나의 꿈을 PDF로 저장합니다.
+            지금까지의 탐구보고서, Q-Grand Slam 현황, 수업·도전 이력, 자격증·수상이력, 나의 꿈을 확인합니다.
           </p>
+          <button class="table-action-btn primary" style="margin-bottom:10px;width:100%" onclick="previewPortfolio()">👁️ 포트폴리오 미리보기</button>
           <div id="pdfBtnArea"></div>
         </div>
       </div>
@@ -4903,6 +4904,8 @@ function showPage(name, param){
     'admin':renderAdminDashboard
   };
   if(renders[name]) renders[name]();
+  // 홈 화면으로 올 때마다 이벤트 팝업 표시
+  if(name==='main') setTimeout(initEventPopup, 100);
 }
 
 /* ═══════════════════════════════════
@@ -6074,6 +6077,10 @@ function viewStudentPortfolio(){
         </div>`).join('')}
       </div>
       <button class="table-action-btn primary" onclick="saveStudentSlamAll('${s.id}')">Q-Grand Slam 저장</button>
+      <div class="card-title" style="margin-top:16px">수업·도전 이력 (${(s.history||[]).length}건)</div>
+      ${(s.history||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>내용</th><th>상세</th></tr></thead><tbody>
+        ${(s.history||[]).map(r=>`<tr><td>${r.date||''}</td><td>${r.type||''}</td><td>${r.title||''}</td><td>${r.detail||'-'}</td></tr>`).join('')}
+      </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
       <div class="card-title">자격증·수상이력 (${(s.studentAwards||[]).length}건)</div>
       ${(s.studentAwards||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>이름</th><th>주최</th></tr></thead><tbody>
         ${(s.studentAwards||[]).map(a=>`<tr><td>${a.date||''}</td><td>${a.type||''}</td><td>${a.name}</td><td>${a.org||'-'}</td></tr>`).join('')}
@@ -6378,6 +6385,114 @@ function importData(input){
 }
 
 /* PDF 다운로드 (간단 버전) */
+function previewPortfolio(){
+  if(!currentUser){alert('로그인이 필요합니다.');return;}
+  // 미리보기: print 스크립트 없이 새 창에서 확인만
+  const s=currentUser;
+  const slam=s.slam||[false,false,false,false,false];
+  const slamNotes=s.slamNotes||['','','','',''];
+  const labels=['Q1 자격 인증','Q2 대회 수상','Q3 작품 제작','Q4 탐구보고서','Q5 발명/하드웨어'];
+  const icons=['📜','🏅','💻','🔬','🛠'];
+  const reports=s.reports||[];
+  const stuAwards=s.studentAwards||[];
+  const history=s.history||[];
+
+  const reportsHtml=reports.length
+    ?reports.slice().reverse().map(r=>`<div style="border:1px solid #e0e0d8;border-radius:8px;padding:14px 16px;margin-bottom:12px">
+        <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px">${r.title||'무제'} <span style="font-size:0.75rem;color:#9a9a94">${r.date||''}</span></div>
+        ${r.desc?`<div style="font-size:0.85rem;margin-bottom:4px"><b>설명:</b> ${r.desc}</div>`:''}
+        ${r.how?`<div style="font-size:0.85rem;margin-bottom:4px"><b>제작:</b> ${r.how}</div>`:''}
+        ${r.feel?`<div style="font-size:0.85rem;margin-bottom:4px"><b>느낀점:</b> ${r.feel}</div>`:''}
+        ${r.tools?`<div style="font-size:0.82rem;color:#6a6a64">도구: ${r.tools}</div>`:''}
+      </div>`).join('')
+    :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
+
+  const awardsHtml=stuAwards.length
+    ?`<table style="width:100%;border-collapse:collapse;font-size:0.85rem"><thead><tr style="background:#f4f6f2">
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">이름</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">주최</th>
+      </tr></thead><tbody>${stuAwards.map(a=>`<tr>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.date||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.type||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${a.name}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.org||'-'}</td>
+      </tr>`).join('')}</tbody></table>`
+    :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
+
+  const historyHtml=history.length
+    ?`<table style="width:100%;border-collapse:collapse;font-size:0.85rem"><thead><tr style="background:#f4f6f2">
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">내용</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">상세</th>
+      </tr></thead><tbody>${history.map(r=>`<tr>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.date||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.type||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r.title||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.detail||'-'}</td>
+      </tr>`).join('')}</tbody></table>`
+    :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
+
+  const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${s.name} 포트폴리오</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap');
+      body{font-family:'Noto Sans KR',sans-serif;padding:40px;color:#1a1a1a;max-width:820px;margin:0 auto;font-size:14px;line-height:1.6}
+      h2{color:#2d4a2d;font-size:1rem;border-left:4px solid #2d4a2d;padding-left:10px;margin:28px 0 12px}
+      .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f4f6f2;padding:16px;border-radius:8px;margin:16px 0}
+      .slam-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+      .slam-box{padding:10px 6px;border-radius:8px;text-align:center;font-size:0.75rem}
+      .done{background:#e8ede6;color:#2d4a2d;border:1px solid #5a7a5a;font-weight:600}
+      .pending{background:#f4f6f2;color:#9a9a94;border:1px solid #e0e0d8}
+      .slam-note{font-size:0.72rem;color:#5a7a5a;margin-top:4px;white-space:pre-wrap}
+      .footer{margin-top:40px;border-top:1px solid #e0e0d8;padding-top:10px;font-size:0.75rem;color:#9a9a94;display:flex;justify-content:space-between}
+      @media print{.no-print{display:none}}
+    </style></head><body>
+    <div class="no-print" style="background:#2d4a2d;color:#fff;padding:10px 20px;border-radius:8px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+      <span>📄 포트폴리오 미리보기 — 저장은 선생님 허용 후 가능합니다</span>
+      <button onclick="window.close()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer">닫기</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
+      <div><div style="font-size:1.5rem;font-weight:700;color:#2d4a2d">QUVIA LAB</div>
+      <div style="font-size:0.82rem;color:#6a6a64">큐비아 탐구학원 · 학생 포트폴리오</div></div>
+      <div style="text-align:right;font-size:0.8rem;color:#6a6a64">확인일: ${new Date().toLocaleDateString('ko-KR')}</div>
+    </div>
+    <hr style="border:none;border-top:2px solid #2d4a2d;margin:10px 0 20px">
+    <div class="info-grid">
+      <div><div style="font-size:0.72rem;color:#6a6a64;margin-bottom:2px">이름</div><div style="font-weight:600">${s.name}</div></div>
+      <div><div style="font-size:0.72rem;color:#6a6a64;margin-bottom:2px">학교/학년</div><div>${s.school||''} ${s.grade||''}</div></div>
+      <div><div style="font-size:0.72rem;color:#6a6a64;margin-bottom:2px">현재 레벨</div><div>${s.level||'-'}</div></div>
+      <div><div style="font-size:0.72rem;color:#6a6a64;margin-bottom:2px">클래스</div><div>${s.cls||'-'}</div></div>
+    </div>
+    <h2>나의 꿈</h2>
+    <div style="font-style:italic;color:#3a3a36;padding:12px 16px;background:#f4f6f2;border-radius:6px;border-left:3px solid #5a7a5a">${s.dream||'(미입력)'}</div>
+    <h2>Q-Grand Slam 현황</h2>
+    <div class="slam-grid">
+      ${labels.map((l,i)=>`<div class="slam-box ${slam[i]?'done':'pending'}">
+        <div style="font-size:1.1rem;margin-bottom:4px">${icons[i]}</div>
+        <div>${l}</div><div>${slam[i]?'✓ 달성':'미달성'}</div>
+        ${slamNotes[i]?`<div class="slam-note">${slamNotes[i]}</div>`:''}
+      </div>`).join('')}
+    </div>
+    <h2>수업·도전 이력 (${history.length}건)</h2>
+    ${historyHtml}
+    <h2>자격증·수상이력 (${stuAwards.length}건)</h2>
+    ${awardsHtml}
+    <h2>탐구보고서 (${reports.length}개)</h2>
+    ${reportsHtml}
+    <div class="footer">
+      <span>QUVIA LAB 큐비아 탐구학원</span>
+      <span>${s.name} 학생 포트폴리오</span>
+    </div>
+    </body></html>`;
+
+  const w=window.open('','_blank');
+  if(!w){alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');return;}
+  w.document.write(html);
+  w.document.close();
+}
+
 function downloadPortfolioPDF(){
   if(!currentUser){alert('로그인이 필요합니다.');return;}
   const s=currentUser;

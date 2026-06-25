@@ -6061,7 +6061,6 @@ function saveNewsWrite(){
   if(idx===-1){ news.unshift(item); }
   else { news[idx]=item; }
   DB.set('news',news);
-  DB.set('news',news);
   closeNewsWriteModal();
   renderAdminNews();
   renderNews();
@@ -6071,7 +6070,6 @@ function deleteNews(i){
   if(!confirm('삭제하시겠습니까?'))return;
   const a=DB.get('news',[]);
   a.splice(i,1);
-  DB.set('news',a);
   DB.set('news',a);
   renderAdminNews();
   renderNews();
@@ -8484,11 +8482,7 @@ function loadFromSheets() {
     }
   });
   fetchSheet('news').then(function(news) {
-    if (news && news.length) {
-      DB.set('news', news);
-      renderHeroNotice();
-      renderNews();
-    }
+    // 공지/소식은 관리자 포털에서 직접 관리하므로 구글 시트 연동 비활성화
   });
   // ★ 학생작품 시트 연동 추가
   fetchSheet('works').then(function(works) {

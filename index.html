@@ -3696,9 +3696,7 @@ input, textarea, select { font-family: var(--sans); }
           <div class="s-label" style="color:rgba(0,224,110,0.45)">News</div>
           <div class="s-title" style="color:white;margin-bottom:0">공지 / 소식</div>
         </div>
-        <div class="s-header-right">
-          큐비아 랩의 새소식과 공지사항을 확인하세요.
-        </div>
+        <div class="s-header-right">큐비아 랩의 새소식과 공지사항을 확인하세요.</div>
       </div>
     </div>
   </div>
@@ -3708,7 +3706,26 @@ input, textarea, select { font-family: var(--sans); }
       <button onclick="setNewsTag('공지',this)" style="padding:6px 16px;border-radius:20px;border:1px solid var(--border2);background:white;color:var(--ink2);font-size:0.82rem;cursor:pointer">공지</button>
       <button onclick="setNewsTag('소식',this)" style="padding:6px 16px;border-radius:20px;border:1px solid var(--border2);background:white;color:var(--ink2);font-size:0.82rem;cursor:pointer">소식</button>
     </div>
-    <div class="news-list" id="newsList"></div>
+    <!-- 게시판 목록 -->
+    <div id="newsList" style="border:1px solid var(--border);border-radius:12px;overflow:hidden"></div>
+  </div>
+</div>
+
+<!-- 공지/소식 상세 모달 -->
+<div id="newsDetailModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+    <div style="background:var(--g1);padding:20px 24px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div id="newsDetailTag" style="font-size:0.72rem;background:rgba(255,255,255,0.2);color:#fff;padding:2px 10px;border-radius:20px;display:inline-block;margin-bottom:8px"></div>
+        <div id="newsDetailTitle" style="color:#fff;font-size:1.05rem;font-weight:600;line-height:1.4"></div>
+        <div id="newsDetailDate" style="color:rgba(255,255,255,0.6);font-size:0.78rem;margin-top:6px"></div>
+      </div>
+      <button onclick="closeNewsDetail()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:1.2rem;width:32px;height:32px;border-radius:50%;cursor:pointer;flex-shrink:0;margin-left:12px">✕</button>
+    </div>
+    <div id="newsDetailContent" style="padding:24px;font-size:0.92rem;color:var(--ink2);line-height:1.85;white-space:pre-wrap"></div>
+    <div style="padding:0 24px 20px;text-align:right">
+      <button onclick="closeNewsDetail()" style="padding:8px 24px;background:var(--g1);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.88rem">닫기</button>
+    </div>
   </div>
 </div>
 
@@ -4174,6 +4191,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','teachers',this)">강사 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','classes',this)">클래스 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','notice',this)">전달사항</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','news',this)">📢 공지/소식</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','content',this)">🌐 홈페이지 콘텐츠</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','reviews',this)">⭐ 학부모 리뷰</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','events',this)">📣 이벤트 팝업</div>
@@ -4251,8 +4269,50 @@ input, textarea, select { font-family: var(--sans); }
         </table>
       </div>
 
-      <!-- 공지/소식 (빈 탭 — nav 제거됨, 하위호환용) -->
-      <div id="admin-tab-news" class="portal-tab" style="display:none"></div>
+      <!-- 📢 공지/소식 관리 -->
+      <div id="admin-tab-news" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">📢 공지/소식 관리</div>
+          <button class="table-action-btn primary" onclick="openNewsWriteModal()">+ 새 글 작성</button>
+        </div>
+        <div id="adminNewsList" style="border:1px solid var(--border);border-radius:12px;overflow:hidden"></div>
+      </div>
+
+      <!-- 공지/소식 작성/수정 모달 -->
+      <div id="newsWriteModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px">
+        <div style="background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+          <div style="background:var(--g1);padding:18px 24px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center">
+            <div id="newsWriteModalTitle" style="color:#fff;font-weight:600;font-size:1rem">새 글 작성</div>
+            <button onclick="closeNewsWriteModal()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:1.1rem;width:30px;height:30px;border-radius:50%;cursor:pointer">✕</button>
+          </div>
+          <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
+            <input type="hidden" id="newsEditIdx" value="-1">
+            <div>
+              <label style="font-size:0.82rem;color:var(--ink3);display:block;margin-bottom:4px">태그</label>
+              <select id="newsWriteTag" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem">
+                <option value="공지">공지</option>
+                <option value="소식">소식</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.82rem;color:var(--ink3);display:block;margin-bottom:4px">제목</label>
+              <input id="newsWriteTitle" type="text" placeholder="제목을 입력하세요" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;box-sizing:border-box">
+            </div>
+            <div>
+              <label style="font-size:0.82rem;color:var(--ink3);display:block;margin-bottom:4px">날짜</label>
+              <input id="newsWriteDate" type="date" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;box-sizing:border-box">
+            </div>
+            <div>
+              <label style="font-size:0.82rem;color:var(--ink3);display:block;margin-bottom:4px">내용</label>
+              <textarea id="newsWriteContent" placeholder="내용을 입력하세요" rows="10" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;resize:vertical;box-sizing:border-box;line-height:1.7"></textarea>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+              <button onclick="closeNewsWriteModal()" style="padding:9px 20px;border:1px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;font-size:0.88rem">취소</button>
+              <button onclick="saveNewsWrite()" style="padding:9px 24px;background:var(--g1);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600">저장</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="admin-tab-awards" class="portal-tab" style="display:none"></div>
       <div id="admin-tab-works" class="portal-tab" style="display:none"></div>
       <div id="admin-tab-gallery" class="portal-tab" style="display:none"></div>
@@ -5323,15 +5383,34 @@ function renderNews(){
     el.innerHTML='<div style="color:var(--ink4);padding:3rem;text-align:center">해당 항목이 없습니다.</div>';
     return;
   }
-  el.innerHTML=filtered.map(n=>`
-    <div class="news-item">
-      <div class="news-tag">${n.tag||'공지'}</div>
-      <div style="flex:1">
-        <div class="news-title">${n.title}</div>
-        <div class="news-date">${n.date}</div>
-        ${n.content?`<div style="font-size:0.82rem;color:var(--ink3);margin-top:6px;line-height:1.6">${n.content}</div>`:''}
-      </div>
+  el.innerHTML=filtered.map((n,i)=>`
+    <div onclick="openNewsDetail(${news.indexOf(n)})" style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='var(--g6)'" onmouseout="this.style.background=''">
+      <span style="font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;${n.tag==='공지'?'background:#e8ede6;color:#2d5a2d':'background:#e8f0ff;color:#2d4a8a'}">${n.tag||'공지'}</span>
+      <span style="flex:1;font-size:0.92rem;color:var(--ink2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.title||'(제목 없음)'}</span>
+      <span style="font-size:0.75rem;color:var(--ink4);flex-shrink:0">${n.date||''}</span>
+      <span style="color:var(--ink4);font-size:0.8rem;flex-shrink:0">›</span>
     </div>`).join('');
+  // 마지막 아이템 border-bottom 제거
+  const last=el.querySelector('div:last-child');
+  if(last) last.style.borderBottom='none';
+}
+
+function openNewsDetail(idx){
+  const news=DB.get('news',[]);
+  const n=news[idx];
+  if(!n) return;
+  document.getElementById('newsDetailTag').textContent=n.tag||'공지';
+  document.getElementById('newsDetailTitle').textContent=n.title||'';
+  document.getElementById('newsDetailDate').textContent=n.date||'';
+  document.getElementById('newsDetailContent').textContent=n.content||'(내용 없음)';
+  const modal=document.getElementById('newsDetailModal');
+  modal.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+
+function closeNewsDetail(){
+  document.getElementById('newsDetailModal').style.display='none';
+  document.body.style.overflow='';
 }
 
 /* 구글 드라이브 링크 변환 */
@@ -5926,23 +6005,79 @@ function addNoticeRow(){const a=DB.get('notices',[]);a.unshift({date:new Date().
 /* 공지/소식 */
 function renderAdminNews(){
   const news=DB.get('news',[]);
-  const tb=document.getElementById('newsBody');
-  if(!tb) return;
-  tb.innerHTML=news.map((n,i)=>`<tr>
-    <td><input value="${n.date||''}" onchange="updateNews(${i},'date',this.value)" style="width:90px"></td>
-    <td><select onchange="updateNews(${i},'tag',this.value)">
-      ${['공지','소식'].map(t=>`<option ${n.tag===t?'selected':''}>${t}</option>`).join('')}
-    </select></td>
-    <td><input value="${n.title||''}" onchange="updateNews(${i},'title',this.value)"></td>
-    <td><textarea onchange="updateNews(${i},'content',this.value)" style="width:100%;min-height:60px">${n.content||''}</textarea></td>
-    <td><button class="table-action-btn" onclick="saveNewsRow(${i})">저장</button>
-    <button class="table-action-btn danger" onclick="deleteNews(${i})">삭제</button></td>
-  </tr>`).join('');
+  const el=document.getElementById('adminNewsList');
+  if(!el) return;
+  if(!news.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">등록된 공지/소식이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML=news.map((n,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border)">
+      <span style="font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;${n.tag==='공지'?'background:#e8ede6;color:#2d5a2d':'background:#e8f0ff;color:#2d4a8a'}">${n.tag||'공지'}</span>
+      <span style="flex:1;font-size:0.9rem;color:var(--ink2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.title||'(제목 없음)'}</span>
+      <span style="font-size:0.75rem;color:var(--ink4);flex-shrink:0">${n.date||''}</span>
+      <button class="table-action-btn" onclick="editNewsItem(${i})" style="flex-shrink:0">수정</button>
+      <button class="table-action-btn danger" onclick="deleteNews(${i})" style="flex-shrink:0">삭제</button>
+    </div>`).join('');
+  const last=el.querySelector('div:last-child');
+  if(last) last.style.borderBottom='none';
 }
-function updateNews(i,k,v){const a=DB.get('news',[]);if(a[i])a[i][k]=v;DB.set('news',a);}
-function saveNewsRow(i){renderAdminNews();alert('저장됨');}
-function deleteNews(i){if(!confirm('삭제?'))return;const a=DB.get('news',[]);a.splice(i,1);DB.set('news',a);renderAdminNews();}
-function addNewsRow(){const a=DB.get('news',[]);a.unshift({date:new Date().toLocaleDateString('ko'),tag:'공지',title:'',content:''});DB.set('news',a);renderAdminNews();const el=document.getElementById('newsList');if(el&&el.firstElementChild)el.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});}
+
+function openNewsWriteModal(idx){
+  document.getElementById('newsEditIdx').value = (idx===undefined)?-1:idx;
+  document.getElementById('newsWriteModalTitle').textContent = (idx===undefined)?'새 글 작성':'글 수정';
+  if(idx!==undefined){
+    const n=DB.get('news',[])[idx]||{};
+    document.getElementById('newsWriteTag').value=n.tag||'공지';
+    document.getElementById('newsWriteTitle').value=n.title||'';
+    document.getElementById('newsWriteDate').value=n.date||'';
+    document.getElementById('newsWriteContent').value=n.content||'';
+  } else {
+    document.getElementById('newsWriteTag').value='공지';
+    document.getElementById('newsWriteTitle').value='';
+    document.getElementById('newsWriteDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('newsWriteContent').value='';
+  }
+  document.getElementById('newsWriteModal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+
+function closeNewsWriteModal(){
+  document.getElementById('newsWriteModal').style.display='none';
+  document.body.style.overflow='';
+}
+
+function editNewsItem(idx){ openNewsWriteModal(idx); }
+
+function saveNewsWrite(){
+  const tag=document.getElementById('newsWriteTag').value;
+  const title=document.getElementById('newsWriteTitle').value.trim();
+  const date=document.getElementById('newsWriteDate').value;
+  const content=document.getElementById('newsWriteContent').value.trim();
+  if(!title){alert('제목을 입력해주세요.');return;}
+  const news=DB.get('news',[]);
+  const idx=parseInt(document.getElementById('newsEditIdx').value);
+  const item={tag,title,date,content,id:Date.now()};
+  if(idx===-1){ news.unshift(item); }
+  else { news[idx]=item; }
+  DB.set('news',news);
+  DB.set('news',news);
+  closeNewsWriteModal();
+  renderAdminNews();
+  renderNews();
+}
+
+function deleteNews(i){
+  if(!confirm('삭제하시겠습니까?'))return;
+  const a=DB.get('news',[]);
+  a.splice(i,1);
+  DB.set('news',a);
+  DB.set('news',a);
+  renderAdminNews();
+  renderNews();
+}
+
+function addNewsRow(){openNewsWriteModal();}
 
 /* 수상실적 */
 const AWARD_CAT_ICONS={

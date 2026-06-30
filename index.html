@@ -4197,6 +4197,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','events',this)">📣 이벤트 팝업</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','portfolios',this)">포트폴리오 확인</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','history',this)">수업·도전 이력</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','stuawards',this)">🏆 자격증·수상이력</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','logs',this)">교육/상담일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','payroll',this)">💰 급여명세서</div>
     </div>
@@ -4313,7 +4314,120 @@ input, textarea, select { font-family: var(--sans); }
           </div>
         </div>
       </div>
-      <div id="admin-tab-awards" class="portal-tab" style="display:none"></div>
+      <div id="admin-tab-stuawards" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">🏆 자격증·수상이력 관리</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="table-action-btn primary" onclick="openAdminStuAwardForm()">+ 개별 추가</button>
+            <button class="table-action-btn" onclick="openAdminStuAwardBulk()">📋 일괄 업로드</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <label class="form-label" style="margin:0;white-space:nowrap">학생 선택</label>
+          <select class="form-input" id="adminStuAwardStudentSel" style="max-width:200px" onchange="renderAdminStuAwards()">
+            <option value="">-- 학생 선택 --</option>
+          </select>
+        </div>
+
+        <!-- 개별 추가 폼 -->
+        <div id="adminStuAwardForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">자격증·수상이력 추가</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">학생</label>
+              <select class="form-input" id="saa_student"></select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">날짜</label>
+              <input class="form-input" id="saa_date" type="date">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">종류</label>
+              <select class="form-input" id="saa_type">
+                <option value="자격증">자격증</option>
+                <option value="대회출전">대회출전</option>
+                <option value="수상">수상</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">이름 (자격증명/대회명/수상명)</label>
+            <input class="form-input" id="saa_name" type="text" placeholder="예: COS PRO 3급 / 전국 SW 경진대회 대상">
+          </div>
+          <div class="form-group">
+            <label class="form-label">주최/발급기관</label>
+            <input class="form-input" id="saa_org" type="text" placeholder="예: YBM / 교육부">
+          </div>
+          <div class="form-group">
+            <label class="form-label">메모</label>
+            <input class="form-input" id="saa_memo" type="text" placeholder="추가 설명 (선택)">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="table-action-btn primary" onclick="saveAdminStuAward()">저장</button>
+            <button class="table-action-btn" onclick="document.getElementById('adminStuAwardForm').style.display='none'">취소</button>
+          </div>
+        </div>
+
+        <!-- 일괄 업로드 폼 -->
+        <div id="adminStuAwardBulk" style="display:none;margin-bottom:16px" class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <div style="font-weight:600;font-size:0.95rem">📋 자격증·수상이력 일괄 업로드</div>
+            <button class="table-action-btn" onclick="downloadStuAwardTemplate()">📥 양식 다운로드 (.csv)</button>
+          </div>
+
+          <label id="stuAwardDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--border2);border-radius:10px;padding:28px 16px;cursor:pointer;background:var(--g6);margin-bottom:14px;transition:border-color 0.2s"
+            ondragover="event.preventDefault();this.style.borderColor='var(--g3)'"
+            ondragleave="this.style.borderColor='var(--border2)'"
+            ondrop="event.preventDefault();this.style.borderColor='var(--border2)';handleStuAwardFileDrop(event)">
+            <input type="file" accept=".xlsx,.csv" style="display:none" id="stuAwardFileInput" onchange="importStuAwardExcel(this)">
+            <div style="font-size:2rem;margin-bottom:8px">📂</div>
+            <div style="font-weight:500;margin-bottom:4px">엑셀(.xlsx) 또는 CSV 파일을 여기에 드래그하거나 클릭</div>
+            <div style="font-size:0.78rem;color:var(--ink4)">양식 다운로드 후 작성해서 올려주세요</div>
+          </label>
+
+          <div style="background:#f4f6f2;border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--ink3);margin-bottom:12px;line-height:1.8">
+            <strong>필수 열:</strong> 학생이름, 날짜(YYYY-MM-DD), 종류, 이름<br>
+            <strong>선택 열:</strong> 주최, 메모<br>
+            <strong>종류 값:</strong> 자격증 / 대회출전 / 수상<br>
+            <strong>예시:</strong> 홍길동, 2025-03-15, 자격증, COS PRO 3급, YBM
+          </div>
+
+          <details style="margin-bottom:10px">
+            <summary style="font-size:0.82rem;color:var(--ink4);cursor:pointer;margin-bottom:8px">✏️ 텍스트로 직접 입력하기</summary>
+            <textarea class="form-input form-textarea" id="bulk_stuaward_text" rows="5" style="margin-top:8px"
+              placeholder="홍길동, 2025-03-15, 자격증, COS PRO 3급, YBM&#10;김철수, 2025-05-20, 대회출전, 전국 SW 경진대회, 교육부 주최&#10;이영희, 2025-08-10, 수상, 대회 2위, 큐비아랩"></textarea>
+            <button class="table-action-btn primary" style="margin-top:8px" onclick="saveBulkStuAwardText()">텍스트로 저장</button>
+          </details>
+
+          <div style="display:flex;gap:8px">
+            <button class="table-action-btn" onclick="document.getElementById('adminStuAwardBulk').style.display='none'">닫기</button>
+          </div>
+        </div>
+
+        <!-- 일괄 업로드 미리보기 모달 -->
+        <div id="stuAwardImportModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);overflow-y:auto">
+          <div style="background:#fff;border-radius:14px;max-width:820px;margin:40px auto;padding:28px;position:relative">
+            <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px">📋 자격증·수상이력 일괄 업로드 미리보기</div>
+            <div id="stuAwardImportSummary" style="font-size:0.82rem;color:var(--ink4);margin-bottom:16px"></div>
+            <div style="overflow-x:auto;margin-bottom:16px">
+              <table class="admin-table" id="stuAwardImportTable">
+                <thead><tr>
+                  <th>#</th><th>학생이름</th><th>날짜</th><th>종류</th><th>이름</th><th>주최</th><th>상태</th>
+                </tr></thead>
+                <tbody id="stuAwardImportBody"></tbody>
+              </table>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="table-action-btn" onclick="document.getElementById('stuAwardImportModal').style.display='none'">취소</button>
+              <button class="table-action-btn primary" id="stuAwardImportConfirmBtn" onclick="confirmStuAwardImport()">✅ 확인 후 저장</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 목록 -->
+        <div id="adminStuAwardList"></div>
+      </div>
       <div id="admin-tab-works" class="portal-tab" style="display:none"></div>
       <div id="admin-tab-gallery" class="portal-tab" style="display:none"></div>
 
@@ -5630,6 +5744,7 @@ function renderAdminTab(tab){
     reviews:renderAdminReviews,
     portfolios:renderPortfolioSelect,
     history:renderAdminHistoryTab,
+    stuawards:renderAdminStuAwardsTab,
     logs:renderAdminLogs,
     dashboard:renderAdminDashboard,
     payroll:initPayrollAdminTab,
@@ -6212,16 +6327,16 @@ function viewStudentPortfolio(){
       <button class="table-action-btn primary" onclick="saveStudentSlamAll('${s.id}')">Q-Grand Slam 저장</button>
       <div class="card-title" style="margin-top:16px">수업·도전 이력 (${(s.history||[]).length}건)</div>
       ${(s.history||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>내용</th><th>상세</th></tr></thead><tbody>
-        ${(s.history||[]).map(r=>`<tr><td>${r.date||''}</td><td>${r.type||''}</td><td>${r.title||''}</td><td>${r.detail||'-'}</td></tr>`).join('')}
+        ${[...(s.history||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(r=>`<tr><td>${r.date||''}</td><td>${r.type||''}</td><td>${r.title||''}</td><td>${r.detail||'-'}</td></tr>`).join('')}
       </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
       <div class="card-title">자격증·수상이력 (${(s.studentAwards||[]).length}건)</div>
       ${(s.studentAwards||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>이름</th><th>주최</th></tr></thead><tbody>
-        ${(s.studentAwards||[]).map(a=>`<tr><td>${a.date||''}</td><td>${a.type||''}</td><td>${a.name}</td><td>${a.org||'-'}</td></tr>`).join('')}
+        ${[...(s.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(a=>`<tr><td>${a.date||''}</td><td>${a.type||''}</td><td>${a.name}</td><td>${a.org||'-'}</td></tr>`).join('')}
       </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
       <div class="card-title" style="margin-top:16px">탐구보고서 (${(s.reports||[]).length}개)</div>
       ${(s.reports||[]).length===0
         ? '<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'
-        : (s.reports||[]).slice().reverse().map((r,ri)=>{
+        : [...(s.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map((r)=>{
             const origIdx=(s.reports||[]).indexOf(r);
             return `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px" id="admin_report_${s.id}_${origIdx}">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -6526,9 +6641,9 @@ function previewPortfolio(){
   const slamNotes=s.slamNotes||['','','','',''];
   const labels=['Q1 자격 인증','Q2 대회 수상','Q3 작품 제작','Q4 탐구보고서','Q5 발명/하드웨어'];
   const icons=['📜','🏅','💻','🔬','🛠'];
-  const reports=s.reports||[];
-  const stuAwards=s.studentAwards||[];
-  const history=s.history||[];
+  const reports=[...(s.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const stuAwards=[...(s.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const history=[...(s.history||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
   const reportsHtml=reports.length
     ?reports.slice().reverse().map(r=>`<div style="border:1px solid #e0e0d8;border-radius:8px;padding:14px 16px;margin-bottom:12px">
@@ -6633,8 +6748,8 @@ function downloadPortfolioPDF(){
   const slamNotes=s.slamNotes||['','','','',''];
   const labels=['Q1 자격 인증','Q2 대회 수상','Q3 작품 제작','Q4 탐구보고서','Q5 발명/하드웨어'];
   const icons=['📜','🏅','💻','🔬','🛠'];
-  const reports=s.reports||[];
-  const stuAwards=s.studentAwards||[];
+  const reports=[...(s.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const stuAwards=[...(s.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
   // 보고서 HTML 생성
   const reportsHtml = reports.length
@@ -7169,7 +7284,7 @@ function parentToggleReplyForm(ym){
 function renderStudentReports(){
   const el=document.getElementById('reportList');
   if(!el||!currentUser) return;
-  const reports=[...(currentUser.reports||[])].reverse(); // 최신 순
+  const reports=[...(currentUser.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')); // 최신 순
   if(!reports.length){
     el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 작성한 보고서가 없습니다.<br><small>위의 [+ 새 보고서 작성] 버튼을 눌러 작성해보세요!</small></div>';
     return;
@@ -7383,6 +7498,7 @@ function renderAdminHistory(){
           </div>
           <div style="display:flex;gap:6px">
             <button class="table-action-btn" onclick="adminEditHistoryRow('${sid}',${r.id})">편집</button>
+            <button class="table-action-btn" onclick="adminMoveHistoryToAward('${sid}',${r.id})" title="자격증·수상이력으로 이동">🏆 이동</button>
             <button class="table-action-btn danger" onclick="adminDeleteHistory('${sid}',${r.id})">삭제</button>
           </div>
         </div>
@@ -7545,7 +7661,11 @@ function showHistoryImportPreview(rows){
       <td style="text-align:center">${i+1}</td>
       <td><strong>${r.name||'—'}</strong></td>
       <td style="white-space:nowrap">${r.date||'—'}</td>
-      <td>${r.type||'—'}</td>
+      <td>
+        <select onchange="_historyImportRows[${i}].type=this.value">
+          ${['수업이수','대회출전','수상·자격증','기타'].map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </td>
       <td>${r.title||'—'}</td>
       <td style="color:var(--ink4)">${r.detail||''}</td>
       <td>${status}</td>
@@ -7642,6 +7762,330 @@ function adminSaveHistoryRow(sid, id){
   DB.set('students',students);
   renderAdminHistory();
 }
+function adminMoveHistoryToAward(sid,id){
+  if(!confirm('이 항목을 자격증·수상이력으로 이동하시겠습니까?'))return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0) return;
+  const hi=(students[idx].history||[]).findIndex(r=>r.id===id);
+  if(hi<0) return;
+  const r=students[idx].history[hi];
+  students[idx].history.splice(hi,1);
+  if(!students[idx].studentAwards) students[idx].studentAwards=[];
+  const typeMap={'수상·자격증':'자격증','대회출전':'대회출전',수업이수:'자격증',기타:'자격증'};
+  students[idx].studentAwards.unshift({
+    id:Date.now(), date:r.date, type:typeMap[r.type]||'자격증', name:r.title, org:r.detail||'', memo:''
+  });
+  DB.set('students',students);
+  renderAdminHistory();
+  alert('이동되었습니다.');
+}
+function adminMoveAwardToHistory(sid,id){
+  if(!confirm('이 항목을 수업·도전 이력으로 이동하시겠습니까?'))return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0) return;
+  const ai=(students[idx].studentAwards||[]).findIndex(a=>a.id===id);
+  if(ai<0) return;
+  const a=students[idx].studentAwards[ai];
+  students[idx].studentAwards.splice(ai,1);
+  if(!students[idx].history) students[idx].history=[];
+  const typeMap={자격증:'수상·자격증',대회출전:'대회출전',수상:'수상·자격증'};
+  students[idx].history.unshift({
+    id:Date.now(), date:a.date, type:typeMap[a.type]||'수상·자격증', title:a.name, detail:a.org||''
+  });
+  DB.set('students',students);
+  renderAdminStuAwards();
+  alert('이동되었습니다.');
+}
+
+/* ═══════════════════════════════════
+   관리자: 자격증·수상이력 관리 (학생별)
+═══════════════════════════════════ */
+function renderAdminStuAwardsTab(){
+  const students=DB.get('students',[]);
+  const sel=document.getElementById('adminStuAwardStudentSel');
+  if(sel){
+    const cur=sel.value;
+    sel.innerHTML='<option value="">-- 학생 선택 --</option>'+
+      students.map(s=>`<option value="${s.id}" ${s.id===cur?'selected':''}>${s.name}</option>`).join('');
+  }
+  renderAdminStuAwards();
+}
+function renderAdminStuAwards(){
+  const el=document.getElementById('adminStuAwardList');
+  if(!el) return;
+  const sid=document.getElementById('adminStuAwardStudentSel')?.value;
+  if(!sid){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">학생을 선택해 주세요.</div>';return;}
+  const students=DB.get('students',[]);
+  const s=students.find(x=>x.id===sid);
+  if(!s){el.innerHTML='';return;}
+  let records=[...(s.studentAwards||[])];
+  records.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const typeIcon={자격증:'📜',대회출전:'🏁',수상:'🏆'};
+  if(!records.length){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">기록이 없습니다.</div>';return;}
+  el.innerHTML=`<div style="margin-bottom:8px;font-size:0.82rem;color:var(--ink4)">${s.name} 학생 · ${records.length}건</div>`+
+    records.map(a=>`
+      <div class="edu-log-item" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span>${typeIcon[a.type]||'📋'}</span>
+            <span style="font-size:0.72rem;background:var(--g5);color:var(--g2);padding:2px 8px;border-radius:20px">${a.type}</span>
+            <span style="font-size:0.78rem;color:var(--ink4)">${a.date||''}</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="table-action-btn" onclick="adminEditStuAwardRow('${sid}',${a.id})">편집</button>
+            <button class="table-action-btn" onclick="adminMoveAwardToHistory('${sid}',${a.id})" title="수업·도전 이력으로 이동">📚 이동</button>
+            <button class="table-action-btn danger" onclick="adminDeleteStuAward('${sid}',${a.id})">삭제</button>
+          </div>
+        </div>
+        <div style="font-weight:500;font-size:0.9rem" id="saarow_${a.id}">${a.name}</div>
+        ${a.org?`<div style="font-size:0.8rem;color:var(--ink3)">${a.org}</div>`:''}
+        ${a.memo?`<div style="font-size:0.78rem;color:var(--ink4)">${a.memo}</div>`:''}
+      </div>`).join('');
+}
+function openAdminStuAwardForm(){
+  const students=DB.get('students',[]);
+  const sel=document.getElementById('saa_student');
+  if(sel) sel.innerHTML=students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('saa_date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('adminStuAwardForm').style.display='block';
+}
+function openAdminStuAwardBulk(){
+  document.getElementById('adminStuAwardBulk').style.display='block';
+}
+function saveAdminStuAward(){
+  const sid=document.getElementById('saa_student').value;
+  const rec={
+    id:Date.now(),
+    date:document.getElementById('saa_date').value,
+    type:document.getElementById('saa_type').value,
+    name:document.getElementById('saa_name').value.trim(),
+    org:document.getElementById('saa_org').value.trim(),
+    memo:document.getElementById('saa_memo').value.trim()
+  };
+  if(!rec.name){alert('이름을 입력해주세요.');return;}
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0){alert('학생을 찾을 수 없습니다.');return;}
+  if(!students[idx].studentAwards) students[idx].studentAwards=[];
+  students[idx].studentAwards.unshift(rec);
+  DB.set('students',students);
+  document.getElementById('adminStuAwardForm').style.display='none';
+  const sel=document.getElementById('adminStuAwardStudentSel');
+  if(sel) sel.value=sid;
+  renderAdminStuAwards();
+  alert('저장되었습니다!');
+}
+function adminDeleteStuAward(sid,id){
+  if(!confirm('삭제하시겠습니까?')) return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx>=0){
+    students[idx].studentAwards=(students[idx].studentAwards||[]).filter(a=>a.id!==id);
+    DB.set('students',students);
+  }
+  renderAdminStuAwards();
+}
+function adminEditStuAwardRow(sid,id){
+  const students=DB.get('students',[]);
+  const s=students.find(x=>x.id===sid);
+  if(!s) return;
+  const a=(s.studentAwards||[]).find(x=>x.id===id);
+  if(!a) return;
+  const el=document.getElementById(`saarow_${id}`);
+  if(!el) return;
+  el.parentElement.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+      <input class="form-input" id="saae_date_${id}" value="${a.date||''}" type="date" style="font-size:0.82rem">
+      <select class="form-input" id="saae_type_${id}" style="font-size:0.82rem">
+        ${['자격증','대회출전','수상'].map(t=>`<option ${a.type===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+      <div></div>
+    </div>
+    <input class="form-input" id="saae_name_${id}" value="${(a.name||'').replace(/"/g,'&quot;')}" placeholder="이름" style="margin-bottom:6px">
+    <input class="form-input" id="saae_org_${id}" value="${(a.org||'').replace(/"/g,'&quot;')}" placeholder="주최/발급기관" style="margin-bottom:8px">
+    <div style="display:flex;gap:6px">
+      <button class="table-action-btn primary" onclick="adminSaveStuAwardRow('${sid}',${id})">저장</button>
+      <button class="table-action-btn" onclick="renderAdminStuAwards()">취소</button>
+    </div>`;
+}
+function adminSaveStuAwardRow(sid,id){
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0) return;
+  const ai=(students[idx].studentAwards||[]).findIndex(a=>a.id===id);
+  if(ai<0) return;
+  students[idx].studentAwards[ai].date=document.getElementById(`saae_date_${id}`).value;
+  students[idx].studentAwards[ai].type=document.getElementById(`saae_type_${id}`).value;
+  students[idx].studentAwards[ai].name=document.getElementById(`saae_name_${id}`).value;
+  students[idx].studentAwards[ai].org=document.getElementById(`saae_org_${id}`).value;
+  DB.set('students',students);
+  renderAdminStuAwards();
+}
+function saveBulkStuAwardText(){
+  const text=document.getElementById('bulk_stuaward_text')?.value?.trim();
+  if(!text){alert('내용을 입력해주세요.');return;}
+  const students=DB.get('students',[]);
+  const lines=text.split('\n').filter(l=>l.trim());
+  let saved=0, failed=[];
+  lines.forEach(line=>{
+    const parts=line.split(',').map(p=>p.trim());
+    if(parts.length<4){failed.push(line);return;}
+    const [name,date,type,aname,org=''] = parts;
+    const idx=students.findIndex(s=>s.name===name);
+    if(idx<0){failed.push(`"${name}" 학생 없음`);return;}
+    if(!students[idx].studentAwards) students[idx].studentAwards=[];
+    students[idx].studentAwards.unshift({id:Date.now()+saved,date,type,name:aname,org});
+    saved++;
+  });
+  DB.set('students',students);
+  document.getElementById('adminStuAwardBulk').style.display='none';
+  document.getElementById('bulk_stuaward_text').value='';
+  renderAdminStuAwardsTab();
+  alert(`${saved}건 저장완료${failed.length?'\n실패: '+failed.join(', '):''}`);
+}
+
+/* 자격증·수상이력 업로드 — 파일 입력 */
+function handleStuAwardFileDrop(e){
+  const file=e.dataTransfer?.files?.[0];
+  if(file) processStuAwardFile(file);
+}
+function importStuAwardExcel(input){
+  const file=input.files[0];
+  if(!file) return;
+  input.value='';
+  processStuAwardFile(file);
+}
+function processStuAwardFile(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'){
+    const r=new FileReader();
+    r.onload=e=>{
+      const text=e.target.result.replace(/^\uFEFF/,'');
+      showStuAwardImportPreview(parseStuAwardCSV(text));
+    };
+    r.readAsText(file,'UTF-8');
+  } else if(ext==='xlsx'||ext==='xls'){
+    loadSheetJS(()=>{
+      const r=new FileReader();
+      r.onload=e=>{
+        try{
+          const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+          const ws=wb.Sheets[wb.SheetNames[0]];
+          showStuAwardImportPreview(parseStuAwardCSV(XLSX.utils.sheet_to_csv(ws)));
+        }catch(err){alert('파일을 읽는 데 실패했습니다.\n'+err.message);}
+      };
+      r.readAsArrayBuffer(file);
+    });
+  } else {
+    alert('.xlsx 또는 .csv 파일만 올려주세요.');
+  }
+}
+function parseStuAwardCSV(text){
+  const lines=text.trim().split(/\r?\n/);
+  if(lines.length<2) return [];
+  function parseLine(line){
+    let result=[],cur='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+      else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+      else cur+=c;
+    }
+    result.push(cur.trim());
+    return result.map(v=>v.replace(/^"|"$/g,'').trim());
+  }
+  const headers=parseLine(lines[0]);
+  function pick(obj,...keys){
+    for(const k of keys) if(obj[k]!==undefined&&obj[k]!=='') return obj[k];
+    return '';
+  }
+  return lines.slice(1).map(line=>{
+    if(!line.trim()) return null;
+    const vals=parseLine(line);
+    const obj={};
+    headers.forEach((h,i)=>{ obj[h]=vals[i]||''; });
+    return {
+      name: pick(obj,'학생이름','이름','name','학생명','성명'),
+      date: pick(obj,'날짜','date'),
+      type: pick(obj,'종류','type') || '자격증',
+      aname:pick(obj,'이름','자격증명','대회명','수상명','name'),
+      org:  pick(obj,'주최','발급기관','org')
+    };
+  }).filter(Boolean);
+}
+let _stuAwardImportRows=[];
+function showStuAwardImportPreview(rows){
+  const students=DB.get('students',[]);
+  _stuAwardImportRows=rows;
+  const modal=document.getElementById('stuAwardImportModal');
+  const tbody=document.getElementById('stuAwardImportBody');
+  const summary=document.getElementById('stuAwardImportSummary');
+  if(!modal||!tbody) return;
+  let okCount=0, errCount=0;
+  tbody.innerHTML=rows.map((r,i)=>{
+    const found=students.find(s=>s.name===r.name);
+    const validType=['자격증','대회출전','수상'].includes(r.type);
+    const ok=found&&r.name&&r.date&&r.aname&&validType;
+    if(ok) okCount++; else errCount++;
+    const status=ok
+      ?`<span style="color:#2d7a2d;font-size:0.78rem">✅ 정상</span>`
+      :`<span style="color:#c0392b;font-size:0.78rem">⚠️ ${!found?'학생없음':!validType?'종류오류':'필드누락'}</span>`;
+    return `<tr style="${ok?'':'background:#fff5f5'}">
+      <td style="text-align:center">${i+1}</td>
+      <td><strong>${r.name||'—'}</strong></td>
+      <td style="white-space:nowrap">${r.date||'—'}</td>
+      <td>
+        <select onchange="_stuAwardImportRows[${i}].type=this.value">
+          ${['자격증','대회출전','수상'].map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </td>
+      <td>${r.aname||'—'}</td>
+      <td style="color:var(--ink4)">${r.org||''}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+  summary.innerHTML=`총 <strong>${rows.length}</strong>건 인식 &nbsp;·&nbsp; <span style="color:#2d7a2d">✅ ${okCount}건 저장 가능</span>${errCount?` &nbsp;·&nbsp; <span style="color:#c0392b">⚠️ ${errCount}건 오류 (저장 제외)</span>`:''}`;
+  document.getElementById('stuAwardImportConfirmBtn').textContent=`✅ ${okCount}건 저장`;
+  modal.style.display='block';
+}
+function confirmStuAwardImport(){
+  const students=DB.get('students',[]);
+  let saved=0;
+  _stuAwardImportRows.forEach(r=>{
+    const idx=students.findIndex(s=>s.name===r.name);
+    const validType=['자격증','대회출전','수상'].includes(r.type);
+    if(idx<0||!r.name||!r.date||!r.aname||!validType) return;
+    if(!students[idx].studentAwards) students[idx].studentAwards=[];
+    students[idx].studentAwards.unshift({id:Date.now()+saved,date:r.date,type:r.type,name:r.aname,org:r.org||''});
+    saved++;
+  });
+  DB.set('students',students);
+  document.getElementById('stuAwardImportModal').style.display='none';
+  document.getElementById('adminStuAwardBulk').style.display='none';
+  _stuAwardImportRows=[];
+  renderAdminStuAwardsTab();
+  alert(`${saved}건 저장 완료!`);
+}
+function downloadStuAwardTemplate(){
+  const bom='\uFEFF';
+  const header='학생이름,날짜,종류,이름,주최\n';
+  const sample=[
+    '홍길동,2025-03-15,자격증,COS PRO 3급,YBM',
+    '김철수,2025-05-20,대회출전,전국 SW 경진대회 출전,교육부 주최',
+    '이영희,2025-08-10,수상,대회 2위,큐비아랩',
+  ].join('\n')+'\n';
+  const blob=new Blob([bom+header+sample],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='자격증수상이력_일괄등록양식.csv';
+  a.click();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const dz=document.getElementById('stuAwardDropZone');
+  if(dz) dz.addEventListener('click',()=>document.getElementById('stuAwardFileInput').click());
+});
 
 /* ═══ Q-Grand Slam 학생 포털 연동 (근거 표시) ═══ */
 function renderStudentSlam(){
@@ -7813,7 +8257,7 @@ function deleteStudentAward(id){
 function renderStudentAwards(){
   const el=document.getElementById('studentAwardList');
   if(!el||!currentUser) return;
-  const awards=currentUser.studentAwards||[];
+  const awards=[...(currentUser.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const typeIcon={자격증:'📜',대회출전:'🏁',수상:'🏆'};
   if(!awards.length){
     el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 기록이 없습니다. 자격증, 대회출전, 수상이력을 추가해보세요!</div>';
@@ -7890,7 +8334,7 @@ function deleteStudentHistory(id){
 function renderStudentHistory(){
   const el=document.getElementById('studentHistoryList');
   if(!el||!currentUser) return;
-  let records=currentUser.history||[];
+  let records=[...(currentUser.history||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(currentHistoryFilter!=='전체') records=records.filter(r=>r.type===currentHistoryFilter);
   const typeIcon={수업이수:'✅',대회출전:'🏁','수상·자격증':'🏆',기타:'📌'};
   const typeBg={수업이수:'rgba(55,138,221,0.1)',대회출전:'rgba(186,117,23,0.1)','수상·자격증':'rgba(29,158,117,0.1)',기타:'rgba(136,135,128,0.1)'};

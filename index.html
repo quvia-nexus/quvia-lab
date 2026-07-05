@@ -3832,8 +3832,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item active" onclick="switchPortalTab('student','info',this)">내 정보</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">수업결과</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','report',this)">탐구보고서</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('student','history',this)">수업·도전 이력</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('student','awards',this)">자격증·수상이력</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('student','footprint',this)">🐾 탐구발자국</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','slam',this)">Q-Grand Slam</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','pdf',this)">포트폴리오 PDF</div>
     </div>
@@ -3943,106 +3942,60 @@ input, textarea, select { font-family: var(--sans); }
         </div>
       </div>
 
-      <!-- 수업·도전 이력 -->
-      <div id="student-tab-history" class="portal-tab">
+      <!-- 🐾 탐구발자국 (통합) -->
+      <div id="student-tab-footprint" class="portal-tab">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <div style="font-size:1rem;font-weight:500;color:var(--ink)">수업 · 도전 이력</div>
-          <button class="table-action-btn primary" onclick="openStudentHistoryForm()">+ 새 기록 추가</button>
+          <div style="font-size:1rem;font-weight:600;color:var(--ink)">🐾 탐구발자국</div>
+          <button class="table-action-btn primary" onclick="openStudentFootprintForm()">+ 새 기록 추가</button>
         </div>
 
-        <!-- 필터 탭 -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="historyFilterRow">
-          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('전체',this)">전체</button>
-          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('수업이수',this)">수업 이수</button>
-          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('대회출전',this)">대회 출전</button>
-          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('수상·자격증',this)">수상·자격증</button>
-          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterHistory('기타',this)">기타</button>
+        <!-- 카테고리 필터 -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="footprintFilterRow">
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem;background:var(--g2);color:#fff;border-color:var(--g2)" onclick="filterFootprint('전체',this)">전체</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterFootprint('활동이력',this)">📚 활동이력</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterFootprint('수상기록',this)">🏆 수상기록</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterFootprint('자격증취득',this)">📜 자격증 취득</button>
+          <button class="table-action-btn" style="border-radius:20px;font-size:0.78rem" onclick="filterFootprint('기타',this)">📌 기타</button>
         </div>
 
         <!-- 입력 폼 -->
-        <div id="studentHistoryForm" style="display:none" class="card" style="margin-bottom:16px">
-          <div style="font-weight:500;margin-bottom:12px">새 기록 작성</div>
+        <div id="studentFootprintForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">새 발자국 기록</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
             <div class="form-group" style="margin:0">
               <label class="form-label">날짜</label>
-              <input class="form-input" id="sh_date" type="date">
+              <input class="form-input" id="fp_date" type="date">
             </div>
             <div class="form-group" style="margin:0">
-              <label class="form-label">종류</label>
-              <select class="form-input" id="sh_type">
-                <option value="수업이수">✅ 수업 이수</option>
-                <option value="대회출전">🏁 대회 출전</option>
-                <option value="수상·자격증">🏆 수상·자격증</option>
+              <label class="form-label">분류</label>
+              <select class="form-input" id="fp_type">
+                <option value="활동이력">📚 활동이력 (수업이수 · 대회출전)</option>
+                <option value="수상기록">🏆 수상기록</option>
+                <option value="자격증취득">📜 자격증 취득</option>
                 <option value="기타">📌 기타</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">내용 (과정명 / 대회명 / 수상명)</label>
-            <input class="form-input" id="sh_title" type="text" placeholder="예: Python 기초 과정 이수 / 전국 SW 경진대회 / COS PRO 3급">
+            <label class="form-label">내용 (과정명 / 대회명 / 수상명 / 자격증명)</label>
+            <input class="form-input" id="fp_title" type="text" placeholder="예: Python 기초 과정 이수 / COS PRO 3급 / 전국 SW 경진대회 금상">
           </div>
           <div class="form-group">
-            <label class="form-label">상세 (기간·주최·학년 등)</label>
-            <input class="form-input" id="sh_detail" type="text" placeholder="예: 24주 완료 / 교육부 주최 / LV.3 Probe">
+            <label class="form-label">상세 (주최 · 기간 · 기관 등)</label>
+            <input class="form-input" id="fp_detail" type="text" placeholder="예: YBM / 교육부 주최 / 24주 완료">
           </div>
           <div class="form-group">
             <label class="form-label">메모 (선택)</label>
-            <input class="form-input" id="sh_memo" type="text" placeholder="추가 내용">
+            <input class="form-input" id="fp_memo" type="text" placeholder="추가 내용">
           </div>
           <div style="display:flex;gap:8px">
-            <button class="form-submit" style="flex:1" onclick="saveStudentHistory()">저장</button>
-            <button class="table-action-btn" onclick="closeStudentHistoryForm()">취소</button>
+            <button class="form-submit" style="flex:1" onclick="saveStudentFootprint()">저장</button>
+            <button class="table-action-btn" onclick="closeStudentFootprintForm()">취소</button>
           </div>
         </div>
 
         <!-- 목록 -->
-        <div id="studentHistoryList"></div>
-      </div>
-
-      <!-- 자격증·수상이력 -->
-      <div id="student-tab-awards" class="portal-tab">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <div style="font-size:1rem;font-weight:500;color:var(--ink)">자격증 · 대회출전 · 수상이력</div>
-          <button class="table-action-btn primary" onclick="openStudentAwardForm()">+ 새 기록 추가</button>
-        </div>
-
-        <!-- 입력 폼 -->
-        <div id="studentAwardForm" style="display:none" class="card" style="margin-bottom:16px">
-          <div style="font-weight:500;margin-bottom:12px">새 기록 작성</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-            <div class="form-group" style="margin:0">
-              <label class="form-label">날짜</label>
-              <input class="form-input" id="sa_date" type="date">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">종류</label>
-              <select class="form-input" id="sa_type">
-                <option value="자격증">📜 자격증</option>
-                <option value="대회출전">🏁 대회출전</option>
-                <option value="수상">🏆 수상</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">이름 (자격증명 / 대회명 / 수상명)</label>
-            <input class="form-input" id="sa_name" type="text" placeholder="예: COS PRO 3급, 전국 SW 경진대회, 과기부 장관상">
-          </div>
-          <div class="form-group">
-            <label class="form-label">주최 기관 (선택)</label>
-            <input class="form-input" id="sa_org" type="text" placeholder="예: YBM, 교육부, 과학기술정보통신부">
-          </div>
-          <div class="form-group">
-            <label class="form-label">메모 (선택)</label>
-            <input class="form-input" id="sa_memo" type="text" placeholder="추가 내용">
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="form-submit" style="flex:1" onclick="saveStudentAward()">저장</button>
-            <button class="table-action-btn" onclick="closeStudentAwardForm()">취소</button>
-          </div>
-        </div>
-
-        <!-- 목록 -->
-        <div id="studentAwardList"></div>
+        <div id="studentFootprintList"></div>
       </div>
 
       <!-- PDF -->
@@ -4050,7 +4003,7 @@ input, textarea, select { font-family: var(--sans); }
         <div class="card" style="margin-bottom:16px">
           <div class="card-title">포트폴리오 미리보기 · 저장</div>
           <p style="font-size:0.88rem;color:var(--ink3);margin-bottom:16px;line-height:1.7">
-            지금까지의 탐구보고서, Q-Grand Slam 현황, 수업·도전 이력, 자격증·수상이력, 나의 꿈을 확인합니다.
+            지금까지의 탐구보고서, Q-Grand Slam 현황, 탐구발자국(활동이력·수상기록·자격증 취득), 나의 꿈을 확인합니다.
           </p>
           <button class="table-action-btn primary" style="margin-bottom:10px;width:100%" onclick="previewPortfolio()">👁️ 포트폴리오 미리보기</button>
           <div id="pdfBtnArea"></div>
@@ -4196,8 +4149,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','reviews',this)">⭐ 학부모 리뷰</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','events',this)">📣 이벤트 팝업</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','portfolios',this)">포트폴리오 확인</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('admin','history',this)">수업·도전 이력</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('admin','stuawards',this)">🏆 자격증·수상이력</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','footprint',this)">🐾 탐구발자국</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','logs',this)">교육/상담일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','payroll',this)">💰 급여명세서</div>
     </div>
@@ -4314,171 +4266,9 @@ input, textarea, select { font-family: var(--sans); }
           </div>
         </div>
       </div>
-      <div id="admin-tab-stuawards" class="portal-tab">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:600;font-size:1rem">🏆 자격증·수상이력 관리</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="table-action-btn primary" onclick="openAdminStuAwardForm()">+ 개별 추가</button>
-            <button class="table-action-btn" onclick="openAdminStuAwardBulk()">📋 일괄 업로드</button>
-          </div>
-        </div>
+      <div id="admin-tab-stuawards" class="portal-tab" style="display:none"></div>
 
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-          <label class="form-label" style="margin:0;white-space:nowrap">학생 선택</label>
-          <select class="form-input" id="adminStuAwardStudentSel" style="max-width:200px" onchange="renderAdminStuAwards()">
-            <option value="">-- 학생 선택 --</option>
-          </select>
-        </div>
-
-        <!-- 개별 추가 폼 -->
-        <div id="adminStuAwardForm" style="display:none" class="card" style="margin-bottom:16px">
-          <div style="font-weight:500;margin-bottom:12px">자격증·수상이력 추가</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-            <div class="form-group" style="margin:0">
-              <label class="form-label">학생</label>
-              <select class="form-input" id="saa_student"></select>
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">날짜</label>
-              <input class="form-input" id="saa_date" type="date">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">종류</label>
-              <select class="form-input" id="saa_type">
-                <option value="자격증">자격증</option>
-                <option value="대회출전">대회출전</option>
-                <option value="수상">수상</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">이름 (자격증명/대회명/수상명)</label>
-            <input class="form-input" id="saa_name" type="text" placeholder="예: COS PRO 3급 / 전국 SW 경진대회 대상">
-          </div>
-          <div class="form-group">
-            <label class="form-label">주최/발급기관</label>
-            <input class="form-input" id="saa_org" type="text" placeholder="예: YBM / 교육부">
-          </div>
-          <div class="form-group">
-            <label class="form-label">메모</label>
-            <input class="form-input" id="saa_memo" type="text" placeholder="추가 설명 (선택)">
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="table-action-btn primary" onclick="saveAdminStuAward()">저장</button>
-            <button class="table-action-btn" onclick="document.getElementById('adminStuAwardForm').style.display='none'">취소</button>
-          </div>
-        </div>
-
-        <!-- 일괄 업로드 폼 -->
-        <div id="adminStuAwardBulk" style="display:none;margin-bottom:16px" class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-            <div style="font-weight:600;font-size:0.95rem">📋 자격증·수상이력 일괄 업로드</div>
-            <button class="table-action-btn" onclick="downloadStuAwardTemplate()">📥 양식 다운로드 (.csv)</button>
-          </div>
-
-          <label id="stuAwardDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--border2);border-radius:10px;padding:28px 16px;cursor:pointer;background:var(--g6);margin-bottom:14px;transition:border-color 0.2s"
-            ondragover="event.preventDefault();this.style.borderColor='var(--g3)'"
-            ondragleave="this.style.borderColor='var(--border2)'"
-            ondrop="event.preventDefault();this.style.borderColor='var(--border2)';handleStuAwardFileDrop(event)">
-            <input type="file" accept=".xlsx,.csv" style="display:none" id="stuAwardFileInput" onchange="importStuAwardExcel(this)">
-            <div style="font-size:2rem;margin-bottom:8px">📂</div>
-            <div style="font-weight:500;margin-bottom:4px">엑셀(.xlsx) 또는 CSV 파일을 여기에 드래그하거나 클릭</div>
-            <div style="font-size:0.78rem;color:var(--ink4)">양식 다운로드 후 작성해서 올려주세요</div>
-          </label>
-
-          <div style="background:#f4f6f2;border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--ink3);margin-bottom:12px;line-height:1.8">
-            <strong>필수 열:</strong> 학생이름, 날짜(YYYY-MM-DD), 종류, 이름<br>
-            <strong>선택 열:</strong> 주최, 메모<br>
-            <strong>종류 값:</strong> 자격증 / 대회출전 / 수상<br>
-            <strong>예시:</strong> 홍길동, 2025-03-15, 자격증, COS PRO 3급, YBM
-          </div>
-
-          <details style="margin-bottom:10px">
-            <summary style="font-size:0.82rem;color:var(--ink4);cursor:pointer;margin-bottom:8px">✏️ 텍스트로 직접 입력하기</summary>
-            <textarea class="form-input form-textarea" id="bulk_stuaward_text" rows="5" style="margin-top:8px"
-              placeholder="홍길동, 2025-03-15, 자격증, COS PRO 3급, YBM&#10;김철수, 2025-05-20, 대회출전, 전국 SW 경진대회, 교육부 주최&#10;이영희, 2025-08-10, 수상, 대회 2위, 큐비아랩"></textarea>
-            <button class="table-action-btn primary" style="margin-top:8px" onclick="saveBulkStuAwardText()">텍스트로 저장</button>
-          </details>
-
-          <div style="display:flex;gap:8px">
-            <button class="table-action-btn" onclick="document.getElementById('adminStuAwardBulk').style.display='none'">닫기</button>
-          </div>
-        </div>
-
-        <!-- 일괄 업로드 미리보기 모달 -->
-        <div id="stuAwardImportModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);overflow-y:auto">
-          <div style="background:#fff;border-radius:14px;max-width:820px;margin:40px auto;padding:28px;position:relative">
-            <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px">📋 자격증·수상이력 일괄 업로드 미리보기</div>
-            <div id="stuAwardImportSummary" style="font-size:0.82rem;color:var(--ink4);margin-bottom:16px"></div>
-            <div style="overflow-x:auto;margin-bottom:16px">
-              <table class="admin-table" id="stuAwardImportTable">
-                <thead><tr>
-                  <th>#</th><th>학생이름</th><th>날짜</th><th>종류</th><th>이름</th><th>주최</th><th>상태</th>
-                </tr></thead>
-                <tbody id="stuAwardImportBody"></tbody>
-              </table>
-            </div>
-            <div style="display:flex;gap:10px;justify-content:flex-end">
-              <button class="table-action-btn" onclick="document.getElementById('stuAwardImportModal').style.display='none'">취소</button>
-              <button class="table-action-btn primary" id="stuAwardImportConfirmBtn" onclick="confirmStuAwardImport()">✅ 확인 후 저장</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 목록 -->
-        <div id="adminStuAwardList"></div>
-      </div>
-      <div id="admin-tab-works" class="portal-tab" style="display:none"></div>
-      <div id="admin-tab-gallery" class="portal-tab" style="display:none"></div>
-
-      <!-- 🌐 홈페이지 콘텐츠 (구글시트 통합 관리) -->
-      <div id="admin-tab-content" class="portal-tab">
-        <div style="font-weight:600;font-size:1rem;margin-bottom:6px">🌐 홈페이지 콘텐츠 관리</div>
-        <p style="font-size:0.84rem;color:var(--ink4);margin-bottom:20px">
-          공지/소식, 수상실적, 학생작품, 탐구현장은 구글 드라이브 스프레드시트로 관리됩니다.<br>
-          아래 버튼을 클릭하면 해당 시트로 바로 이동합니다.
-        </p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;max-width:700px">
-          <a href="https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/edit#gid=0" target="_blank"
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;background:#fff;border:1.5px solid var(--border2);border-radius:12px;text-decoration:none;color:var(--ink);transition:box-shadow 0.2s,border-color 0.2s"
-            onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)';this.style.borderColor='var(--g3)'"
-            onmouseout="this.style.boxShadow='';this.style.borderColor='var(--border2)'">
-            <span style="font-size:2rem">📢</span>
-            <div style="font-weight:600;font-size:0.92rem">공지 / 소식</div>
-            <div style="font-size:0.74rem;color:var(--ink4)">구글시트에서 편집 →</div>
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/edit#gid=1" target="_blank"
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;background:#fff;border:1.5px solid var(--border2);border-radius:12px;text-decoration:none;color:var(--ink);transition:box-shadow 0.2s,border-color 0.2s"
-            onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)';this.style.borderColor='var(--g3)'"
-            onmouseout="this.style.boxShadow='';this.style.borderColor='var(--border2)'">
-            <span style="font-size:2rem">🏆</span>
-            <div style="font-weight:600;font-size:0.92rem">수상 실적</div>
-            <div style="font-size:0.74rem;color:var(--ink4)">구글시트에서 편집 →</div>
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/edit#gid=2" target="_blank"
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;background:#fff;border:1.5px solid var(--border2);border-radius:12px;text-decoration:none;color:var(--ink);transition:box-shadow 0.2s,border-color 0.2s"
-            onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)';this.style.borderColor='var(--g3)'"
-            onmouseout="this.style.boxShadow='';this.style.borderColor='var(--border2)'">
-            <span style="font-size:2rem">🎨</span>
-            <div style="font-weight:600;font-size:0.92rem">학생 작품</div>
-            <div style="font-size:0.74rem;color:var(--ink4)">구글시트에서 편집 →</div>
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1hzIHBRDw4SS95ssAxwiSPi2bC1LieCjooG1GBDTGEDc/edit#gid=3" target="_blank"
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;background:#fff;border:1.5px solid var(--border2);border-radius:12px;text-decoration:none;color:var(--ink);transition:box-shadow 0.2s,border-color 0.2s"
-            onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)';this.style.borderColor='var(--g3)'"
-            onmouseout="this.style.boxShadow='';this.style.borderColor='var(--border2)'">
-            <span style="font-size:2rem">📸</span>
-            <div style="font-weight:600;font-size:0.92rem">탐구 현장</div>
-            <div style="font-size:0.74rem;color:var(--ink4)">구글시트에서 편집 →</div>
-          </a>
-        </div>
-        <div style="margin-top:20px;padding:14px 18px;background:#f0f4ff;border-radius:10px;font-size:0.8rem;color:#3a4a8a;max-width:700px">
-          💡 시트 탭(하단 탭)이 공지/수상실적/학생작품/탐구현장 순서로 구성되어 있다면 위 버튼이 정확히 연결됩니다.<br>
-          탭 순서가 다른 경우 구글시트를 열어 직접 해당 탭을 클릭하세요.
-        </div>
-      </div>
-
-      <!-- ⭐ 학부모 리뷰 관리 -->
+            <!-- ⭐ 학부모 리뷰 관리 -->
       <div id="admin-tab-reviews" class="portal-tab">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div style="font-weight:600;font-size:1rem">⭐ 학부모 리뷰 관리</div>
@@ -4596,129 +4386,120 @@ input, textarea, select { font-family: var(--sans); }
         <div id="eventList"></div>
       </div>
 
-      <!-- 수업·도전 이력 (관리자) -->
-      <div id="admin-tab-history" class="portal-tab">
+      <!-- 🐾 탐구발자국 (관리자 통합) -->
+      <div id="admin-tab-footprint" class="portal-tab">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:600;font-size:1rem">수업 · 도전 이력 관리</div>
+          <div style="font-weight:600;font-size:1rem">🐾 탐구발자국 관리</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="table-action-btn primary" onclick="openAdminHistoryForm()">+ 개별 추가</button>
-            <button class="table-action-btn" onclick="openAdminHistoryBulk()">📋 일괄 업로드</button>
+            <button class="table-action-btn primary" onclick="openAdminFootprintForm()">+ 개별 추가</button>
+            <button class="table-action-btn" onclick="openAdminFootprintBulk()">📋 일괄 업로드</button>
           </div>
         </div>
 
-        <!-- 학생 선택 -->
+        <!-- 학생 선택 + 카테고리 필터 -->
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
           <label class="form-label" style="margin:0;white-space:nowrap">학생 선택</label>
-          <select class="form-input" id="adminHistoryStudentSel" style="max-width:200px" onchange="renderAdminHistory()">
+          <select class="form-input" id="adminFootprintStudentSel" style="max-width:200px" onchange="renderAdminFootprint()">
             <option value="">-- 학생 선택 --</option>
           </select>
-          <select class="form-input" id="adminHistoryYearSel" style="max-width:120px" onchange="renderAdminHistory()">
-            <option value="">연도 전체</option>
-          </select>
-          <select class="form-input" id="adminHistoryMonthSel" style="max-width:120px" onchange="renderAdminHistory()">
-            <option value="">월 전체</option>
+          <select class="form-input" id="adminFootprintCatSel" style="max-width:160px" onchange="renderAdminFootprint()">
+            <option value="">분류 전체</option>
+            <option value="활동이력">📚 활동이력</option>
+            <option value="수상기록">🏆 수상기록</option>
+            <option value="자격증취득">📜 자격증 취득</option>
+            <option value="기타">📌 기타</option>
           </select>
         </div>
 
         <!-- 개별 추가 폼 -->
-        <div id="adminHistoryForm" style="display:none" class="card" style="margin-bottom:16px">
-          <div style="font-weight:500;margin-bottom:12px">수업·도전 이력 추가</div>
+        <div id="adminFootprintForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">🐾 탐구발자국 추가</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
             <div class="form-group" style="margin:0">
               <label class="form-label">학생</label>
-              <select class="form-input" id="ah_student"></select>
+              <select class="form-input" id="afp_student"></select>
             </div>
             <div class="form-group" style="margin:0">
               <label class="form-label">날짜</label>
-              <input class="form-input" id="ah_date" type="date">
+              <input class="form-input" id="afp_date" type="date">
             </div>
             <div class="form-group" style="margin:0">
-              <label class="form-label">종류</label>
-              <select class="form-input" id="ah_type">
-                <option value="수업이수">수업 이수</option>
-                <option value="대회출전">대회 출전</option>
-                <option value="수상·자격증">수상·자격증</option>
-                <option value="기타">기타</option>
+              <label class="form-label">분류</label>
+              <select class="form-input" id="afp_type">
+                <option value="활동이력">📚 활동이력</option>
+                <option value="수상기록">🏆 수상기록</option>
+                <option value="자격증취득">📜 자격증 취득</option>
+                <option value="기타">📌 기타</option>
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">내용</label>
-            <input class="form-input" id="ah_title" type="text" placeholder="과정명 / 대회명 / 수상명">
+            <label class="form-label">내용 (과정명 / 대회명 / 수상명 / 자격증명)</label>
+            <input class="form-input" id="afp_title" type="text" placeholder="예: Python 기초 이수 / COS PRO 3급 / 전국 SW 경진대회 금상">
           </div>
           <div class="form-group">
-            <label class="form-label">상세 (기간·주최·레벨 등)</label>
-            <input class="form-input" id="ah_detail" type="text" placeholder="24주 완료 / 교육부 주최 / LV.3">
+            <label class="form-label">상세 (주최 · 기간 · 기관 등)</label>
+            <input class="form-input" id="afp_detail" type="text" placeholder="예: YBM / 교육부 주최 / 24주 완료">
           </div>
           <div style="display:flex;gap:8px">
-            <button class="table-action-btn primary" onclick="saveAdminHistory()">저장</button>
-            <button class="table-action-btn" onclick="document.getElementById('adminHistoryForm').style.display='none'">취소</button>
+            <button class="table-action-btn primary" onclick="saveAdminFootprint()">저장</button>
+            <button class="table-action-btn" onclick="document.getElementById('adminFootprintForm').style.display='none'">취소</button>
           </div>
         </div>
 
         <!-- 일괄 업로드 폼 -->
-        <div id="adminHistoryBulk" style="display:none;margin-bottom:16px" class="card">
+        <div id="adminFootprintBulk" style="display:none;margin-bottom:16px" class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-            <div style="font-weight:600;font-size:0.95rem">📋 수업·도전 이력 일괄 업로드</div>
-            <button class="table-action-btn" onclick="downloadHistoryTemplate()">📥 양식 다운로드 (.csv)</button>
+            <div style="font-weight:600;font-size:0.95rem">📋 탐구발자국 일괄 업로드</div>
+            <button class="table-action-btn" onclick="downloadFootprintTemplate()">📥 양식 다운로드 (.csv)</button>
           </div>
-
-          <!-- 파일 업로드 영역 -->
-          <label id="historyDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--border2);border-radius:10px;padding:28px 16px;cursor:pointer;background:var(--g6);margin-bottom:14px;transition:border-color 0.2s"
+          <label id="footprintDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--border2);border-radius:10px;padding:28px 16px;cursor:pointer;background:var(--g6);margin-bottom:14px;transition:border-color 0.2s"
             ondragover="event.preventDefault();this.style.borderColor='var(--g3)'"
             ondragleave="this.style.borderColor='var(--border2)'"
-            ondrop="event.preventDefault();this.style.borderColor='var(--border2)';handleHistoryFileDrop(event)">
-            <input type="file" accept=".xlsx,.csv" style="display:none" id="historyFileInput" onchange="importHistoryExcel(this)">
+            ondrop="event.preventDefault();this.style.borderColor='var(--border2)';handleFootprintFileDrop(event)">
+            <input type="file" accept=".xlsx,.csv" style="display:none" id="footprintFileInput" onchange="importFootprintExcel(this)">
             <div style="font-size:2rem;margin-bottom:8px">📂</div>
             <div style="font-weight:500;margin-bottom:4px">엑셀(.xlsx) 또는 CSV 파일을 여기에 드래그하거나 클릭</div>
             <div style="font-size:0.78rem;color:var(--ink4)">양식 다운로드 후 작성해서 올려주세요</div>
           </label>
-
-          <!-- 열 안내 -->
           <div style="background:#f4f6f2;border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--ink3);margin-bottom:12px;line-height:1.8">
-            <strong>필수 열:</strong> 학생이름, 날짜(YYYY-MM-DD), 종류, 내용<br>
+            <strong>필수 열:</strong> 학생이름, 날짜(YYYY-MM-DD), 분류, 내용<br>
             <strong>선택 열:</strong> 상세<br>
-            <strong>종류 값:</strong> 수업이수 / 대회출전 / 수상·자격증 / 기타
+            <strong>분류 값:</strong> 활동이력 / 수상기록 / 자격증취득 / 기타<br>
+            <strong>예시:</strong> 홍길동, 2025-03-15, 활동이력, Python 기초 과정 이수, 24주 완료
           </div>
-
-          <!-- 텍스트 직접입력 토글 -->
           <details style="margin-bottom:10px">
             <summary style="font-size:0.82rem;color:var(--ink4);cursor:pointer;margin-bottom:8px">✏️ 텍스트로 직접 입력하기</summary>
-            <textarea class="form-input form-textarea" id="bulk_text" rows="5" style="margin-top:8px"
-              placeholder="홍길동, 2025-03-15, 수업이수, Python 기초 과정 이수, 24주 완료&#10;김철수, 2025-05-20, 대회출전, 전국 SW 경진대회, 교육부 주최&#10;이영희, 2025-08-10, 수상·자격증, COS PRO 3급, YBM"></textarea>
-            <button class="table-action-btn primary" style="margin-top:8px" onclick="saveBulkHistoryText()">텍스트로 저장</button>
+            <textarea class="form-input form-textarea" id="bulk_footprint_text" rows="5" style="margin-top:8px"
+              placeholder="홍길동, 2025-03-15, 활동이력, Python 기초 과정 이수, 24주 완료&#10;김철수, 2025-05-20, 수상기록, 전국 SW 경진대회 금상, 교육부 주최&#10;이영희, 2025-08-10, 자격증취득, COS PRO 3급, YBM"></textarea>
+            <button class="table-action-btn primary" style="margin-top:8px" onclick="saveBulkFootprintText()">텍스트로 저장</button>
           </details>
-
-          <div style="display:flex;gap:8px">
-            <button class="table-action-btn" onclick="document.getElementById('adminHistoryBulk').style.display='none'">닫기</button>
-          </div>
+          <button class="table-action-btn" onclick="document.getElementById('adminFootprintBulk').style.display='none'">닫기</button>
         </div>
 
         <!-- 일괄 업로드 미리보기 모달 -->
-        <div id="historyImportModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);overflow-y:auto">
-          <div style="background:#fff;border-radius:14px;max-width:800px;margin:40px auto;padding:28px;position:relative">
-            <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px">📋 이력 일괄 업로드 미리보기</div>
-            <div id="historyImportSummary" style="font-size:0.82rem;color:var(--ink4);margin-bottom:16px"></div>
+        <div id="footprintImportModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);overflow-y:auto">
+          <div style="background:#fff;border-radius:14px;max-width:820px;margin:40px auto;padding:28px;position:relative">
+            <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px">📋 탐구발자국 일괄 업로드 미리보기</div>
+            <div id="footprintImportSummary" style="font-size:0.82rem;color:var(--ink4);margin-bottom:16px"></div>
             <div style="overflow-x:auto;margin-bottom:16px">
-              <table class="admin-table" id="historyImportTable">
-                <thead><tr>
-                  <th>#</th><th>학생이름</th><th>날짜</th><th>종류</th><th>내용</th><th>상세</th><th>상태</th>
-                </tr></thead>
-                <tbody id="historyImportBody"></tbody>
+              <table class="admin-table">
+                <thead><tr><th>#</th><th>학생이름</th><th>날짜</th><th>분류</th><th>내용</th><th>상세</th><th>상태</th></tr></thead>
+                <tbody id="footprintImportBody"></tbody>
               </table>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end">
-              <button class="table-action-btn" onclick="document.getElementById('historyImportModal').style.display='none'">취소</button>
-              <button class="table-action-btn primary" id="historyImportConfirmBtn" onclick="confirmHistoryImport()">✅ 확인 후 저장</button>
+              <button class="table-action-btn" onclick="document.getElementById('footprintImportModal').style.display='none'">취소</button>
+              <button class="table-action-btn primary" id="footprintImportConfirmBtn" onclick="confirmFootprintImport()">✅ 확인 후 저장</button>
             </div>
           </div>
         </div>
 
-        <!-- 이력 목록 -->
-        <div id="adminHistoryList"></div>
+        <!-- 목록 -->
+        <div id="adminFootprintList"></div>
       </div>
 
-      <!-- 급여명세서 (관리자) -->
+            <!-- 급여명세서 (관리자) -->
       <div id="admin-tab-payroll" class="portal-tab">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div style="font-weight:600;font-size:1rem">강사 급여명세서</div>
@@ -5743,8 +5524,7 @@ function renderAdminTab(tab){
     content:()=>{},
     reviews:renderAdminReviews,
     portfolios:renderPortfolioSelect,
-    history:renderAdminHistoryTab,
-    stuawards:renderAdminStuAwardsTab,
+    footprint:renderAdminFootprintTab,
     logs:renderAdminLogs,
     dashboard:renderAdminDashboard,
     payroll:initPayrollAdminTab,
@@ -6325,13 +6105,9 @@ function viewStudentPortfolio(){
         </div>`).join('')}
       </div>
       <button class="table-action-btn primary" onclick="saveStudentSlamAll('${s.id}')">Q-Grand Slam 저장</button>
-      <div class="card-title" style="margin-top:16px">수업·도전 이력 (${(s.history||[]).length}건)</div>
-      ${(s.history||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>내용</th><th>상세</th></tr></thead><tbody>
-        ${[...(s.history||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(r=>`<tr><td>${r.date||''}</td><td>${r.type||''}</td><td>${r.title||''}</td><td>${r.detail||'-'}</td></tr>`).join('')}
-      </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
-      <div class="card-title">자격증·수상이력 (${(s.studentAwards||[]).length}건)</div>
-      ${(s.studentAwards||[]).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>종류</th><th>이름</th><th>주최</th></tr></thead><tbody>
-        ${[...(s.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(a=>`<tr><td>${a.date||''}</td><td>${a.type||''}</td><td>${a.name}</td><td>${a.org||'-'}</td></tr>`).join('')}
+      <div class="card-title" style="margin-top:16px">🐾 탐구발자국 (${getMergedFootprint(s).length}건)</div>
+      ${getMergedFootprint(s).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>분류</th><th>내용</th><th>상세</th></tr></thead><tbody>
+        ${getMergedFootprint(s).map(r=>`<tr><td>${r.date||''}</td><td>${fpTypeInfo(r.type).cat}</td><td>${r._label||''}</td><td>${r._sub||'-'}</td></tr>`).join('')}
       </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
       <div class="card-title" style="margin-top:16px">탐구보고서 (${(s.reports||[]).length}개)</div>
       ${(s.reports||[]).length===0
@@ -6655,31 +6431,18 @@ function previewPortfolio(){
       </div>`).join('')
     :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
 
-  const awardsHtml=stuAwards.length
+  const merged=getMergedFootprint(s);
+  const footprintHtml=merged.length
     ?`<table style="width:100%;border-collapse:collapse;font-size:0.85rem"><thead><tr style="background:#f4f6f2">
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
-        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
-        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">이름</th>
-        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">주최</th>
-      </tr></thead><tbody>${stuAwards.map(a=>`<tr>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.date||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.type||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${a.name}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.org||'-'}</td>
-      </tr>`).join('')}</tbody></table>`
-    :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
-
-  const historyHtml=history.length
-    ?`<table style="width:100%;border-collapse:collapse;font-size:0.85rem"><thead><tr style="background:#f4f6f2">
-        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
-        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">분류</th>
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">내용</th>
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">상세</th>
-      </tr></thead><tbody>${history.map(r=>`<tr>
+      </tr></thead><tbody>${merged.map(r=>`<tr>
         <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.date||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.type||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r.title||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.detail||'-'}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${fpTypeInfo(r.type).cat}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r._label||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r._sub||'-'}</td>
       </tr>`).join('')}</tbody></table>`
     :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
 
@@ -6723,10 +6486,8 @@ function previewPortfolio(){
         ${slamNotes[i]?`<div class="slam-note">${slamNotes[i]}</div>`:''}
       </div>`).join('')}
     </div>
-    <h2>수업·도전 이력 (${history.length}건)</h2>
-    ${historyHtml}
-    <h2>자격증·수상이력 (${stuAwards.length}건)</h2>
-    ${awardsHtml}
+    <h2>🐾 탐구발자국 (${merged.length}건)</h2>
+    ${footprintHtml}
     <h2>탐구보고서 (${reports.length}개)</h2>
     ${reportsHtml}
     <div class="footer">
@@ -6771,20 +6532,21 @@ function downloadPortfolioPDF(){
         </div>`).join('')
     : '<div style="color:#9a9a94;padding:12px">작성한 보고서가 없습니다.</div>';
 
-  // 자격증·수상이력 HTML
-  const awardsHtml = stuAwards.length
+  // 🐾 탐구발자국 통합 HTML
+  const mergedPdf=getMergedFootprint(s);
+  const footprintPdfHtml = mergedPdf.length
     ? `<table style="width:100%;border-collapse:collapse;font-size:0.85rem">
         <thead><tr style="background:#f4f6f2">
           <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
-          <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
-          <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">이름</th>
-          <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">주최</th>
+          <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">분류</th>
+          <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">내용</th>
+          <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">상세</th>
         </tr></thead>
-        <tbody>${stuAwards.map(a=>`<tr>
-          <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.date||''}</td>
-          <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.type||''}</td>
-          <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${a.name}</td>
-          <td style="padding:6px 10px;border:1px solid #e0e0d8">${a.org||'-'}</td>
+        <tbody>${mergedPdf.map(r=>`<tr>
+          <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.date||''}</td>
+          <td style="padding:6px 10px;border:1px solid #e0e0d8">${fpTypeInfo(r.type).cat}</td>
+          <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r._label||''}</td>
+          <td style="padding:6px 10px;border:1px solid #e0e0d8">${r._sub||'-'}</td>
         </tr>`).join('')}</tbody>
        </table>`
     : '<div style="color:#9a9a94;padding:12px">없음</div>';
@@ -6832,26 +6594,8 @@ function downloadPortfolioPDF(){
       </div>`).join('')}
     </div>
 
-    <h2>수업 · 도전 이력 (${(s.history||[]).length}건)</h2>
-    ${(s.history||[]).length
-      ? `<table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin-bottom:16px">
-          <thead><tr style="background:#f4f6f2">
-            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
-            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">종류</th>
-            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">내용</th>
-            <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">상세</th>
-          </tr></thead>
-          <tbody>${(s.history||[]).map(r=>`<tr>
-            <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.date||''}</td>
-            <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.type||''}</td>
-            <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r.title}</td>
-            <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.detail||'-'}</td>
-          </tr>`).join('')}</tbody>
-         </table>`
-      : '<div style="color:#9a9a94;padding:8px 0;margin-bottom:16px">없음</div>'}
-
-    <h2>자격증 · 수상이력 (${stuAwards.length}건)</h2>
-    ${awardsHtml}
+    <h2>🐾 탐구발자국 (${mergedPdf.length}건)</h2>
+    ${footprintPdfHtml}
 
     <h2>탐구보고서 (${reports.length}개)</h2>
     ${reportsHtml}
@@ -7445,86 +7189,90 @@ function adminSaveReport(sid, idx, type){
   alert('보고서가 수정되었습니다!');
 }
 
-/* ═══ 관리자 수업·도전 이력 ═══ */
-function renderAdminHistoryTab(){
+
+/* 🐾 탐구발자국 통합 타입 매핑 */
+function fpTypeInfo(type){
+  // history 배열 기존 타입 → 새 카테고리
+  const map={
+    '수업이수':'활동이력','대회출전':'활동이력','수상·자격증':'수상기록','기타':'기타',
+    // studentAwards 배열 기존 타입 → 새 카테고리
+    '수상':'수상기록','자격증':'자격증취득',
+    // 새 통합 타입 (그대로)
+    '활동이력':'활동이력','수상기록':'수상기록','자격증취득':'자격증취득'
+  };
+  const cat=map[type]||type||'기타';
+  const icon={활동이력:'📚',수상기록:'🏆',자격증취득:'📜',기타:'📌'};
+  const bg={활동이력:'rgba(55,138,221,0.1)',수상기록:'rgba(186,117,23,0.1)',자격증취득:'rgba(29,158,117,0.1)',기타:'rgba(136,135,128,0.1)'};
+  const color={활동이력:'#1e4a8a',수상기록:'#7a4a00',자격증취득:'#1e6b4a',기타:'#4a4a4a'};
+  return {cat, icon:icon[cat]||'📌', bg:bg[cat]||'rgba(0,0,0,0.05)', color:color[cat]||'var(--ink2)'};
+}
+
+/* 두 배열을 합쳐 통합 레코드 반환 */
+function getMergedFootprint(s){
+  const history=(s.history||[]).map(r=>({...r, _src:'history', _label:r.title, _sub:r.detail||''}));
+  const awards=(s.studentAwards||[]).map(a=>({...a, _src:'awards', _label:a.name, _sub:a.org||''}));
+  return [...history,...awards].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+}
+
+/* ═══════════════════════════════════
+   관리자: 탐구발자국 통합 탭
+═══════════════════════════════════ */
+function renderAdminFootprintTab(){
   const students=DB.get('students',[]);
-  // 학생 선택 드롭다운 채우기
-  const sel=document.getElementById('adminHistoryStudentSel');
+  const sel=document.getElementById('adminFootprintStudentSel');
   if(sel){
     const cur=sel.value;
     sel.innerHTML='<option value="">-- 학생 선택 --</option>'+
       students.map(s=>`<option value="${s.id}" ${s.id===cur?'selected':''}>${s.name}</option>`).join('');
   }
-  // 연도 드롭다운
-  const yrSel=document.getElementById('adminHistoryYearSel');
-  if(yrSel){
-    const curYr=yrSel.value;
-    const yr=new Date().getFullYear();
-    yrSel.innerHTML='<option value="">연도 전체</option>'+
-      Array.from({length:6},(_,i)=>yr-i).map(y=>`<option value="${y}" ${String(y)===curYr?'selected':''}>${y}년</option>`).join('');
-  }
-  // 월 드롭다운
-  const moSel=document.getElementById('adminHistoryMonthSel');
-  if(moSel&&!moSel.children.length){
-    moSel.innerHTML='<option value="">월 전체</option>'+
-      Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${i+1}월</option>`).join('');
-  }
-  renderAdminHistory();
+  renderAdminFootprint();
 }
-function renderAdminHistory(){
-  const el=document.getElementById('adminHistoryList');
+function renderAdminFootprint(){
+  const el=document.getElementById('adminFootprintList');
   if(!el) return;
-  const sid=document.getElementById('adminHistoryStudentSel')?.value;
-  const yr=document.getElementById('adminHistoryYearSel')?.value;
-  const mo=document.getElementById('adminHistoryMonthSel')?.value;
+  const sid=document.getElementById('adminFootprintStudentSel')?.value;
+  const cat=document.getElementById('adminFootprintCatSel')?.value||'';
   if(!sid){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">학생을 선택해 주세요.</div>';return;}
   const students=DB.get('students',[]);
   const s=students.find(x=>x.id===sid);
   if(!s){el.innerHTML='';return;}
-  let records=[...(s.history||[])];
-  if(yr) records=records.filter(r=>(r.date||'').startsWith(yr));
-  if(mo) records=records.filter(r=>{const d=r.date||'';return d.length>=7&&d.slice(5,7)===mo;});
-  records.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const typeIcon={수업이수:'✅',대회출전:'🏁','수상·자격증':'🏆',기타:'📌'};
-  if(!records.length){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">이력이 없습니다.</div>';return;}
+  let records=getMergedFootprint(s);
+  if(cat) records=records.filter(r=>fpTypeInfo(r.type).cat===cat);
+  if(!records.length){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">기록이 없습니다.</div>';return;}
   el.innerHTML=`<div style="margin-bottom:8px;font-size:0.82rem;color:var(--ink4)">${s.name} 학생 · ${records.length}건</div>`+
-    records.map(r=>`
-      <div class="edu-log-item" style="margin-bottom:8px">
+    records.map(r=>{
+      const {cat:c,icon,bg,color}=fpTypeInfo(r.type);
+      return `<div class="edu-log-item" style="margin-bottom:8px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
           <div style="display:flex;align-items:center;gap:8px">
-            <span>${typeIcon[r.type]||'📌'}</span>
-            <span style="font-size:0.72rem;background:var(--g5);color:var(--g2);padding:2px 8px;border-radius:20px">${r.type}</span>
+            <span>${icon}</span>
+            <span style="font-size:0.72rem;padding:2px 10px;border-radius:20px;background:${bg};color:${color};font-weight:600">${c}</span>
             <span style="font-size:0.78rem;color:var(--ink4)">${r.date||''}</span>
           </div>
           <div style="display:flex;gap:6px">
-            <button class="table-action-btn" onclick="adminEditHistoryRow('${sid}',${r.id})">편집</button>
-            <button class="table-action-btn" onclick="adminMoveHistoryToAward('${sid}',${r.id})" title="자격증·수상이력으로 이동">🏆 이동</button>
-            <button class="table-action-btn danger" onclick="adminDeleteHistory('${sid}',${r.id})">삭제</button>
+            <button class="table-action-btn" onclick="adminEditFootprintRow('${sid}','${r._src}',${r.id})">편집</button>
+            <button class="table-action-btn danger" onclick="adminDeleteFootprintRow('${sid}','${r._src}',${r.id})">삭제</button>
           </div>
         </div>
-        <div style="font-weight:500;font-size:0.9rem" id="ahrow_${r.id}">${r.title}</div>
-        ${r.detail?`<div style="font-size:0.8rem;color:var(--ink3)">${r.detail}</div>`:''}
-      </div>`).join('');
+        <div style="font-weight:500;font-size:0.9rem">${r._label||''}</div>
+        ${r._sub?`<div style="font-size:0.8rem;color:var(--ink3)">${r._sub}</div>`:''}
+      </div>`;
+    }).join('');
 }
-function openAdminHistoryForm(){
+function openAdminFootprintForm(){
   const students=DB.get('students',[]);
-  const ahSel=document.getElementById('ah_student');
-  if(ahSel) ahSel.innerHTML=students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  document.getElementById('ah_date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('adminHistoryForm').style.display='block';
+  const sel=document.getElementById('afp_student');
+  if(sel) sel.innerHTML=students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('afp_date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('adminFootprintForm').style.display='block';
 }
-function openAdminHistoryBulk(){
-  document.getElementById('adminHistoryBulk').style.display='block';
-}
-function saveAdminHistory(){
-  const sid=document.getElementById('ah_student').value;
-  const rec={
-    id:Date.now(),
-    date:document.getElementById('ah_date').value,
-    type:document.getElementById('ah_type').value,
-    title:document.getElementById('ah_title').value.trim(),
-    detail:document.getElementById('ah_detail').value.trim()
-  };
+function openAdminFootprintBulk(){document.getElementById('adminFootprintBulk').style.display='block';}
+function saveAdminFootprint(){
+  const sid=document.getElementById('afp_student').value;
+  const rec={id:Date.now(),date:document.getElementById('afp_date').value,
+    type:document.getElementById('afp_type').value,
+    title:document.getElementById('afp_title').value.trim(),
+    detail:document.getElementById('afp_detail').value.trim()};
   if(!rec.title){alert('내용을 입력해주세요.');return;}
   const students=DB.get('students',[]);
   const idx=students.findIndex(s=>s.id===sid);
@@ -7532,25 +7280,70 @@ function saveAdminHistory(){
   if(!students[idx].history) students[idx].history=[];
   students[idx].history.unshift(rec);
   DB.set('students',students);
-  document.getElementById('adminHistoryForm').style.display='none';
-  // 해당 학생 선택 후 렌더
-  const sel=document.getElementById('adminHistoryStudentSel');
+  document.getElementById('adminFootprintForm').style.display='none';
+  const sel=document.getElementById('adminFootprintStudentSel');
   if(sel) sel.value=sid;
-  renderAdminHistory();
+  renderAdminFootprint();
   alert('저장되었습니다!');
 }
-function saveBulkHistory(){
-  // 텍스트 직접입력 방식 (하위 호환)
-  const text=document.getElementById('bulk_text')?.value?.trim();
-  if(!text){alert('내용을 입력해주세요.');return;}
-  saveBulkHistoryText();
+function adminDeleteFootprintRow(sid,src,id){
+  if(!confirm('삭제하시겠습니까?')) return;
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0) return;
+  if(src==='history') students[idx].history=(students[idx].history||[]).filter(r=>r.id!==id);
+  else students[idx].studentAwards=(students[idx].studentAwards||[]).filter(a=>a.id!==id);
+  DB.set('students',students);
+  renderAdminFootprint();
 }
-function saveBulkHistoryText(){
-  const text=document.getElementById('bulk_text')?.value?.trim();
+function adminEditFootprintRow(sid,src,id){
+  const students=DB.get('students',[]);
+  const s=students.find(x=>x.id===sid);
+  if(!s) return;
+  const rec=src==='history'?(s.history||[]).find(x=>x.id===id):(s.studentAwards||[]).find(x=>x.id===id);
+  if(!rec) return;
+  const label=src==='history'?rec.title:rec.name;
+  const sub=src==='history'?(rec.detail||''):(rec.org||'');
+  // 인라인 편집 모달 대신 입력 폼에 값 채워서 열기
+  document.getElementById('afp_student').value=sid;
+  document.getElementById('afp_date').value=rec.date||'';
+  const typeMap={수업이수:'활동이력',대회출전:'활동이력','수상·자격증':'수상기록',기타:'기타',수상:'수상기록',자격증:'자격증취득',활동이력:'활동이력',수상기록:'수상기록',자격증취득:'자격증취득'};
+  document.getElementById('afp_type').value=typeMap[rec.type]||rec.type||'활동이력';
+  document.getElementById('afp_title').value=label||'';
+  document.getElementById('afp_detail').value=sub||'';
+  // 저장 버튼을 수정 모드로 전환
+  const btn=document.querySelector('#adminFootprintForm button.table-action-btn.primary');
+  if(btn){btn.textContent='수정 저장';btn.onclick=()=>adminSaveFootprintEdit(sid,src,id);}
+  document.getElementById('adminFootprintForm').style.display='block';
+}
+function adminSaveFootprintEdit(sid,src,id){
+  const students=DB.get('students',[]);
+  const idx=students.findIndex(s=>s.id===sid);
+  if(idx<0) return;
+  const date=document.getElementById('afp_date').value;
+  const type=document.getElementById('afp_type').value;
+  const title=document.getElementById('afp_title').value.trim();
+  const detail=document.getElementById('afp_detail').value.trim();
+  if(!title){alert('내용을 입력해주세요.');return;}
+  if(src==='history'){
+    const hi=(students[idx].history||[]).findIndex(r=>r.id===id);
+    if(hi>=0){students[idx].history[hi]={...students[idx].history[hi],date,type,title,detail};}
+  } else {
+    const ai=(students[idx].studentAwards||[]).findIndex(a=>a.id===id);
+    if(ai>=0){students[idx].studentAwards[ai]={...students[idx].studentAwards[ai],date,type:type,name:title,org:detail};}
+  }
+  DB.set('students',students);
+  document.getElementById('adminFootprintForm').style.display='none';
+  const btn=document.querySelector('#adminFootprintForm button.table-action-btn.primary');
+  if(btn){btn.textContent='저장';btn.onclick=saveAdminFootprint;}
+  renderAdminFootprint();
+}
+function saveBulkFootprintText(){
+  const text=document.getElementById('bulk_footprint_text')?.value?.trim();
   if(!text){alert('내용을 입력해주세요.');return;}
   const students=DB.get('students',[]);
   const lines=text.split('\n').filter(l=>l.trim());
-  let saved=0, failed=[];
+  let saved=0,failed=[];
   lines.forEach(line=>{
     const parts=line.split(',').map(p=>p.trim());
     if(parts.length<4){failed.push(line);return;}
@@ -7562,750 +7355,143 @@ function saveBulkHistoryText(){
     saved++;
   });
   DB.set('students',students);
-  document.getElementById('adminHistoryBulk').style.display='none';
-  document.getElementById('bulk_text').value='';
-  renderAdminHistoryTab();
+  document.getElementById('adminFootprintBulk').style.display='none';
+  document.getElementById('bulk_footprint_text').value='';
+  renderAdminFootprintTab();
   alert(`${saved}건 저장완료${failed.length?'\n실패: '+failed.join(', '):''}`);
 }
-
-/* 이력 일괄 업로드 — 파일 입력 */
-function handleHistoryFileDrop(e){
-  const file=e.dataTransfer?.files?.[0];
-  if(file) processHistoryFile(file);
-}
-function importHistoryExcel(input){
-  const file=input.files[0];
-  if(!file) return;
-  input.value='';
-  processHistoryFile(file);
-}
-function processHistoryFile(file){
+function handleFootprintFileDrop(e){const file=e.dataTransfer?.files?.[0];if(file) processFootprintFile(file);}
+function importFootprintExcel(input){const file=input.files[0];if(!file)return;input.value='';processFootprintFile(file);}
+function processFootprintFile(file){
   const ext=file.name.split('.').pop().toLowerCase();
   if(ext==='csv'){
     const r=new FileReader();
-    r.onload=e=>{
-      const text=e.target.result.replace(/^\uFEFF/,'');
-      showHistoryImportPreview(parseHistoryCSV(text));
-    };
+    r.onload=e=>{const text=e.target.result.replace(/^\uFEFF/,'');showFootprintImportPreview(parseFootprintCSV(text));};
     r.readAsText(file,'UTF-8');
   } else if(ext==='xlsx'||ext==='xls'){
     loadSheetJS(()=>{
       const r=new FileReader();
       r.onload=e=>{
-        try{
-          const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
-          const ws=wb.Sheets[wb.SheetNames[0]];
-          showHistoryImportPreview(parseHistoryCSV(XLSX.utils.sheet_to_csv(ws)));
-        }catch(err){alert('파일을 읽는 데 실패했습니다.\n'+err.message);}
+        try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];showFootprintImportPreview(parseFootprintCSV(XLSX.utils.sheet_to_csv(ws)));}
+        catch(err){alert('파일 읽기 실패: '+err.message);}
       };
       r.readAsArrayBuffer(file);
     });
-  } else {
-    alert('.xlsx 또는 .csv 파일만 올려주세요.');
-  }
+  } else {alert('.xlsx 또는 .csv 파일만 올려주세요.');}
 }
-function parseHistoryCSV(text){
+function parseFootprintCSV(text){
   const lines=text.trim().split(/\r?\n/);
   if(lines.length<2) return [];
-  function parseLine(line){
-    let result=[],cur='',inQ=false;
-    for(let i=0;i<line.length;i++){
-      const c=line[i];
-      if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-      else if(c===','&&!inQ){result.push(cur.trim());cur='';}
-      else cur+=c;
-    }
-    result.push(cur.trim());
-    return result.map(v=>v.replace(/^"|"$/g,'').trim());
-  }
+  function parseLine(line){let result=[],cur='',inQ=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===','&&!inQ){result.push(cur.trim());cur='';}else cur+=c;}result.push(cur.trim());return result.map(v=>v.replace(/^"|"$/g,'').trim());}
   const headers=parseLine(lines[0]);
-  function pick(obj,...keys){
-    for(const k of keys) if(obj[k]!==undefined&&obj[k]!=='') return obj[k];
-    return '';
-  }
+  function pick(obj,...keys){for(const k of keys) if(obj[k]!==undefined&&obj[k]!=='') return obj[k];return '';}
   return lines.slice(1).map(line=>{
     if(!line.trim()) return null;
-    const vals=parseLine(line);
-    const obj={};
-    headers.forEach((h,i)=>{ obj[h]=vals[i]||''; });
-    return {
-      name:  pick(obj,'학생이름','이름','name','학생명','성명'),
-      date:  pick(obj,'날짜','date'),
-      type:  pick(obj,'종류','type') || '수업이수',
-      title: pick(obj,'내용','title','과정명','대회명'),
-      detail:pick(obj,'상세','detail','기타')
-    };
+    const vals=parseLine(line);const obj={};headers.forEach((h,i)=>{obj[h]=vals[i]||'';});
+    return {name:pick(obj,'학생이름','이름','name','학생명'),date:pick(obj,'날짜','date'),type:pick(obj,'분류','종류','type')||'활동이력',title:pick(obj,'내용','title','과정명'),detail:pick(obj,'상세','detail')};
   }).filter(Boolean);
 }
-
-/* 미리보기 모달 */
-let _historyImportRows=[];
-function showHistoryImportPreview(rows){
+let _footprintImportRows=[];
+function showFootprintImportPreview(rows){
   const students=DB.get('students',[]);
-  _historyImportRows=rows;
-  const modal=document.getElementById('historyImportModal');
-  const tbody=document.getElementById('historyImportBody');
-  const summary=document.getElementById('historyImportSummary');
+  _footprintImportRows=rows;
+  const modal=document.getElementById('footprintImportModal');
+  const tbody=document.getElementById('footprintImportBody');
+  const summary=document.getElementById('footprintImportSummary');
   if(!modal||!tbody) return;
-
-  let okCount=0, errCount=0;
+  const VALID_TYPES=['활동이력','수상기록','자격증취득','기타'];
+  let okCount=0,errCount=0;
   tbody.innerHTML=rows.map((r,i)=>{
     const found=students.find(s=>s.name===r.name);
-    const validType=['수업이수','대회출전','수상·자격증','기타'].includes(r.type);
+    const validType=VALID_TYPES.includes(r.type);
     const ok=found&&r.name&&r.date&&r.title&&validType;
     if(ok) okCount++; else errCount++;
-    const status=ok
-      ?`<span style="color:#2d7a2d;font-size:0.78rem">✅ 정상</span>`
-      :`<span style="color:#c0392b;font-size:0.78rem">⚠️ ${!found?'학생없음':!validType?'종류오류':'필드누락'}</span>`;
-    return `<tr style="${ok?'':'background:#fff5f5'}">
-      <td style="text-align:center">${i+1}</td>
-      <td><strong>${r.name||'—'}</strong></td>
-      <td style="white-space:nowrap">${r.date||'—'}</td>
-      <td>
-        <select onchange="_historyImportRows[${i}].type=this.value">
-          ${['수업이수','대회출전','수상·자격증','기타'].map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}
-        </select>
-      </td>
-      <td>${r.title||'—'}</td>
-      <td style="color:var(--ink4)">${r.detail||''}</td>
-      <td>${status}</td>
-    </tr>`;
+    const status=ok?`<span style="color:#2d7a2d;font-size:0.78rem">✅ 정상</span>`:`<span style="color:#c0392b;font-size:0.78rem">⚠️ ${!found?'학생없음':!validType?'분류오류':'필드누락'}</span>`;
+    return `<tr style="${ok?'':'background:#fff5f5'}"><td style="text-align:center">${i+1}</td><td><strong>${r.name||'—'}</strong></td><td style="white-space:nowrap">${r.date||'—'}</td>
+      <td><select onchange="_footprintImportRows[${i}].type=this.value">${VALID_TYPES.map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}</select></td>
+      <td>${r.title||'—'}</td><td style="color:var(--ink4)">${r.detail||''}</td><td>${status}</td></tr>`;
   }).join('');
-
-  summary.innerHTML=`총 <strong>${rows.length}</strong>건 인식 &nbsp;·&nbsp; <span style="color:#2d7a2d">✅ ${okCount}건 저장 가능</span>${errCount?` &nbsp;·&nbsp; <span style="color:#c0392b">⚠️ ${errCount}건 오류 (저장 제외)</span>`:''}`;
-  document.getElementById('historyImportConfirmBtn').textContent=`✅ ${okCount}건 저장`;
+  summary.innerHTML=`총 <strong>${rows.length}</strong>건 &nbsp;·&nbsp; <span style="color:#2d7a2d">✅ ${okCount}건 저장 가능</span>${errCount?` &nbsp;·&nbsp; <span style="color:#c0392b">⚠️ ${errCount}건 오류</span>`:''}`;
+  document.getElementById('footprintImportConfirmBtn').textContent=`✅ ${okCount}건 저장`;
   modal.style.display='block';
 }
-function confirmHistoryImport(){
+function confirmFootprintImport(){
   const students=DB.get('students',[]);
+  const VALID=['활동이력','수상기록','자격증취득','기타'];
   let saved=0;
-  _historyImportRows.forEach(r=>{
+  _footprintImportRows.forEach(r=>{
     const idx=students.findIndex(s=>s.name===r.name);
-    const validType=['수업이수','대회출전','수상·자격증','기타'].includes(r.type);
-    if(idx<0||!r.name||!r.date||!r.title||!validType) return;
+    if(idx<0||!r.name||!r.date||!r.title||!VALID.includes(r.type)) return;
     if(!students[idx].history) students[idx].history=[];
     students[idx].history.unshift({id:Date.now()+saved,date:r.date,type:r.type,title:r.title,detail:r.detail||''});
     saved++;
   });
   DB.set('students',students);
-  document.getElementById('historyImportModal').style.display='none';
-  document.getElementById('adminHistoryBulk').style.display='none';
-  _historyImportRows=[];
-  renderAdminHistoryTab();
+  document.getElementById('footprintImportModal').style.display='none';
+  document.getElementById('adminFootprintBulk').style.display='none';
+  _footprintImportRows=[];
+  renderAdminFootprintTab();
   alert(`${saved}건 저장 완료!`);
 }
-
-/* 이력 업로드 양식 다운로드 */
-function downloadHistoryTemplate(){
+function downloadFootprintTemplate(){
   const bom='\uFEFF';
-  const header='학생이름,날짜,종류,내용,상세\n';
-  const sample=[
-    '홍길동,2025-03-15,수업이수,Python 기초 과정 이수,24주 완료',
-    '김철수,2025-05-20,대회출전,전국 SW 경진대회,교육부 주최',
-    '이영희,2025-08-10,수상·자격증,COS PRO 3급,YBM',
-  ].join('\n')+'\n';
+  const header='학생이름,날짜,분류,내용,상세\n';
+  const sample=['홍길동,2025-03-15,활동이력,Python 기초 과정 이수,24주 완료','김철수,2025-05-20,수상기록,전국 SW 경진대회 금상,교육부 주최','이영희,2025-08-10,자격증취득,COS PRO 3급,YBM'].join('\n')+'\n';
   const blob=new Blob([bom+header+sample],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='수업도전이력_일괄등록양식.csv';
-  a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='탐구발자국_일괄등록양식.csv';a.click();
 }
-
-/* 드롭존 클릭 → 파일선택 연동 */
 document.addEventListener('DOMContentLoaded',()=>{
-  const dz=document.getElementById('historyDropZone');
-  if(dz) dz.addEventListener('click',()=>document.getElementById('historyFileInput').click());
+  const dz=document.getElementById('footprintDropZone');
+  if(dz) dz.addEventListener('click',()=>document.getElementById('footprintFileInput').click());
 });
-function adminDeleteHistory(sid, id){
-  if(!confirm('삭제하시겠습니까?')) return;
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx>=0){
-    students[idx].history=(students[idx].history||[]).filter(r=>r.id!==id);
-    DB.set('students',students);
-  }
-  renderAdminHistory();
-}
-function adminEditHistoryRow(sid, id){
-  const students=DB.get('students',[]);
-  const s=students.find(x=>x.id===sid);
-  if(!s) return;
-  const r=(s.history||[]).find(x=>x.id===id);
-  if(!r) return;
-  const el=document.getElementById(`ahrow_${id}`);
-  if(!el) return;
-  el.parentElement.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-      <input class="form-input" id="ahe_date_${id}" value="${r.date||''}" type="date" style="font-size:0.82rem">
-      <select class="form-input" id="ahe_type_${id}" style="font-size:0.82rem">
-        ${['수업이수','대회출전','수상·자격증','기타'].map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}
-      </select>
-      <div></div>
-    </div>
-    <input class="form-input" id="ahe_title_${id}" value="${(r.title||'').replace(/"/g,'&quot;')}" placeholder="내용" style="margin-bottom:6px">
-    <input class="form-input" id="ahe_detail_${id}" value="${(r.detail||'').replace(/"/g,'&quot;')}" placeholder="상세" style="margin-bottom:8px">
-    <div style="display:flex;gap:6px">
-      <button class="table-action-btn primary" onclick="adminSaveHistoryRow('${sid}',${id})">저장</button>
-      <button class="table-action-btn" onclick="renderAdminHistory()">취소</button>
-    </div>`;
-}
-function adminSaveHistoryRow(sid, id){
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx<0) return;
-  const hi=(students[idx].history||[]).findIndex(r=>r.id===id);
-  if(hi<0) return;
-  students[idx].history[hi].date=document.getElementById(`ahe_date_${id}`).value;
-  students[idx].history[hi].type=document.getElementById(`ahe_type_${id}`).value;
-  students[idx].history[hi].title=document.getElementById(`ahe_title_${id}`).value;
-  students[idx].history[hi].detail=document.getElementById(`ahe_detail_${id}`).value;
-  DB.set('students',students);
-  renderAdminHistory();
-}
-function adminMoveHistoryToAward(sid,id){
-  if(!confirm('이 항목을 자격증·수상이력으로 이동하시겠습니까?'))return;
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx<0) return;
-  const hi=(students[idx].history||[]).findIndex(r=>r.id===id);
-  if(hi<0) return;
-  const r=students[idx].history[hi];
-  students[idx].history.splice(hi,1);
-  if(!students[idx].studentAwards) students[idx].studentAwards=[];
-  const typeMap={'수상·자격증':'자격증','대회출전':'대회출전',수업이수:'자격증',기타:'자격증'};
-  students[idx].studentAwards.unshift({
-    id:Date.now(), date:r.date, type:typeMap[r.type]||'자격증', name:r.title, org:r.detail||'', memo:''
-  });
-  DB.set('students',students);
-  renderAdminHistory();
-  alert('이동되었습니다.');
-}
-function adminMoveAwardToHistory(sid,id){
-  if(!confirm('이 항목을 수업·도전 이력으로 이동하시겠습니까?'))return;
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx<0) return;
-  const ai=(students[idx].studentAwards||[]).findIndex(a=>a.id===id);
-  if(ai<0) return;
-  const a=students[idx].studentAwards[ai];
-  students[idx].studentAwards.splice(ai,1);
-  if(!students[idx].history) students[idx].history=[];
-  const typeMap={자격증:'수상·자격증',대회출전:'대회출전',수상:'수상·자격증'};
-  students[idx].history.unshift({
-    id:Date.now(), date:a.date, type:typeMap[a.type]||'수상·자격증', title:a.name, detail:a.org||''
-  });
-  DB.set('students',students);
-  renderAdminStuAwards();
-  alert('이동되었습니다.');
-}
 
 /* ═══════════════════════════════════
-   관리자: 자격증·수상이력 관리 (학생별)
+   학생 포털: 탐구발자국 통합 탭
 ═══════════════════════════════════ */
-function renderAdminStuAwardsTab(){
-  const students=DB.get('students',[]);
-  const sel=document.getElementById('adminStuAwardStudentSel');
-  if(sel){
-    const cur=sel.value;
-    sel.innerHTML='<option value="">-- 학생 선택 --</option>'+
-      students.map(s=>`<option value="${s.id}" ${s.id===cur?'selected':''}>${s.name}</option>`).join('');
-  }
-  renderAdminStuAwards();
-}
-function renderAdminStuAwards(){
-  const el=document.getElementById('adminStuAwardList');
-  if(!el) return;
-  const sid=document.getElementById('adminStuAwardStudentSel')?.value;
-  if(!sid){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">학생을 선택해 주세요.</div>';return;}
-  const students=DB.get('students',[]);
-  const s=students.find(x=>x.id===sid);
-  if(!s){el.innerHTML='';return;}
-  let records=[...(s.studentAwards||[])];
-  records.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const typeIcon={자격증:'📜',대회출전:'🏁',수상:'🏆'};
-  if(!records.length){el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">기록이 없습니다.</div>';return;}
-  el.innerHTML=`<div style="margin-bottom:8px;font-size:0.82rem;color:var(--ink4)">${s.name} 학생 · ${records.length}건</div>`+
-    records.map(a=>`
-      <div class="edu-log-item" style="margin-bottom:8px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span>${typeIcon[a.type]||'📋'}</span>
-            <span style="font-size:0.72rem;background:var(--g5);color:var(--g2);padding:2px 8px;border-radius:20px">${a.type}</span>
-            <span style="font-size:0.78rem;color:var(--ink4)">${a.date||''}</span>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="table-action-btn" onclick="adminEditStuAwardRow('${sid}',${a.id})">편집</button>
-            <button class="table-action-btn" onclick="adminMoveAwardToHistory('${sid}',${a.id})" title="수업·도전 이력으로 이동">📚 이동</button>
-            <button class="table-action-btn danger" onclick="adminDeleteStuAward('${sid}',${a.id})">삭제</button>
-          </div>
-        </div>
-        <div style="font-weight:500;font-size:0.9rem" id="saarow_${a.id}">${a.name}</div>
-        ${a.org?`<div style="font-size:0.8rem;color:var(--ink3)">${a.org}</div>`:''}
-        ${a.memo?`<div style="font-size:0.78rem;color:var(--ink4)">${a.memo}</div>`:''}
-      </div>`).join('');
-}
-function openAdminStuAwardForm(){
-  const students=DB.get('students',[]);
-  const sel=document.getElementById('saa_student');
-  if(sel) sel.innerHTML=students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  document.getElementById('saa_date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('adminStuAwardForm').style.display='block';
-}
-function openAdminStuAwardBulk(){
-  document.getElementById('adminStuAwardBulk').style.display='block';
-}
-function saveAdminStuAward(){
-  const sid=document.getElementById('saa_student').value;
-  const rec={
-    id:Date.now(),
-    date:document.getElementById('saa_date').value,
-    type:document.getElementById('saa_type').value,
-    name:document.getElementById('saa_name').value.trim(),
-    org:document.getElementById('saa_org').value.trim(),
-    memo:document.getElementById('saa_memo').value.trim()
-  };
-  if(!rec.name){alert('이름을 입력해주세요.');return;}
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx<0){alert('학생을 찾을 수 없습니다.');return;}
-  if(!students[idx].studentAwards) students[idx].studentAwards=[];
-  students[idx].studentAwards.unshift(rec);
-  DB.set('students',students);
-  document.getElementById('adminStuAwardForm').style.display='none';
-  const sel=document.getElementById('adminStuAwardStudentSel');
-  if(sel) sel.value=sid;
-  renderAdminStuAwards();
-  alert('저장되었습니다!');
-}
-function adminDeleteStuAward(sid,id){
-  if(!confirm('삭제하시겠습니까?')) return;
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx>=0){
-    students[idx].studentAwards=(students[idx].studentAwards||[]).filter(a=>a.id!==id);
-    DB.set('students',students);
-  }
-  renderAdminStuAwards();
-}
-function adminEditStuAwardRow(sid,id){
-  const students=DB.get('students',[]);
-  const s=students.find(x=>x.id===sid);
-  if(!s) return;
-  const a=(s.studentAwards||[]).find(x=>x.id===id);
-  if(!a) return;
-  const el=document.getElementById(`saarow_${id}`);
-  if(!el) return;
-  el.parentElement.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-      <input class="form-input" id="saae_date_${id}" value="${a.date||''}" type="date" style="font-size:0.82rem">
-      <select class="form-input" id="saae_type_${id}" style="font-size:0.82rem">
-        ${['자격증','대회출전','수상'].map(t=>`<option ${a.type===t?'selected':''}>${t}</option>`).join('')}
-      </select>
-      <div></div>
-    </div>
-    <input class="form-input" id="saae_name_${id}" value="${(a.name||'').replace(/"/g,'&quot;')}" placeholder="이름" style="margin-bottom:6px">
-    <input class="form-input" id="saae_org_${id}" value="${(a.org||'').replace(/"/g,'&quot;')}" placeholder="주최/발급기관" style="margin-bottom:8px">
-    <div style="display:flex;gap:6px">
-      <button class="table-action-btn primary" onclick="adminSaveStuAwardRow('${sid}',${id})">저장</button>
-      <button class="table-action-btn" onclick="renderAdminStuAwards()">취소</button>
-    </div>`;
-}
-function adminSaveStuAwardRow(sid,id){
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===sid);
-  if(idx<0) return;
-  const ai=(students[idx].studentAwards||[]).findIndex(a=>a.id===id);
-  if(ai<0) return;
-  students[idx].studentAwards[ai].date=document.getElementById(`saae_date_${id}`).value;
-  students[idx].studentAwards[ai].type=document.getElementById(`saae_type_${id}`).value;
-  students[idx].studentAwards[ai].name=document.getElementById(`saae_name_${id}`).value;
-  students[idx].studentAwards[ai].org=document.getElementById(`saae_org_${id}`).value;
-  DB.set('students',students);
-  renderAdminStuAwards();
-}
-function saveBulkStuAwardText(){
-  const text=document.getElementById('bulk_stuaward_text')?.value?.trim();
-  if(!text){alert('내용을 입력해주세요.');return;}
-  const students=DB.get('students',[]);
-  const lines=text.split('\n').filter(l=>l.trim());
-  let saved=0, failed=[];
-  lines.forEach(line=>{
-    const parts=line.split(',').map(p=>p.trim());
-    if(parts.length<4){failed.push(line);return;}
-    const [name,date,type,aname,org=''] = parts;
-    const idx=students.findIndex(s=>s.name===name);
-    if(idx<0){failed.push(`"${name}" 학생 없음`);return;}
-    if(!students[idx].studentAwards) students[idx].studentAwards=[];
-    students[idx].studentAwards.unshift({id:Date.now()+saved,date,type,name:aname,org});
-    saved++;
+let currentFootprintFilter='전체';
+function filterFootprint(type,btn){
+  currentFootprintFilter=type;
+  document.querySelectorAll('#footprintFilterRow button').forEach(b=>{
+    b.style.background='white';b.style.color='var(--ink2)';b.style.borderColor='var(--border2)';
   });
-  DB.set('students',students);
-  document.getElementById('adminStuAwardBulk').style.display='none';
-  document.getElementById('bulk_stuaward_text').value='';
-  renderAdminStuAwardsTab();
-  alert(`${saved}건 저장완료${failed.length?'\n실패: '+failed.join(', '):''}`);
+  if(btn){btn.style.background='var(--g2)';btn.style.color='white';btn.style.borderColor='var(--g2)';}
+  renderStudentFootprint();
 }
-
-/* 자격증·수상이력 업로드 — 파일 입력 */
-function handleStuAwardFileDrop(e){
-  const file=e.dataTransfer?.files?.[0];
-  if(file) processStuAwardFile(file);
-}
-function importStuAwardExcel(input){
-  const file=input.files[0];
-  if(!file) return;
-  input.value='';
-  processStuAwardFile(file);
-}
-function processStuAwardFile(file){
-  const ext=file.name.split('.').pop().toLowerCase();
-  if(ext==='csv'){
-    const r=new FileReader();
-    r.onload=e=>{
-      const text=e.target.result.replace(/^\uFEFF/,'');
-      showStuAwardImportPreview(parseStuAwardCSV(text));
-    };
-    r.readAsText(file,'UTF-8');
-  } else if(ext==='xlsx'||ext==='xls'){
-    loadSheetJS(()=>{
-      const r=new FileReader();
-      r.onload=e=>{
-        try{
-          const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
-          const ws=wb.Sheets[wb.SheetNames[0]];
-          showStuAwardImportPreview(parseStuAwardCSV(XLSX.utils.sheet_to_csv(ws)));
-        }catch(err){alert('파일을 읽는 데 실패했습니다.\n'+err.message);}
-      };
-      r.readAsArrayBuffer(file);
-    });
-  } else {
-    alert('.xlsx 또는 .csv 파일만 올려주세요.');
-  }
-}
-function parseStuAwardCSV(text){
-  const lines=text.trim().split(/\r?\n/);
-  if(lines.length<2) return [];
-  function parseLine(line){
-    let result=[],cur='',inQ=false;
-    for(let i=0;i<line.length;i++){
-      const c=line[i];
-      if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-      else if(c===','&&!inQ){result.push(cur.trim());cur='';}
-      else cur+=c;
-    }
-    result.push(cur.trim());
-    return result.map(v=>v.replace(/^"|"$/g,'').trim());
-  }
-  const headers=parseLine(lines[0]);
-  function pick(obj,...keys){
-    for(const k of keys) if(obj[k]!==undefined&&obj[k]!=='') return obj[k];
-    return '';
-  }
-  return lines.slice(1).map(line=>{
-    if(!line.trim()) return null;
-    const vals=parseLine(line);
-    const obj={};
-    headers.forEach((h,i)=>{ obj[h]=vals[i]||''; });
-    return {
-      name: pick(obj,'학생이름','이름','name','학생명','성명'),
-      date: pick(obj,'날짜','date'),
-      type: pick(obj,'종류','type') || '자격증',
-      aname:pick(obj,'이름','자격증명','대회명','수상명','name'),
-      org:  pick(obj,'주최','발급기관','org')
-    };
-  }).filter(Boolean);
-}
-let _stuAwardImportRows=[];
-function showStuAwardImportPreview(rows){
-  const students=DB.get('students',[]);
-  _stuAwardImportRows=rows;
-  const modal=document.getElementById('stuAwardImportModal');
-  const tbody=document.getElementById('stuAwardImportBody');
-  const summary=document.getElementById('stuAwardImportSummary');
-  if(!modal||!tbody) return;
-  let okCount=0, errCount=0;
-  tbody.innerHTML=rows.map((r,i)=>{
-    const found=students.find(s=>s.name===r.name);
-    const validType=['자격증','대회출전','수상'].includes(r.type);
-    const ok=found&&r.name&&r.date&&r.aname&&validType;
-    if(ok) okCount++; else errCount++;
-    const status=ok
-      ?`<span style="color:#2d7a2d;font-size:0.78rem">✅ 정상</span>`
-      :`<span style="color:#c0392b;font-size:0.78rem">⚠️ ${!found?'학생없음':!validType?'종류오류':'필드누락'}</span>`;
-    return `<tr style="${ok?'':'background:#fff5f5'}">
-      <td style="text-align:center">${i+1}</td>
-      <td><strong>${r.name||'—'}</strong></td>
-      <td style="white-space:nowrap">${r.date||'—'}</td>
-      <td>
-        <select onchange="_stuAwardImportRows[${i}].type=this.value">
-          ${['자격증','대회출전','수상'].map(t=>`<option ${r.type===t?'selected':''}>${t}</option>`).join('')}
-        </select>
-      </td>
-      <td>${r.aname||'—'}</td>
-      <td style="color:var(--ink4)">${r.org||''}</td>
-      <td>${status}</td>
-    </tr>`;
-  }).join('');
-  summary.innerHTML=`총 <strong>${rows.length}</strong>건 인식 &nbsp;·&nbsp; <span style="color:#2d7a2d">✅ ${okCount}건 저장 가능</span>${errCount?` &nbsp;·&nbsp; <span style="color:#c0392b">⚠️ ${errCount}건 오류 (저장 제외)</span>`:''}`;
-  document.getElementById('stuAwardImportConfirmBtn').textContent=`✅ ${okCount}건 저장`;
-  modal.style.display='block';
-}
-function confirmStuAwardImport(){
-  const students=DB.get('students',[]);
-  let saved=0;
-  _stuAwardImportRows.forEach(r=>{
-    const idx=students.findIndex(s=>s.name===r.name);
-    const validType=['자격증','대회출전','수상'].includes(r.type);
-    if(idx<0||!r.name||!r.date||!r.aname||!validType) return;
-    if(!students[idx].studentAwards) students[idx].studentAwards=[];
-    students[idx].studentAwards.unshift({id:Date.now()+saved,date:r.date,type:r.type,name:r.aname,org:r.org||''});
-    saved++;
-  });
-  DB.set('students',students);
-  document.getElementById('stuAwardImportModal').style.display='none';
-  document.getElementById('adminStuAwardBulk').style.display='none';
-  _stuAwardImportRows=[];
-  renderAdminStuAwardsTab();
-  alert(`${saved}건 저장 완료!`);
-}
-function downloadStuAwardTemplate(){
-  const bom='\uFEFF';
-  const header='학생이름,날짜,종류,이름,주최\n';
-  const sample=[
-    '홍길동,2025-03-15,자격증,COS PRO 3급,YBM',
-    '김철수,2025-05-20,대회출전,전국 SW 경진대회 출전,교육부 주최',
-    '이영희,2025-08-10,수상,대회 2위,큐비아랩',
-  ].join('\n')+'\n';
-  const blob=new Blob([bom+header+sample],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='자격증수상이력_일괄등록양식.csv';
-  a.click();
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  const dz=document.getElementById('stuAwardDropZone');
-  if(dz) dz.addEventListener('click',()=>document.getElementById('stuAwardFileInput').click());
-});
-
-/* ═══ Q-Grand Slam 학생 포털 연동 (근거 표시) ═══ */
-function renderStudentSlam(){
-  const el=document.getElementById('studentSlamGrid');
+function renderStudentFootprint(){
+  const el=document.getElementById('studentFootprintList');
   if(!el||!currentUser) return;
-  const slam=currentUser.slam||[false,false,false,false,false];
-  const notes=currentUser.slamNotes||['','','','',''];
-  const labels=['Q1 자격 인증','Q2 대회 수상','Q3 작품 제작','Q4 탐구보고서','Q5 발명/하드웨어'];
-  const icons=['📜','🏅','💻','🔬','🛠'];
-  el.innerHTML=labels.map((l,i)=>`
-    <div class="slam-status-item ${slam[i]?'done':''}">
-      <div style="font-size:1.5rem;margin-bottom:4px">${icons[i]}</div>
-      <div class="slam-status-q">Q${i+1}</div>
-      <div class="slam-status-label">${l}${slam[i]?' ✓':''}</div>
-      ${notes[i]?`<div style="font-size:0.72rem;color:${slam[i]?'var(--g3)':'var(--ink4)'};margin-top:6px;line-height:1.4;text-align:center">${notes[i]}</div>`:''}
-    </div>`).join('');
-}
-
-/* ═══ 강사 포털 렌더 (수정) ═══ */
-function renderTeacherPortal(){
-  if(!currentUser||currentRole!=='teacher') return;
-  document.getElementById('teacherPortalUser').textContent=currentUser.name+' 선생님';
-  populateClassSelect();
-  renderTeacherNotices();
-  renderEduLogs();
-  renderConsultLogs();
-  renderTeacherStudents();
-  renderTeacherPayslip();
-}
-
-/* ═══ 학생 포털 렌더 (수정) ═══ */
-function renderStudentPortal(){
-  if(!currentUser||currentRole!=='student') return;
-  const s=currentUser;
-  document.getElementById('studentPortalUser').textContent=s.name+' 학생';
-  document.getElementById('studentAvatar').textContent=s.name[0]||'Q';
-  document.getElementById('studentName').textContent=s.name;
-  document.getElementById('studentMeta').textContent=`${s.school||''} · ${s.grade||''}`;
-  document.getElementById('studentLevel').textContent=s.level||'LV.1 Sense';
-  const dreamEl=document.getElementById('studentDreamDisplay');
-  const dreamInput=document.getElementById('studentDreamInput');
-  if(dreamEl) dreamEl.textContent=s.dream||'아직 꿈을 입력하지 않았습니다.';
-  if(dreamInput) dreamInput.value=s.dream||'';
-  renderStudentReports();
-  renderStudentSlam();
-  renderStudentClassLogs();
-}
-
-/* ═══ switchPortalTab 수정 - classlog 포함 ═══ */
-function switchPortalTab(portal, tab, el){
-  document.querySelectorAll(`#page-${portal} .portal-tab`).forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll(`#page-${portal} .portal-nav-item`).forEach(t=>t.classList.remove('active'));
-  const t=document.getElementById(`${portal}-tab-${tab}`);
-  if(t) t.classList.add('active');
-  if(el) el.classList.add('active');
-  // 현재 열린 탭 추적 (Firebase 동기화 후 재렌더링용)
-  if(portal==='admin') _currentAdminTab=tab;
-  if(portal==='teacher') _currentTeacherTab=tab;
-  if(portal==='student') _currentStudentTab=tab;
-  // 관리자 탭
-  if(portal==='admin'){
-    renderAdminTab(tab);
-    // 이벤트 탭: Firebase 동기화 타이밍 대응 — 1.5초 후 재렌더링
-    if(tab==='events') setTimeout(renderAdminEvents, 1500);
-  }
-  // 학생 탭
-  if(portal==='student'){
-    if(tab==='classlog') renderStudentClassLogs();
-    if(tab==='awards') renderStudentAwards();
-    if(tab==='history') renderStudentHistory();
-    if(tab==='pdf') renderPdfTabBtn();
-  }
-  // 강사 탭 — 각 탭 전환 시 해당 렌더 함수 실행
-  if(portal==='teacher'){
-    if(tab==='notice')   renderTeacherNotices();
-    if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
-    if(tab==='consult')  renderConsultLogs();
-    if(tab==='students') renderTeacherStudents();
-    if(tab==='payslip')  renderTeacherPayslip();
-  }
-  // 관리자 급여명세서 탭
-  if(portal==='admin' && tab==='payroll') initPayrollAdminTab();
-}
-
-/* ═══ 학생 보고서 목록 클릭 ═══ */
-function renderTeacherStudents(){
-  const teacherCls=currentUser.cls;
-  const clsList=Array.isArray(teacherCls)?teacherCls:(teacherCls?[teacherCls]:[]);
-  const students=DB.get('students',[]).filter(s=>{
-    if(!clsList.length||clsList.includes('전체')) return true;
-    return clsList.includes(s.cls);
-  });
-  const el=document.getElementById('teacherStudentList');
-  if(!el) return;
-  if(!students.length){
-    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">담당 클래스의 학생이 없습니다.<br><small>관리자 포털에서 학생 클래스를 배정해 주세요.</small></div>';
+  let records=getMergedFootprint(currentUser);
+  if(currentFootprintFilter!=='전체') records=records.filter(r=>fpTypeInfo(r.type).cat===currentFootprintFilter);
+  if(!records.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 기록이 없습니다. 위 버튼을 눌러 추가해보세요!</div>';
     return;
   }
-  el.innerHTML=`<table class="admin-table"><thead><tr>
-    <th>이름</th><th>학교/학년</th><th>클래스</th><th>레벨</th><th>보고서</th>
-  </tr></thead><tbody>
-    ${students.map(s=>`<tr>
-      <td style="font-weight:500">${s.name}</td>
-      <td>${s.school||''} ${s.grade||''}</td>
-      <td>${s.cls||'-'}</td>
-      <td>${s.level||'-'}</td>
-      <td><button class="table-action-btn" onclick="toggleStudentReports('${s.id}')">${(s.reports||[]).length}개 보기</button>
-        <div id="sreports_${s.id}" style="display:none;margin-top:8px">
-          ${[...(s.reports||[])].reverse().map(r=>`<div style="font-size:0.8rem;padding:4px 0;border-bottom:1px solid var(--border)">
-            <b>${r.title}</b> <span style="color:var(--ink4)">${r.date||''}</span>
-            <span style="font-size:0.7rem;color:var(--g3)">${r.type==='simple'?'저학년':'일반'}</span>
-          </div>`).join('')||'<div style="font-size:0.8rem;color:var(--ink4)">없음</div>'}
+  el.innerHTML=records.map(r=>{
+    const {cat,icon,bg,color}=fpTypeInfo(r.type);
+    return `<div class="edu-log-item" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:1rem">${icon}</span>
+          <span style="font-size:0.72rem;padding:2px 10px;border-radius:20px;background:${bg};color:${color};font-weight:600">${cat}</span>
+          <span style="font-size:0.75rem;color:var(--ink4)">${r.date||''}</span>
         </div>
-      </td>
-    </tr>`).join('')}
-  </tbody></table>`;
-}
-function toggleStudentReports(id){
-  const el=document.getElementById(`sreports_${id}`);
-  if(el) el.style.display=el.style.display==='none'?'block':'none';
-}
-
-/* ═══ 학생포털 자격증·수상이력 ═══ */
-function openStudentAwardForm(){
-  document.getElementById('studentAwardForm').style.display='block';
-  // 날짜 기본값
-  const d=new Date();
-  document.getElementById('sa_date').value=d.toISOString().slice(0,10);
-}
-function closeStudentAwardForm(){
-  document.getElementById('studentAwardForm').style.display='none';
-}
-function saveStudentAward(){
-  if(!currentUser) return;
-  const record={
-    id:Date.now(),
-    date:document.getElementById('sa_date').value,
-    type:document.getElementById('sa_type').value,
-    name:document.getElementById('sa_name').value.trim(),
-    org:document.getElementById('sa_org').value.trim(),
-    memo:document.getElementById('sa_memo').value.trim()
-  };
-  if(!record.name){alert('이름을 입력해주세요.');return;}
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===currentUser.id);
-  if(idx>=0){
-    if(!students[idx].studentAwards) students[idx].studentAwards=[];
-    students[idx].studentAwards.unshift(record);
-    currentUser=students[idx];
-    DB.set('students',students);
-  }
-  // 입력 초기화
-  ['sa_name','sa_org','sa_memo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  closeStudentAwardForm();
-  renderStudentAwards();
-  alert('저장되었습니다!');
-}
-function deleteStudentAward(id){
-  if(!confirm('삭제하시겠습니까?')) return;
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===currentUser.id);
-  if(idx>=0){
-    students[idx].studentAwards=(students[idx].studentAwards||[]).filter(a=>a.id!==id);
-    currentUser=students[idx];
-    DB.set('students',students);
-  }
-  renderStudentAwards();
-}
-function renderStudentAwards(){
-  const el=document.getElementById('studentAwardList');
-  if(!el||!currentUser) return;
-  const awards=[...(currentUser.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const typeIcon={자격증:'📜',대회출전:'🏁',수상:'🏆'};
-  if(!awards.length){
-    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 기록이 없습니다. 자격증, 대회출전, 수상이력을 추가해보세요!</div>';
-    return;
-  }
-  el.innerHTML=awards.map(a=>`
-    <div class="edu-log-item">
-      <div class="edu-log-header">
-        <span style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:1.1rem">${typeIcon[a.type]||'📋'}</span>
-          <span style="font-size:0.75rem;padding:2px 8px;border-radius:20px;background:var(--g5);color:var(--g2);font-weight:600">${a.type}</span>
-          <span class="edu-log-date">${a.date||''}</span>
-        </span>
-        <button class="table-action-btn danger" onclick="deleteStudentAward(${a.id})">삭제</button>
+        <button class="table-action-btn danger" style="font-size:0.72rem" onclick="deleteStudentFootprintRow('${r._src}',${r.id})">삭제</button>
       </div>
-      <div style="font-weight:600;font-size:0.95rem;margin:6px 0 2px">${a.name}</div>
-      ${a.org?`<div style="font-size:0.82rem;color:var(--ink3)">주최: ${a.org}</div>`:''}
-      ${a.memo?`<div style="font-size:0.82rem;color:var(--ink4);margin-top:2px">${a.memo}</div>`:''}
-    </div>`).join('');
+      <div style="font-weight:600;font-size:0.95rem;margin-bottom:2px">${r._label||''}</div>
+      ${r._sub?`<div style="font-size:0.82rem;color:var(--ink3)">${r._sub}</div>`:''}
+      ${r.memo?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:2px">${r.memo}</div>`:''}
+    </div>`;
+  }).join('');
 }
-
-/* ═══ 학생포털 수업·도전 이력 ═══ */
-let currentHistoryFilter='전체';
-function openStudentHistoryForm(){
-  document.getElementById('studentHistoryForm').style.display='block';
-  document.getElementById('sh_date').value=new Date().toISOString().slice(0,10);
+function openStudentFootprintForm(){
+  document.getElementById('fp_date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('studentFootprintForm').style.display='block';
 }
-function closeStudentHistoryForm(){
-  document.getElementById('studentHistoryForm').style.display='none';
-}
-function filterHistory(type, btn){
-  currentHistoryFilter=type;
-  document.querySelectorAll('#historyFilterRow button').forEach(b=>{
-    b.style.background=''; b.style.color='';
-  });
-  if(btn){ btn.style.background='var(--g2)'; btn.style.color='white'; }
-  renderStudentHistory();
-}
-function saveStudentHistory(){
+function closeStudentFootprintForm(){document.getElementById('studentFootprintForm').style.display='none';}
+function saveStudentFootprint(){
   if(!currentUser) return;
-  const rec={
-    id:Date.now(),
-    date:document.getElementById('sh_date').value,
-    type:document.getElementById('sh_type').value,
-    title:document.getElementById('sh_title').value.trim(),
-    detail:document.getElementById('sh_detail').value.trim(),
-    memo:document.getElementById('sh_memo').value.trim()
-  };
+  const rec={id:Date.now(),date:document.getElementById('fp_date').value,type:document.getElementById('fp_type').value,
+    title:document.getElementById('fp_title').value.trim(),detail:document.getElementById('fp_detail').value.trim(),memo:document.getElementById('fp_memo').value.trim()};
   if(!rec.title){alert('내용을 입력해주세요.');return;}
   const students=DB.get('students',[]);
   const idx=students.findIndex(s=>s.id===currentUser.id);
@@ -8315,48 +7501,25 @@ function saveStudentHistory(){
     currentUser=students[idx];
     DB.set('students',students);
   }
-  ['sh_title','sh_detail','sh_memo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  closeStudentHistoryForm();
-  renderStudentHistory();
-  alert('저장되었습니다!');
+  ['fp_title','fp_detail','fp_memo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  closeStudentFootprintForm();
+  renderStudentFootprint();
 }
-function deleteStudentHistory(id){
+function deleteStudentFootprintRow(src,id){
   if(!confirm('삭제하시겠습니까?')) return;
   const students=DB.get('students',[]);
   const idx=students.findIndex(s=>s.id===currentUser.id);
   if(idx>=0){
-    students[idx].history=(students[idx].history||[]).filter(r=>r.id!==id);
+    if(src==='history') students[idx].history=(students[idx].history||[]).filter(r=>r.id!==id);
+    else students[idx].studentAwards=(students[idx].studentAwards||[]).filter(a=>a.id!==id);
     currentUser=students[idx];
     DB.set('students',students);
   }
-  renderStudentHistory();
+  renderStudentFootprint();
 }
-function renderStudentHistory(){
-  const el=document.getElementById('studentHistoryList');
-  if(!el||!currentUser) return;
-  let records=[...(currentUser.history||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  if(currentHistoryFilter!=='전체') records=records.filter(r=>r.type===currentHistoryFilter);
-  const typeIcon={수업이수:'✅',대회출전:'🏁','수상·자격증':'🏆',기타:'📌'};
-  const typeBg={수업이수:'rgba(55,138,221,0.1)',대회출전:'rgba(186,117,23,0.1)','수상·자격증':'rgba(29,158,117,0.1)',기타:'rgba(136,135,128,0.1)'};
-  if(!records.length){
-    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px">아직 기록이 없습니다. 위 버튼을 눌러 추가해보세요!</div>';
-    return;
-  }
-  el.innerHTML=records.map(r=>`
-    <div class="edu-log-item" style="margin-bottom:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:1rem">${typeIcon[r.type]||'📌'}</span>
-          <span style="font-size:0.72rem;padding:2px 10px;border-radius:20px;background:${typeBg[r.type]||'rgba(0,0,0,0.05)'};font-weight:600;color:var(--ink2)">${r.type}</span>
-          <span style="font-size:0.75rem;color:var(--ink4)">${r.date||''}</span>
-        </div>
-        <button class="table-action-btn danger" style="font-size:0.72rem" onclick="deleteStudentHistory(${r.id})">삭제</button>
-      </div>
-      <div style="font-weight:600;font-size:0.95rem;margin-bottom:2px">${r.title}</div>
-      ${r.detail?`<div style="font-size:0.82rem;color:var(--ink3)">${r.detail}</div>`:''}
-      ${r.memo?`<div style="font-size:0.8rem;color:var(--ink4);margin-top:2px">${r.memo}</div>`:''}
-    </div>`).join('');
-}
+// 하위 호환용 (기존 switchPortalTab이 'awards' 호출할 경우 대비)
+function renderStudentHistory(){renderStudentFootprint();}
+function renderStudentAwards(){renderStudentFootprint();}
 
 /* PDF 허용 여부 체크 및 버튼 렌더 */
 function renderPdfTabBtn(){

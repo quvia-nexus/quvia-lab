@@ -5462,6 +5462,40 @@ function deleteReport(idx){
   renderStudentReports();
 }
 
+function switchPortalTab(portal, tab, el){
+  document.querySelectorAll(`#page-${portal} .portal-tab`).forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll(`#page-${portal} .portal-nav-item`).forEach(t=>t.classList.remove('active'));
+  const t=document.getElementById(`${portal}-tab-${tab}`);
+  if(t) t.classList.add('active');
+  if(el) el.classList.add('active');
+  if(portal==='admin') _currentAdminTab=tab;
+  if(portal==='teacher') _currentTeacherTab=tab;
+  if(portal==='student') _currentStudentTab=tab;
+  // 관리자 탭
+  if(portal==='admin'){
+    renderAdminTab(tab);
+    if(tab==='events') setTimeout(renderAdminEvents, 1500);
+  }
+  // 학생 탭
+  if(portal==='student'){
+    if(tab==='classlog') renderStudentClassLogs();
+    if(tab==='footprint') renderStudentFootprint();
+    if(tab==='pdf') renderPdfTabBtn();
+    // 하위 호환
+    if(tab==='awards') renderStudentFootprint();
+    if(tab==='history') renderStudentFootprint();
+  }
+  // 강사 탭
+  if(portal==='teacher'){
+    if(tab==='notice')   renderTeacherNotices();
+    if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
+    if(tab==='consult')  renderConsultLogs();
+    if(tab==='students') renderTeacherStudents();
+    if(tab==='payslip')  renderTeacherPayslip();
+  }
+  if(portal==='admin' && tab==='payroll') initPayrollAdminTab();
+}
+
 function renderStudentSlam(){
   const el=document.getElementById('studentSlamGrid');
   if(!el||!currentUser) return;
@@ -5545,8 +5579,9 @@ function renderTeacherTab(tab){
 // Firebase 동기화 후 현재 학생 탭 재렌더링용
 function renderStudentTab(tab){
   if(tab==='classlog') renderStudentClassLogs();
-  if(tab==='awards')   renderStudentAwards();
-  if(tab==='history')  renderStudentHistory();
+  if(tab==='footprint') renderStudentFootprint();
+  if(tab==='awards')   renderStudentFootprint();
+  if(tab==='history')  renderStudentFootprint();
   if(tab==='pdf')      renderPdfTabBtn();
 }
 

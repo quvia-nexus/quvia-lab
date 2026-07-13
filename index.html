@@ -8180,7 +8180,18 @@ function loadFromSheets() {
     }
   });
   fetchSheet('news').then(function(news) {
-    // 공지/소식은 관리자 포털에서 직접 관리하므로 구글 시트 연동 비활성화
+    if (news && news.length) {
+      // 구글 시트에서 불러온 데이터와 관리자 포털에서 직접 작성한 데이터를 합침
+      const existing = DB.get('news', []);
+      // 구글 시트 항목 중 제목이 기존에 없는 것만 추가 (중복 방지)
+      const existingTitles = existing.map(n => n.title);
+      const newFromSheets = news.filter(n => !existingTitles.includes(n.title));
+      const merged = [...existing, ...newFromSheets];
+      merged.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      DB.set('news', merged);
+      renderHeroNotice();
+      renderNews();
+    }
   });
   // ★ 학생작품 시트 연동 추가
   fetchSheet('works').then(function(works) {

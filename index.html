@@ -5573,6 +5573,34 @@ function openConsultLogForm(){document.getElementById('consultLogForm').style.di
 /* ═══════════════════════════════════
    관리자 포털
 ═══════════════════════════════════ */
+function renderTeacherPortal(){
+  if(!currentUser||currentRole!=='teacher') return;
+  document.getElementById('teacherPortalUser').textContent=currentUser.name+' 선생님';
+  populateClassSelect();
+  renderTeacherNotices();
+  renderEduLogs();
+  renderConsultLogs();
+  renderTeacherStudents();
+  renderTeacherPayslip();
+}
+
+function renderStudentPortal(){
+  if(!currentUser||currentRole!=='student') return;
+  const s=currentUser;
+  document.getElementById('studentPortalUser').textContent=s.name+' 학생';
+  document.getElementById('studentAvatar').textContent=s.name[0]||'Q';
+  document.getElementById('studentName').textContent=s.name;
+  document.getElementById('studentMeta').textContent=`${s.school||''} · ${s.grade||''}`;
+  document.getElementById('studentLevel').textContent=s.level||'LV.1 Sense';
+  const dreamEl=document.getElementById('studentDreamDisplay');
+  const dreamInput=document.getElementById('studentDreamInput');
+  if(dreamEl) dreamEl.textContent=s.dream||'아직 꿈을 입력하지 않았습니다.';
+  if(dreamInput) dreamInput.value=s.dream||'';
+  renderStudentReports();
+  renderStudentSlam();
+  renderStudentClassLogs();
+}
+
 function renderAdminDashboard(){
   const students=DB.get('students',[]);
   const teachers=DB.get('teachers',[]);

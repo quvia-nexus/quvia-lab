@@ -4145,7 +4145,8 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','classes',this)">클래스 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','notice',this)">전달사항</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','news',this)">📢 공지/소식</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('admin','content',this)">🌐 홈페이지 콘텐츠</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','curriculum',this)">📋 세부 커리큘럼</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','content',this)">🏆 수상실적</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','reviews',this)">⭐ 학부모 리뷰</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','events',this)">📣 이벤트 팝업</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','portfolios',this)">포트폴리오 확인</div>
@@ -4660,14 +4661,14 @@ input, textarea, select { font-family: var(--sans); }
             <div class="form-group" style="margin:0">
               <label class="form-label">아이콘 (이모지)</label>
               <select class="form-input" id="aw_icon">
-                <option value="🥇">🥇 금상/1위</option>
-                <option value="🥈">🥈 은상/2위</option>
-                <option value="🥉">🥉 동상/3위</option>
-                <option value="🏅">🏅 입상/특별상</option>
-                <option value="🏆">🏆 대상/최우수</option>
-                <option value="🎖️">🎖️ 장관상</option>
-                <option value="💡">💡 발명</option>
-                <option value="🔬">🔬 과학</option>
+                <option value="🥇">🥇</option>
+                <option value="🥈">🥈</option>
+                <option value="🥉">🥉</option>
+                <option value="🏅">🏅</option>
+                <option value="🏆">🏆</option>
+                <option value="🎖️">🎖️</option>
+                <option value="💡">💡</option>
+                <option value="🔬">🔬</option>
               </select>
             </div>
             <div class="form-group" style="margin:0">
@@ -4700,6 +4701,26 @@ input, textarea, select { font-family: var(--sans); }
 
         <!-- 목록 -->
         <div id="adminAwardsContentList"></div>
+      </div>
+
+      <!-- 📋 세부 커리큘럼 -->
+      <div id="admin-tab-curriculum" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">📋 큐비아 랩 세부 커리큘럼</div>
+          <div style="display:flex;gap:8px">
+            <button class="table-action-btn" onclick="curriculumPage(1)" id="curBtn1" style="background:var(--g2);color:#fff;border-color:var(--g2)">1장 학습 트랙</button>
+            <button class="table-action-btn" onclick="curriculumPage(2)" id="curBtn2">2장 세부 커리큘럼</button>
+            <button class="table-action-btn" onclick="curriculumPage(3)" id="curBtn3">3장 명예의 전당</button>
+            <button class="table-action-btn" onclick="printCurriculum()" style="margin-left:8px">🖨️ 인쇄</button>
+          </div>
+        </div>
+        <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#0f172a">
+          <iframe id="curriculumFrame" style="width:100%;height:700px;border:none;display:block"
+            scrolling="auto"></iframe>
+        </div>
+        <div style="font-size:0.75rem;color:var(--ink4);margin-top:8px;text-align:right">
+          커리큘럼 내용 수정은 별도 파일을 교체해주세요.
+        </div>
       </div>
 
       <div id="admin-tab-logs" class="portal-tab">
@@ -5684,6 +5705,7 @@ function renderAdminTab(tab){
     works:renderAdminWorks,
     gallery:renderAdminGallery,
     content:renderAdminContent,
+    curriculum:renderAdminCurriculumTab,
     reviews:renderAdminReviews,
     portfolios:renderPortfolioSelect,
     footprint:renderAdminFootprintTab,
@@ -6142,6 +6164,812 @@ const AWARD_CAT_ICONS={
   '예술':'🎨', '융합':'🌐', '기타':'🏆'
 };
 function getAwardIcon(cat){ return AWARD_CAT_ICONS[cat]||'🏆'; }
+
+
+/* ═══════════════════════════════════
+   관리자: 세부 커리큘럼
+═══════════════════════════════════ */
+const _CURRICULUM_HTML = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>큐비아 랩 (QUVIA LAB) - 커리큘럼 로드맵 포스터 (가로형)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <!-- html2canvas for High-Res PNG Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        quvia: {
+                            navy: '#0B132B',
+                            dark: '#1C2541',
+                            blue: '#1E40AF',
+                            accent: '#00F0FF',
+                            purple: '#7C3AED',
+                            pink: '#EC4899',
+                            emerald: '#059669',
+                            amber: '#F59E0B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    <\/script>
+    <style>
+        * {
+            word-break: keep-all !important;
+            overflow-wrap: break-word;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #0F172A;
+            color: #1E293B;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Standard A4 Landscape Canvas Box (1130px x 800px) */
+        .a4-landscape {
+            width: 1130px;
+            height: 800px;
+            margin: 0 auto 30px auto;
+            background: #FFFFFF;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            padding: 36px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .a4-landscape {
+                box-shadow: none;
+                margin: 0 auto;
+                page-break-after: always;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="py-8 px-4">
+
+    <!-- ACTION CONTROL BAR (NO PRINT) -->
+    <div class="max-w-[1130px] mx-auto mb-6 p-4 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-wrap justify-between items-center gap-4 no-print">
+        <div class="flex items-center gap-2">
+            <button onclick="switchPage('page1')" id="tabBtn1" class="px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-cyan-400 text-slate-950 shadow">
+                <i class="fa-solid fa-layer-group"></i> 1장 (1. 학습 트랙)
+            </button>
+            <button onclick="switchPage('page2')" id="tabBtn2" class="px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700">
+                <i class="fa-solid fa-list-check"></i> 2장 (2. 세부 커리큘럼)
+            </button>
+            <button onclick="switchPage('page3')" id="tabBtn3" class="px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700">
+                <i class="fa-solid fa-trophy"></i> 3장 (3. 명예의 전당)
+            </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="downloadActivePagePNG()" id="downloadBtn" class="bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-file-image"></i>
+                <span id="dlBtnText">현재 페이지 가로 4K PNG 다운로드</span>
+            </button>
+            <button onclick="downloadAllPagesPNG()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-images"></i> 전체 3장 연속 저장
+            </button>
+            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-print"></i> 인쇄
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ================= PAGE 1 CANVAS (LANDSCAPE: SECTION 1) ================= -->
+    <div id="page1Canvas" class="a4-landscape rounded-3xl">
+        <div class="space-y-5">
+            
+            <!-- LANDSCAPE HEADER BANNER -->
+            <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white p-6 rounded-2xl relative overflow-hidden border border-slate-800 shadow-xl">
+                <div class="absolute -right-20 -top-20 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-20 -bottom-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex justify-between items-center border-b border-slate-800/80 pb-4 mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-cyan-400 text-slate-950 font-black px-3 py-1 rounded-md text-sm tracking-wider font-poppins shadow whitespace-nowrap">QUVIA LAB</span>
+                        <span class="text-sm text-slate-200 font-semibold tracking-wide whitespace-nowrap">코딩 · AI · 융합 전문 탐구학원</span>
+                    </div>
+
+                    <div class="text-right flex items-center gap-4">
+                        <div>
+                            <div class="text-xs text-slate-400 font-medium whitespace-nowrap">입회 상담 & 대표 웹사이트</div>
+                            <div class="text-cyan-400 font-bold font-poppins text-base tracking-wide whitespace-nowrap">WWW.QUVIA-LAB.COM</div>
+                        </div>
+                        <span class="bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap">초·중·고 1:1 맞춤 진도</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                            <span class="whitespace-nowrap">큐비아 랩</span> <span class="text-cyan-400 font-poppins whitespace-nowrap">Curriculum Roadmap</span>
+                        </h1>
+                        <p class="text-slate-300 text-xs font-light mt-1 whitespace-nowrap">
+                            "질문에서 시작해, 코드로 설계하고, AI로 탐구하여 결과물로 증명합니다."
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-xs">
+                        <div class="bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs">1</span>
+                            <span class="text-slate-200 font-bold whitespace-nowrap">스스로 질문하는 탐구형 수업</span>
+                        </div>
+                        <div class="bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">2</span>
+                            <span class="text-slate-200 font-bold whitespace-nowrap">메타버스 · AI 융합 프로젝트</span>
+                        </div>
+                        <div class="bg-slate-800/90 border border-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-xs">3</span>
+                            <span class="text-slate-200 font-bold whitespace-nowrap">대회 · 수행평가 · 포트폴리오</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SECTION 1 TITLE -->
+            <div class="flex items-center justify-between pt-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-7 bg-purple-600 rounded-xs shadow-xs"></div>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight whitespace-nowrap">1. 단계별 학습 트랙 (Learning Tracks)</h2>
+                </div>
+                <span class="text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold border border-purple-200 whitespace-nowrap">
+                    체계적 5개 메인 트랙
+                </span>
+            </div>
+
+            <!-- 5 HORIZONTAL TRACK CARDS GRID WITH ENLARGED FONTS & OPTIMIZED SPACING -->
+            <div class="grid grid-cols-5 gap-3">
+                
+                <!-- Track 1: Sense Track (Lv.1) -->
+                <div class="bg-emerald-50/30 rounded-2xl p-3 border-2 border-emerald-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                    <div class="w-full h-1.5 bg-emerald-500 absolute top-0 left-0"></div>
+                    <div class="space-y-2.5">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 font-black text-[11px] px-2.5 py-0.5 rounded border border-emerald-300 inline-block whitespace-nowrap">Sense Track (Lv.1)</span>
+                            <h3 class="font-extrabold text-slate-900 text-sm mt-1.5 leading-snug">코딩의 첫걸음 &<br><span class="whitespace-nowrap">컴퓨팅 사고력</span></h3>
+                            <p class="text-[11px] text-slate-500 mt-0.5 font-medium">놀이와 손끝 체험의 논리적 생각</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="bg-white p-2.5 rounded-xl border border-emerald-200/80 shadow-xs">
+                                <div class="font-bold text-emerald-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-cubes text-emerald-600 text-xs"></i> 피지컬 코딩 기본
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">손으로 만지고 동작시키는 교구 코딩</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-emerald-200/80 shadow-xs">
+                                <div class="font-bold text-emerald-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-shapes text-emerald-600 text-xs"></i> 스크래치 주니어
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">스토리텔링 기반 블록 프로그래밍</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-emerald-200/80 shadow-xs">
+                                <div class="font-bold text-emerald-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-puzzle-piece text-emerald-600 text-xs"></i> 언플러그드 & 디지리터러시
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">순서·반복·조건 기초 사고력 형성</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-emerald-200 text-[11px] text-emerald-900 font-bold flex items-start gap-1">
+                        <i class="fa-solid fa-bullseye text-emerald-600 mt-0.5 shrink-0"></i>
+                        <span>목표: <span class="whitespace-nowrap">코딩 흥미 유발</span> 및 <span class="whitespace-nowrap">컴퓨팅 사고력</span> 체득</span>
+                    </div>
+                </div>
+
+                <!-- Track 2: Spark Track (Lv.2) -->
+                <div class="bg-sky-50/30 rounded-2xl p-3 border-2 border-sky-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                    <div class="w-full h-1.5 bg-sky-500 absolute top-0 left-0"></div>
+                    <div class="space-y-2.5">
+                        <div>
+                            <span class="bg-sky-100 text-sky-800 font-black text-[11px] px-2.5 py-0.5 rounded border border-sky-300 inline-block whitespace-nowrap">Spark Track (Lv.2)</span>
+                            <h3 class="font-extrabold text-slate-900 text-sm mt-1.5 leading-snug"><span class="whitespace-nowrap">알고리즘 구현</span> &<br><span class="whitespace-nowrap">블록 코딩</span></h3>
+                            <p class="text-[11px] text-slate-500 mt-0.5 font-medium">생각을 프로그램으로 시각화</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="bg-white p-2.5 rounded-xl border border-sky-200/80 shadow-xs">
+                                <div class="font-bold text-sky-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-cubes-stacked text-sky-600 text-xs"></i> 엔트리 (Entry) 기본
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">변수, 조건문, 제어 구조 핵심 마스터</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-sky-200/80 shadow-xs">
+                                <div class="font-bold text-sky-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-robot text-sky-600 text-xs"></i> 피지컬 로봇 코딩
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">교과 연계 센서 및 알고리즘 검증</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-sky-200/80 shadow-xs">
+                                <div class="font-bold text-sky-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-sky-600 text-xs"></i> 디자인 사고력 창작
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">문제 해결형 알고리즘 및 프로젝트</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-sky-200 text-[11px] text-sky-900 font-bold flex items-start gap-1">
+                        <i class="fa-solid fa-bullseye text-sky-600 mt-0.5 shrink-0"></i>
+                        <span>목표: <span class="whitespace-nowrap">변수·조건·반복 알고리즘</span> 직접 설계 및 완성</span>
+                    </div>
+                </div>
+
+                <!-- Track 3: Probe Track (Lv.3) -->
+                <div class="bg-purple-50/30 rounded-2xl p-3 border-2 border-purple-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                    <div class="w-full h-1.5 bg-purple-500 absolute top-0 left-0"></div>
+                    <div class="space-y-2.5">
+                        <div>
+                            <span class="bg-purple-100 text-purple-800 font-black text-[11px] px-2.5 py-0.5 rounded border border-purple-300 inline-block whitespace-nowrap">Probe Track (Lv.3)</span>
+                            <h3 class="font-extrabold text-slate-900 text-sm mt-1.5 leading-snug"><span class="whitespace-nowrap">SW·HW 융합</span> &<br><span class="whitespace-nowrap">메타버스</span></h3>
+                            <p class="text-[11px] text-slate-500 mt-0.5 font-medium">메타버스 공간 구축 및 앱 제작</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="bg-white p-2.5 rounded-xl border border-purple-200/80 shadow-xs">
+                                <div class="font-bold text-purple-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-vr-cardboard text-purple-600 text-xs"></i> 메타버스 (Metaverse)
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">3D 가상공간 구축 및 콘텐츠 제작</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-purple-200/80 shadow-xs">
+                                <div class="font-bold text-purple-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-mobile-screen-button text-purple-600 text-xs"></i> 앱인벤터 & SW·HW 융합
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">스마트폰 앱 창작, 아두이노 IoT 제어</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-purple-200/80 shadow-xs">
+                                <div class="font-bold text-purple-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-file-signature text-purple-600 text-xs"></i> 탐구보고서 작성
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">문제발견 - 기획 - 프로젝트 완성</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-purple-200 text-[11px] text-purple-900 font-bold flex items-start gap-1">
+                        <i class="fa-solid fa-bullseye text-purple-600 mt-0.5 shrink-0"></i>
+                        <span>목표: <span class="whitespace-nowrap">메타버스 공간</span> 및 <span class="whitespace-nowrap">스마트 앱·IoT</span> 작품 개발</span>
+                    </div>
+                </div>
+
+                <!-- Track 4: Build Track (Lv.4) -->
+                <div class="bg-blue-50/30 rounded-2xl p-3 border-2 border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                    <div class="w-full h-1.5 bg-blue-600 absolute top-0 left-0"></div>
+                    <div class="space-y-2.5">
+                        <div>
+                            <span class="bg-blue-100 text-blue-800 font-black text-[11px] px-2.5 py-0.5 rounded border border-blue-300 inline-block whitespace-nowrap">Build Track (Lv.4)</span>
+                            <h3 class="font-extrabold text-slate-900 text-sm mt-1.5 leading-snug">인공지능 개발 &<br><span class="whitespace-nowrap">실전 앱/웹 프로젝트</span></h3>
+                            <p class="text-[11px] text-slate-500 mt-0.5 font-medium">AI 구축 및 파이썬 텍스트 코딩</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="bg-white p-2.5 rounded-xl border border-blue-200/80 shadow-xs">
+                                <div class="font-bold text-blue-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-brain text-blue-600 text-xs"></i> AI 학습 & AI 직접 제작
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">인공지능 원리 습득 및 모델 구현</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-blue-200/80 shadow-xs">
+                                <div class="font-bold text-blue-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-robot text-blue-600 text-xs"></i> 피지컬 AI & 생성형 AI
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">하드웨어 연동 AI, 생성형 AI 활용</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-blue-200/80 shadow-xs">
+                                <div class="font-bold text-blue-900 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-code text-blue-600 text-xs"></i> 문제해결 앱/웹 개발
+                                </div>
+                                <div class="text-slate-600 text-[11px] mt-0.5 leading-snug">실생활 문제 해결을 위한 앱·웹 개발</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-blue-200 text-[11px] text-blue-900 font-bold flex items-start gap-1">
+                        <i class="fa-solid fa-bullseye text-blue-600 mt-0.5 shrink-0"></i>
+                        <span>목표: <span class="whitespace-nowrap">AI 모델 직접 구축</span> 및 <span class="whitespace-nowrap">실전 앱/웹 프로젝트</span></span>
+                    </div>
+                </div>
+
+                <!-- Track 5: Master Track (Lv.5) -->
+                <div class="bg-indigo-50/30 rounded-2xl p-3 border-2 border-indigo-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                    <div class="w-full h-1.5 bg-indigo-700 absolute top-0 left-0"></div>
+                    <div class="space-y-2">
+                        <div>
+                            <span class="bg-indigo-100 text-indigo-900 font-black text-[11px] px-2.5 py-0.5 rounded border border-indigo-300 inline-block whitespace-nowrap">Master Track (Lv.5)</span>
+                            <h3 class="font-extrabold text-slate-900 text-sm mt-1 leading-snug">파이썬 & 머신러닝 &<br><span class="whitespace-nowrap">대회 / 학종 대비</span></h3>
+                            <p class="text-[10px] text-slate-500 mt-0.5 font-medium">파이썬, 머신러닝, 대회 & 탐구보고서</p>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="bg-white p-2 rounded-xl border border-indigo-200/80 shadow-xs">
+                                <div class="font-bold text-indigo-950 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-code text-indigo-600 text-xs"></i> 파이썬 기초 문법
+                                </div>
+                                <div class="text-slate-600 text-[10px] mt-0.5 leading-snug">텍스트 코딩 기본기 및 문법 마스터</div>
+                            </div>
+                            <div class="bg-white p-2 rounded-xl border border-indigo-200/80 shadow-xs">
+                                <div class="font-bold text-indigo-950 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-network-wired text-indigo-600 text-xs"></i> 머신러닝 & 데이터 분석
+                                </div>
+                                <div class="text-slate-600 text-[10px] mt-0.5 leading-snug">인공지능 모델 다루기 & 데이터 분석</div>
+                            </div>
+                            <div class="bg-white p-2 rounded-xl border border-indigo-200/80 shadow-xs">
+                                <div class="font-bold text-indigo-950 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-trophy text-indigo-600 text-xs"></i> SW · AI 경진대회
+                                </div>
+                                <div class="text-slate-600 text-[10px] mt-0.5 leading-snug">정보올림피아드 및 공인 대회 준비</div>
+                            </div>
+                            <div class="bg-white p-2 rounded-xl border border-indigo-200/80 shadow-xs">
+                                <div class="font-bold text-indigo-950 text-[11px] flex items-center gap-1.5 whitespace-nowrap">
+                                    <i class="fa-solid fa-file-pen text-indigo-600 text-xs"></i> 정보 교과 & 탐구보고서
+                                </div>
+                                <div class="text-slate-600 text-[10px] mt-0.5 leading-snug">학생부 종합전형 탐구보고서 대비</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-indigo-200 text-[10px] text-indigo-950 font-bold flex items-start gap-1">
+                        <i class="fa-solid fa-bullseye text-indigo-600 mt-0.5 shrink-0"></i>
+                        <span>목표: <span class="whitespace-nowrap">파이썬·머신러닝 정복</span> 및 <span class="whitespace-nowrap">대회 입상 & 학종 대비</span></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-800 font-poppins text-sm whitespace-nowrap">QUVIA LAB</span>
+                <span class="whitespace-nowrap">| <span class="whitespace-nowrap">큐비아 랩</span> 코딩·AI·융합 전문 학원</span>
+            </div>
+            <div class="font-poppins font-bold text-cyan-600 text-sm tracking-wider whitespace-nowrap">WWW.QUVIA-LAB.COM</div>
+        </footer>
+    </div>
+
+
+    <!-- ================= PAGE 2 CANVAS (LANDSCAPE: SECTION 2) ================= -->
+    <div id="page2Canvas" class="a4-landscape rounded-3xl hidden">
+        <div class="space-y-4">
+            
+            <!-- SECTION 2 HEADER -->
+            <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-7 bg-indigo-600 rounded-xs shadow-xs"></div>
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight whitespace-nowrap">2. <span class="whitespace-nowrap">큐비아 랩</span> 단계별 세부 커리큘럼 (Lv.1 ~ Lv.5)</h2>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-500 font-bold bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 whitespace-nowrap">
+                        ※ 입회 테스트 및 성향에 따른 1:1 맞춤 진도 배치
+                    </span>
+                    <span class="text-xs font-bold text-cyan-600 font-poppins whitespace-nowrap">QUVIA LAB</span>
+                </div>
+            </div>
+
+            <!-- LEVEL CARDS 1 to 5 - LARGE SPACIOUS LANDSCAPE CARDS -->
+            <div class="space-y-3">
+                
+                <!-- Lv.1 Sense -->
+                <div class="bg-white rounded-2xl p-4 border-2 border-emerald-200/90 shadow-sm flex justify-between items-center relative overflow-hidden">
+                    <div class="flex items-center gap-5">
+                        <div class="flex flex-col items-center justify-center min-w-[80px] py-1 border-r border-slate-200 pr-4">
+                            <span class="text-2xl font-black text-emerald-600 font-poppins">Lv.1</span>
+                            <span class="text-xs text-emerald-700 font-bold tracking-tight font-poppins">Sense</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-extrabold text-slate-900 text-base whitespace-nowrap">
+                                    Sense Basic · 코딩의 첫걸음 & 컴퓨팅 사고력
+                                </h3>
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded border border-emerald-200 whitespace-nowrap">
+                                    ✓ 피지컬 코딩 기초 + 스크래치 주니어 + 언플러그드
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">
+                                디지털 리터러시 형성, 손으로 만지고 조작하는 신체 감각 코딩 교구 활용, 순차/조건/반복 명령어 체득, 기초 스토리텔링 창작 프로젝트 수행.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-4">
+                        <span class="bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs whitespace-nowrap">
+                            컴퓨팅 사고력 기틀
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Lv.2 Spark -->
+                <div class="bg-white rounded-2xl p-4 border-2 border-sky-200/90 shadow-sm flex justify-between items-center relative overflow-hidden">
+                    <div class="flex items-center gap-5">
+                        <div class="flex flex-col items-center justify-center min-w-[80px] py-1 border-r border-slate-200 pr-4">
+                            <span class="text-2xl font-black text-sky-600 font-poppins">Lv.2</span>
+                            <span class="text-xs text-sky-700 font-bold tracking-tight font-poppins">Spark</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-extrabold text-slate-900 text-base whitespace-nowrap">
+                                    Spark Entry · 알고리즘 구현 & 블록 코딩
+                                </h3>
+                                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-2.5 py-0.5 rounded border border-sky-200 whitespace-nowrap">
+                                    ✓ 엔트리 블록 코딩 + 로봇 알고리즘 검증
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">
+                                변수·조건문·제어 구조 원리 체득, 인터랙티브 애니메이션 및 게임 프로그래밍, 로봇 센서 피지컬 컴퓨팅 제어, 표현력 및 논리력 확장.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-4">
+                        <span class="bg-sky-50 text-sky-800 border border-sky-300 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs whitespace-nowrap">
+                            알고리즘 창작 입문
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Lv.3 Probe -->
+                <div class="bg-white rounded-2xl p-4 border-2 border-purple-200/90 shadow-sm flex justify-between items-center relative overflow-hidden">
+                    <div class="flex items-center gap-5">
+                        <div class="flex flex-col items-center justify-center min-w-[80px] py-1 border-r border-slate-200 pr-4">
+                            <span class="text-2xl font-black text-purple-600 font-poppins">Lv.3</span>
+                            <span class="text-xs text-purple-700 font-bold tracking-tight font-poppins">Probe</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-extrabold text-slate-900 text-base whitespace-nowrap">
+                                    Probe Metaverse & App · SW·HW 융합 & 메타버스
+                                </h3>
+                                <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-0.5 rounded border border-purple-200 whitespace-nowrap">
+                                    ✓ 메타버스(Metaverse) 공간 설계 + 앱인벤터 + 교과 융합 코딩
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">
+                                디지털 가상공간(메타버스) 3D 공간 기획 및 콘텐츠 제작, 스마트폰 모바일 앱 창작, 아두이노 IoT 제어 및 문제해결 탐구보고서 완성.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-4">
+                        <span class="bg-purple-50 text-purple-800 border border-purple-300 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs whitespace-nowrap">
+                            메타버스 & 스마트 앱
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Lv.4 Build -->
+                <div class="bg-white rounded-2xl p-4 border-2 border-blue-200/90 shadow-sm flex justify-between items-center relative overflow-hidden">
+                    <div class="flex items-center gap-5">
+                        <div class="flex flex-col items-center justify-center min-w-[80px] py-1 border-r border-slate-200 pr-4">
+                            <span class="text-2xl font-black text-blue-600 font-poppins">Lv.4</span>
+                            <span class="text-xs text-blue-700 font-bold tracking-tight font-poppins">Build</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-extrabold text-slate-900 text-base whitespace-nowrap">
+                                    Build AI & Web · 인공지능 직접 개발 & 실전 앱/웹
+                                </h3>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-200 whitespace-nowrap">
+                                    ✓ AI 학습·직접 제작 + 피지컬 AI + 생성형 AI + 문제해결 앱/웹
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">
+                                인공지능 원리 학습 및 AI 모델 직접 제작·구현, 센서/하드웨어 연동 피지컬 AI, 생성형 AI 도구 응용, 실생활 문제해결 중심 실전 앱 및 웹 프로그래밍.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-4">
+                        <span class="bg-blue-50 text-blue-800 border border-blue-300 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs whitespace-nowrap">
+                            AI 구현 & 실전 앱/웹
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Lv.5 Master -->
+                <div class="bg-white rounded-2xl p-4 border-2 border-indigo-200/90 shadow-sm flex justify-between items-center relative overflow-hidden">
+                    <div class="flex items-center gap-5">
+                        <div class="flex flex-col items-center justify-center min-w-[80px] py-1 border-r border-slate-200 pr-4">
+                            <span class="text-2xl font-black text-indigo-700 font-poppins">Lv.5</span>
+                            <span class="text-xs text-indigo-800 font-bold tracking-tight font-poppins">Master</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-extrabold text-slate-900 text-base whitespace-nowrap">
+                                    Master AI & Algo · 파이썬 & 머신러닝 & 대회/학종 대비
+                                </h3>
+                                <span class="bg-indigo-100 text-indigo-900 text-xs font-bold px-2.5 py-0.5 rounded border border-indigo-200 whitespace-nowrap">
+                                    ✓ 파이썬 기초 문법 + 머신러닝·데이터 분석 + SW·AI 경진대회 + 정보 교과 및 학종 탐구보고서
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal">
+                                파이썬 기초 문법 체득, 머신러닝 모델 구축 및 데이터 분석 실습, SW·AI 경진대회 출전, 고교 정보 교과 완벽 대비 및 학생부 종합전형 탐구보고서 작성 지원.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 pl-4">
+                        <span class="bg-indigo-50 text-indigo-900 border border-indigo-300 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs whitespace-nowrap">
+                            대회 입상 & 학종 대비
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-800 font-poppins text-sm whitespace-nowrap">QUVIA LAB</span>
+                <span class="whitespace-nowrap">| <span class="whitespace-nowrap">큐비아 랩</span> 코딩·AI·융합 전문 학원</span>
+            </div>
+            <div class="font-poppins font-bold text-cyan-600 text-sm tracking-wider whitespace-nowrap">WWW.QUVIA-LAB.COM</div>
+        </footer>
+    </div>
+
+
+    <!-- ================= PAGE 3 CANVAS (LANDSCAPE: SECTION 3) ================= -->
+    <div id="page3Canvas" class="a4-landscape rounded-3xl hidden">
+        <div class="space-y-4">
+            
+            <!-- SECTION 3 HEADER -->
+            <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-7 bg-amber-500 rounded-xs shadow-xs"></div>
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight whitespace-nowrap">3. <span class="whitespace-nowrap">큐비아 랩</span> 명예의 전당 & 포트폴리오 (Q1 ~ Q5)</h2>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1.5 rounded-lg border border-amber-300 whitespace-nowrap">
+                        5가지 영역 달성 시 최종 졸업
+                    </span>
+                    <span class="text-xs font-bold text-cyan-600 font-poppins whitespace-nowrap">QUVIA LAB</span>
+                </div>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <p class="text-xs text-slate-600 font-medium bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="whitespace-nowrap">Lv.1~Lv.5</span> 교육과정과 별개로 아래 <span class="whitespace-nowrap">5개 영역(Q1~Q5)</span>을 모두 이수한 학생에게는 <span class="whitespace-nowrap">큐비아 랩</span> 최고 명예인 <strong class="text-amber-600 font-poppins">Q-Grand Slam</strong> 공식 졸업 포트폴리오 및 명예의 전당 헌정이 부여됩니다.
+            </p>
+
+            <!-- Q1 ~ Q5 & Q-GRAND SLAM GRID (3 COLUMNS x 2 ROWS) -->
+            <div class="grid grid-cols-3 gap-4">
+                
+                <!-- Q1 -->
+                <div class="bg-amber-50/40 border-2 border-amber-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-scroll"></i>
+                        </div>
+                        <h3 class="font-black text-slate-900 text-base font-poppins">Qualification</h3>
+                        <div class="text-xs font-bold text-amber-800 mt-0.5">Q1 · 자격 인증</div>
+                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                            코딩 자격증, SW 관련 공인 시험 등 객관적인 기준으로 실력을 증명하는 단계입니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-amber-50/40 border-2 border-amber-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h3 class="font-black text-slate-900 text-base font-poppins">Quest Award</h3>
+                        <div class="text-xs font-bold text-amber-800 mt-0.5">Q2 · 대회 수상</div>
+                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                            SW·발명·과학·수학 분야의 외부 공인 대회 입상을 통해 실력을 검증하는 단계입니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-amber-50/40 border-2 border-amber-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <h3 class="font-black text-slate-900 text-base font-poppins">Quantum Build</h3>
+                        <div class="text-xs font-bold text-amber-800 mt-0.5">Q3 · 작품 제작</div>
+                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                            앱, 웹사이트, 게임 등 실제로 작동하는 결과물을 직접 기획하고 제작하는 단계입니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-amber-50/40 border-2 border-amber-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-microscope"></i>
+                        </div>
+                        <h3 class="font-black text-slate-900 text-base font-poppins">Query Research</h3>
+                        <div class="text-xs font-bold text-amber-800 mt-0.5">Q4 · 탐구보고서</div>
+                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                            문제 제기부터 실험, 데이터 분석, 결론 도출까지의 전 과정을 스스로 수행하는 단계입니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="bg-amber-50/40 border-2 border-amber-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg mb-2">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <h3 class="font-black text-slate-900 text-base font-poppins">Qualia Maker</h3>
+                        <div class="text-xs font-bold text-amber-800 mt-0.5">Q5 · 발명 / 하드웨어</div>
+                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                            3D프린팅, 전자회로, 아두이노 등으로 실물 결과물을 직접 설계하고 제작하는 단계입니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q-GRAND SLAM -->
+                <div class="bg-emerald-600 border-2 border-emerald-500 rounded-2xl p-4 text-white flex flex-col justify-between shadow-lg relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-emerald-400/20 rounded-full blur-xl pointer-events-none"></div>
+                    <div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500 text-emerald-100 flex items-center justify-center text-lg mb-2 shadow-xs">
+                            <i class="fa-solid fa-trophy text-amber-300"></i>
+                        </div>
+                        <h3 class="font-black text-white text-base font-poppins">Q-Grand Slam</h3>
+                        <div class="text-xs font-bold text-emerald-200 mt-0.5">졸업 · 최종 달성</div>
+                        <p class="text-xs text-emerald-50 mt-2 leading-relaxed font-light">
+                            Q1~Q5를 모두 달수한 학생에게 수여되는 공식 졸업 포트폴리오 및 명예의 전당 등록
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-emerald-500/80 text-right">
+                        <span class="text-xs font-poppins font-bold text-emerald-200 tracking-wider">🏆 QUVIA LAB Certified</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-800 font-poppins text-sm whitespace-nowrap">QUVIA LAB</span>
+                <span class="whitespace-nowrap">| <span class="whitespace-nowrap">큐비아 랩</span> 코딩·AI·융합 전문 학원</span>
+            </div>
+            <div class="font-poppins font-bold text-cyan-600 text-sm tracking-wider whitespace-nowrap">WWW.QUVIA-LAB.COM</div>
+        </footer>
+    </div>
+
+
+    <script>
+        let currentTab = 'page1';
+
+        function switchPage(pageId) {
+            currentTab = pageId;
+            document.getElementById('page1Canvas').classList.add('hidden');
+            document.getElementById('page2Canvas').classList.add('hidden');
+            document.getElementById('page3Canvas').classList.add('hidden');
+
+            document.getElementById(pageId + 'Canvas').classList.remove('hidden');
+
+            // Reset tab button states
+            ['tabBtn1', 'tabBtn2', 'tabBtn3'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = "px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-slate-800 text-slate-300 hover:bg-slate-700";
+            });
+
+            const activeNum = pageId.replace('page', '');
+            const activeBtn = document.getElementById('tabBtn' + activeNum);
+            activeBtn.className = "px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-cyan-400 text-slate-950 shadow";
+
+            document.getElementById('dlBtnText').innerText = \`\${activeNum}장 가로 4K PNG 다운로드\`;
+        }
+
+        async function downloadCanvasAsPNG(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const wasHidden = element.classList.contains('hidden');
+            if (wasHidden) element.classList.remove('hidden');
+
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 3.5, // Ultra 4K DPI
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: true
+                });
+
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            } catch (err) {
+                console.error("PNG export error:", err);
+            } finally {
+                if (wasHidden) element.classList.add('hidden');
+            }
+        }
+
+        function downloadActivePagePNG() {
+            const pageNum = currentTab.replace('page', '');
+            downloadCanvasAsPNG(currentTab + 'Canvas', \`QUVIA_LAB_Curriculum_Page\${pageNum}_Landscape.png\`);
+        }
+
+        async function downloadAllPagesPNG() {
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = \`<i class="fa-solid fa-spinner fa-spin"></i> 저장 중...\`;
+
+            await downloadCanvasAsPNG('page1Canvas', 'QUVIA_LAB_Curriculum_Page1_Tracks.png');
+            await new Promise(r => setTimeout(r, 400));
+            await downloadCanvasAsPNG('page2Canvas', 'QUVIA_LAB_Curriculum_Page2_Levels.png');
+            await new Promise(r => setTimeout(r, 400));
+            await downloadCanvasAsPNG('page3Canvas', 'QUVIA_LAB_Curriculum_Page3_HallOfFame.png');
+
+            btn.innerHTML = originalText;
+        }
+    <\/script>
+</body>
+</html>`;
+let _curriculumLoaded = false;
+
+function renderAdminCurriculumTab(){
+  if(!_curriculumLoaded){
+    const fr = document.getElementById('curriculumFrame');
+    if(fr){
+      fr.srcdoc = _CURRICULUM_HTML;
+      _curriculumLoaded = true;
+    }
+  }
+}
+function curriculumPage(n){
+  // 탭 버튼 스타일
+  [1,2,3].forEach(i=>{
+    const b=document.getElementById('curBtn'+i);
+    if(b){ b.style.background=''; b.style.color=''; b.style.borderColor=''; }
+  });
+  const active=document.getElementById('curBtn'+n);
+  if(active){ active.style.background='var(--g2)'; active.style.color='#fff'; active.style.borderColor='var(--g2)'; }
+  // iframe 내부 switchPage 호출
+  const fr=document.getElementById('curriculumFrame');
+  if(fr && fr.contentWindow){
+    try{ fr.contentWindow.switchPage('page'+n); }
+    catch(e){ console.log('iframe switchPage:', e); }
+  }
+}
+function printCurriculum(){
+  const fr=document.getElementById('curriculumFrame');
+  if(fr && fr.contentWindow){
+    try{ fr.contentWindow.print(); }
+    catch(e){ console.log('iframe print:', e); }
+  }
+}
 
 function renderAdminContent(){
   renderAdminContentAwards();

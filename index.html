@@ -4779,9 +4779,8 @@ const DB = {
    기본 데이터 초기화
 ═══════════════════════════════════ */
 function initData(){
-  // 수상실적 버전 강제 업데이트
-  const AWARDS_VER='v2025_05';
-  if(DB.get('awards_ver','')!==AWARDS_VER){
+  // 수상실적: Firebase/구글시트 데이터 우선, 없을 때만 기본값 사용
+  if(!DB.get('awards',null)){
     DB.set('awards',[
       {icon:'🥇',name:'2025년 과학기술정보통신부 장관상_AI융합',cat:'SW'},
       {icon:'🏅',name:'2025 과학,정보 영재교육원 합격_DGIST, 경북대,대구교대, 교육청',cat:'과학'},
@@ -4820,7 +4819,6 @@ function initData(){
       {icon:'🏅',name:'원더리그 코리아 입상',cat:'SW'},
       {icon:'🥈',name:'K-edu 인공지능 창작부문 은상',cat:'SW'},
     ]);
-    DB.set('awards_ver',AWARDS_VER);
   }
 
   // 학생/강사는 Firebase에서 동기화하므로 로컬 초기화 생략
@@ -8177,7 +8175,7 @@ function fetchSheet(sheetName) {
       document.body.removeChild(script);
       console.warn('시트 로드 실패(' + sheetName + '): timeout');
       resolve(null);
-    }, 8000);
+    }, 15000);
     window[cbName] = function(data) {
       clearTimeout(timer);
       delete window[cbName];
@@ -8202,7 +8200,7 @@ function loadFromSheets() {
     if (awards && awards.length) {
       var iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
       awards.forEach(function(a) { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
-      DB.set('awards', awards);
+      DB.set('awards', awards); // localStorage + Firebase 자동 저장
       renderAwardRoll();
       renderAwards();
     }

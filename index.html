@@ -9261,10 +9261,20 @@ function loadFromSheets() {
     }
   });
   fetchSheet('awards').then(function(awards) {
-    if (awards && awards.length) {
-      var iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
-      awards.forEach(function(a) { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
-      DB.set('awards', awards); // localStorage + Firebase 자동 저장
+    // 수상실적은 관리자 포털(🏆 수상실적 탭)에서 직접 관리
+    // 구글 시트가 Firebase 데이터를 덮어쓰지 않도록 비활성화
+    // 기존 데이터가 없을 때만 구글 시트 데이터 사용
+    const existing = DB.get('awards', null);
+    if (!existing || existing.length === 0) {
+      if (awards && awards.length) {
+        var iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
+        awards.forEach(function(a) { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
+        DB.set('awards', awards);
+        renderAwardRoll();
+        renderAwards();
+      }
+    } else {
+      // Firebase 데이터가 있으면 그대로 렌더링
       renderAwardRoll();
       renderAwards();
     }

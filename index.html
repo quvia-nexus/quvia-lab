@@ -3854,6 +3854,13 @@ input, textarea, select { font-family: var(--sans); }
           <textarea class="form-input form-textarea" id="studentDreamInput" placeholder="나의 꿈을 적어보세요..." style="margin-top:8px"></textarea>
           <button class="table-action-btn primary" style="margin-top:8px" onclick="saveDream()">저장</button>
         </div>
+        <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div class="card-title" style="margin-bottom:4px">내 포트폴리오 아카이브</div>
+            <div style="font-size:0.82rem;color:var(--ink3)">내가 만든 프로그램·발표자료·보고서를 직접 등록하고 관리할 수 있어요.</div>
+          </div>
+          <a id="studentArchiveLink" href="#" target="_blank" rel="noopener" class="table-action-btn primary" style="white-space:nowrap">📁 내 아카이브 바로가기</a>
+        </div>
       </div>
 
       <!-- 수업결과 -->
@@ -5675,6 +5682,9 @@ function renderStudentPortal(){
   const dreamInput=document.getElementById('studentDreamInput');
   if(dreamEl) dreamEl.textContent=s.dream||'아직 꿈을 입력하지 않았습니다.';
   if(dreamInput) dreamInput.value=s.dream||'';
+  // 포트폴리오 아카이브로 이동하는 버튼 — 로그인한 학생의 아이디(sid)를 붙여서 연결
+  const archiveLink=document.getElementById('studentArchiveLink');
+  if(archiveLink) archiveLink.href='https://quvia-nexus.github.io/quvia-student-archive/?sid='+encodeURIComponent(s.id);
   renderStudentReports();
   renderStudentSlam();
   renderStudentClassLogs();

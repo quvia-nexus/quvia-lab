@@ -4642,6 +4642,66 @@ input, textarea, select { font-family: var(--sans); }
       </div>
 
       <!-- 교육/상담일지 -->
+      <!-- 🌐 홈페이지 콘텐츠 (수상실적 관리) -->
+      <div id="admin-tab-content" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">🏆 수상실적 관리</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="table-action-btn primary" onclick="openAwardForm()">+ 추가</button>
+            <button class="table-action-btn" onclick="downloadAwardCSV()">📥 CSV 다운로드</button>
+          </div>
+        </div>
+
+        <!-- 추가 폼 -->
+        <div id="awardForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div style="font-weight:500;margin-bottom:12px">수상실적 추가 / 수정</div>
+          <input type="hidden" id="aw_edit_idx" value="-1">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">아이콘 (이모지)</label>
+              <select class="form-input" id="aw_icon">
+                <option value="🥇">🥇 금상/1위</option>
+                <option value="🥈">🥈 은상/2위</option>
+                <option value="🥉">🥉 동상/3위</option>
+                <option value="🏅">🏅 입상/특별상</option>
+                <option value="🏆">🏆 대상/최우수</option>
+                <option value="🎖️">🎖️ 장관상</option>
+                <option value="💡">💡 발명</option>
+                <option value="🔬">🔬 과학</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">분야</label>
+              <select class="form-input" id="aw_cat">
+                <option value="SW">SW</option>
+                <option value="AI">AI</option>
+                <option value="로봇">로봇</option>
+                <option value="SW사고력">SW사고력</option>
+                <option value="과학">과학</option>
+                <option value="발명">발명</option>
+                <option value="융합">융합</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">연도</label>
+              <input class="form-input" id="aw_year" type="number" placeholder="2026" value="2026">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">수상명 (대회명_수상내역)</label>
+            <input class="form-input" id="aw_name" type="text" placeholder="예: 2026 전국 SW 경진대회_금상1, 은상2">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="table-action-btn primary" onclick="saveAwardForm()">저장</button>
+            <button class="table-action-btn" onclick="closeAwardForm()">취소</button>
+          </div>
+        </div>
+
+        <!-- 목록 -->
+        <div id="adminAwardsContentList"></div>
+      </div>
+
       <div id="admin-tab-logs" class="portal-tab">
         <!-- 학생 필터 -->
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
@@ -5623,7 +5683,7 @@ function renderAdminTab(tab){
     awards:renderAdminAwards,
     works:renderAdminWorks,
     gallery:renderAdminGallery,
-    content:()=>{},
+    content:renderAdminContent,
     reviews:renderAdminReviews,
     portfolios:renderPortfolioSelect,
     footprint:renderAdminFootprintTab,
@@ -6082,6 +6142,101 @@ const AWARD_CAT_ICONS={
   '예술':'🎨', '융합':'🌐', '기타':'🏆'
 };
 function getAwardIcon(cat){ return AWARD_CAT_ICONS[cat]||'🏆'; }
+
+function renderAdminContent(){
+  renderAdminContentAwards();
+}
+function renderAdminContentAwards(){
+  const el=document.getElementById('adminAwardsContentList');
+  if(!el) return;
+  const awards=DB.get('awards',[]);
+  if(!awards.length){
+    el.innerHTML='<div style="color:var(--ink4);padding:2rem;text-align:center">등록된 수상실적이 없습니다. 위 추가 버튼을 눌러주세요.</div>';
+    return;
+  }
+  // 연도별 그룹핑
+  const byYear={};
+  awards.forEach((a,i)=>{
+    const y=a.year||'기타';
+    if(!byYear[y]) byYear[y]=[];
+    byYear[y].push({...a,_idx:i});
+  });
+  const years=Object.keys(byYear).sort((a,b)=>b-a);
+  el.innerHTML=years.map(y=>`
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;font-size:0.88rem;color:var(--g2);padding:6px 12px;background:var(--g6);border-radius:8px;margin-bottom:8px">${y}년 (${byYear[y].length}건)</div>
+      ${byYear[y].map(a=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
+          <span style="font-size:1.2rem">${a.icon||'🏆'}</span>
+          <span style="flex:1;font-size:0.88rem;color:var(--ink2)">${a.name||''}</span>
+          <span style="font-size:0.72rem;background:var(--g6);color:var(--g2);padding:2px 8px;border-radius:20px;white-space:nowrap">${a.cat||''}</span>
+          <button class="table-action-btn" onclick="editAwardForm(${a._idx})">수정</button>
+          <button class="table-action-btn danger" onclick="deleteContentAward(${a._idx})">삭제</button>
+        </div>`).join('')}
+    </div>`).join('');
+}
+function openAwardForm(){
+  document.getElementById('aw_edit_idx').value='-1';
+  document.getElementById('aw_icon').value='🥇';
+  document.getElementById('aw_cat').value='SW';
+  document.getElementById('aw_year').value=new Date().getFullYear();
+  document.getElementById('aw_name').value='';
+  document.getElementById('awardForm').style.display='block';
+}
+function editAwardForm(idx){
+  const a=DB.get('awards',[])[idx];
+  if(!a) return;
+  document.getElementById('aw_edit_idx').value=idx;
+  document.getElementById('aw_icon').value=a.icon||'🥇';
+  document.getElementById('aw_cat').value=a.cat||'SW';
+  document.getElementById('aw_year').value=a.year||new Date().getFullYear();
+  document.getElementById('aw_name').value=a.name||'';
+  document.getElementById('awardForm').style.display='block';
+  document.getElementById('awardForm').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function closeAwardForm(){
+  document.getElementById('awardForm').style.display='none';
+}
+function saveAwardForm(){
+  const name=document.getElementById('aw_name').value.trim();
+  if(!name){alert('수상명을 입력해주세요.');return;}
+  const rec={
+    icon:document.getElementById('aw_icon').value,
+    cat:document.getElementById('aw_cat').value,
+    year:parseInt(document.getElementById('aw_year').value)||new Date().getFullYear(),
+    name
+  };
+  const awards=DB.get('awards',[]);
+  const idx=parseInt(document.getElementById('aw_edit_idx').value);
+  if(idx===-1) awards.unshift(rec);
+  else awards[idx]=rec;
+  DB.set('awards',awards);
+  closeAwardForm();
+  renderAdminContentAwards();
+  renderAwardRoll();
+  renderAwards();
+  alert('저장되었습니다!');
+}
+function deleteContentAward(idx){
+  if(!confirm('삭제하시겠습니까?')) return;
+  const awards=DB.get('awards',[]);
+  awards.splice(idx,1);
+  DB.set('awards',awards);
+  renderAdminContentAwards();
+  renderAwardRoll();
+  renderAwards();
+}
+function downloadAwardCSV(){
+  const awards=DB.get('awards',[]);
+  const bom='\uFEFF';
+  const header='연도,분야,아이콘,수상명\n';
+  const rows=awards.map(a=>`${a.year||''},${a.cat||''},${a.icon||''},${(a.name||'').replace(/,/g,'/')}`).join('\n');
+  const blob=new Blob([bom+header+rows],{type:'text/csv;charset=utf-8'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='수상실적_'+new Date().getFullYear()+'.csv';
+  link.click();
+}
 
 function renderAdminAwards(){
   const awards=DB.get('awards',[]);

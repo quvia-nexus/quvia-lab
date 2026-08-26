@@ -6367,7 +6367,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
             <div class="grid grid-cols-5 gap-3">
                 
                 <!-- Track 1: Sense Track (Lv.1) -->
-                <div class="bg-emerald-50/30 rounded-2xl p-3 border-2 border-emerald-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                <div class="bg-emerald-50/30 rounded-2xl p-3 border-2 border-emerald-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
                     <div class="w-full h-1.5 bg-emerald-500 absolute top-0 left-0"></div>
                     <div class="space-y-2.5">
                         <div>
@@ -6405,7 +6405,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                 </div>
 
                 <!-- Track 2: Spark Track (Lv.2) -->
-                <div class="bg-sky-50/30 rounded-2xl p-3 border-2 border-sky-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                <div class="bg-sky-50/30 rounded-2xl p-3 border-2 border-sky-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
                     <div class="w-full h-1.5 bg-sky-500 absolute top-0 left-0"></div>
                     <div class="space-y-2.5">
                         <div>
@@ -6443,7 +6443,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                 </div>
 
                 <!-- Track 3: Probe Track (Lv.3) -->
-                <div class="bg-purple-50/30 rounded-2xl p-3 border-2 border-purple-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                <div class="bg-purple-50/30 rounded-2xl p-3 border-2 border-purple-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
                     <div class="w-full h-1.5 bg-purple-500 absolute top-0 left-0"></div>
                     <div class="space-y-2.5">
                         <div>
@@ -6481,7 +6481,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                 </div>
 
                 <!-- Track 4: Build Track (Lv.4) -->
-                <div class="bg-blue-50/30 rounded-2xl p-3 border-2 border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                <div class="bg-blue-50/30 rounded-2xl p-3 border-2 border-blue-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
                     <div class="w-full h-1.5 bg-blue-600 absolute top-0 left-0"></div>
                     <div class="space-y-2.5">
                         <div>
@@ -6519,7 +6519,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                 </div>
 
                 <!-- Track 5: Master Track (Lv.5) -->
-                <div class="bg-indigo-50/30 rounded-2xl p-3 border-2 border-indigo-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-[460px]">
+                <div class="bg-indigo-50/30 rounded-2xl p-3 border-2 border-indigo-200 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
                     <div class="w-full h-1.5 bg-indigo-700 absolute top-0 left-0"></div>
                     <div class="space-y-2">
                         <div>
@@ -6722,8 +6722,8 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                                 <h3 class="font-extrabold text-slate-900 text-xl leading-snug" style="flex:1;min-width:200px">
                                     Master AI & Algo · 파이썬 & 머신러닝 & 대회/학종 대비
                                 </h3>
-                                <span class="bg-indigo-100 text-indigo-900 text-xs font-bold px-2.5 py-0.5 rounded border border-indigo-200" style="flex-shrink:0;max-width:320px;word-break:keep-all">
-                                    ✓ 파이썬 기초 문법 + 머신러닝·데이터 분석 + SW·AI 경진대회 + 정보 교과 및 학종 탐구보고서
+                                <span class="bg-indigo-100 text-indigo-900 text-xs font-bold px-2.5 py-0.5 rounded border border-indigo-200" style="white-space:nowrap;flex-shrink:0">
+                                    ✓ 파이썬 문법 + 머신러닝·데이터 분석 + 정보 교과 & 학종 탐구보고서
                                 </span>
                             </div>
                             <p class="text-sm text-slate-600 leading-relaxed font-normal">
@@ -6732,7 +6732,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                         </div>
                     </div>
                     <div class="shrink-0 pl-4">
-                        <span class="bg-indigo-50 text-indigo-900 border border-indigo-300 text-sm font-bold px-4 py-2 rounded-xl shadow-xs">
+                        <span class="bg-indigo-50 text-indigo-900 border border-indigo-300 text-sm font-bold px-4 py-2 rounded-xl shadow-xs" style="white-space:nowrap">
                             대회 입상 & 학종 대비
                         </span>
                     </div>
@@ -6965,7 +6965,7 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
             const prevM = wrapper.style.marginBottom;
             wrapper.style.transform = 'none';
             wrapper.style.marginBottom = '';
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise(r => setTimeout(r, 400));
             try {
                 const canvas = await html2canvas(element, {
                     scale: 3,
@@ -6973,8 +6973,10 @@ const _CURRICULUM_HTML = `<!DOCTYPE html>
                     backgroundColor: '#ffffff',
                     logging: false,
                     allowTaint: true,
-                    width: 1123,
-                    height: 794
+                    onclone: (clonedDoc) => {
+                        const cw = clonedDoc.getElementById('slideWrapper');
+                        if (cw) { cw.style.transform = 'none'; cw.style.marginBottom = ''; }
+                    }
                 });
                 const link = document.createElement('a');
                 link.download = filename;

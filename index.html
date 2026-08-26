@@ -2538,11 +2538,11 @@ input, textarea, select { font-family: var(--sans); }
 
 /* 홈 탐구현장 미니 마퀴 */
 .home-gallery-marquee {
-  background: #f5f0e8;
-  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 8px;
   overflow: hidden;
-  margin-top: 12px;
+  margin: 18px 0 0;
   position: relative;
   z-index: 2;
 }
@@ -2555,9 +2555,10 @@ input, textarea, select { font-family: var(--sans); }
   font-size: 0.62rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--g2);
+  color: var(--g4);
   padding: 0 0 8px;
   font-weight: 600;
+  text-align: center;
 }
 .home-gallery-marquee-wrap {
   overflow: hidden;
@@ -2959,6 +2960,11 @@ input, textarea, select { font-family: var(--sans); }
       <button class="event-popup-btn-main" id="evPopupGoBtn" onclick="goEventNews()">자세히 보기 →</button>
       <button class="event-popup-btn-close" onclick="closeEventPopup()">닫기</button>
     </div>
+    <div class="review-popup-nav" id="evPopupNav" style="display:none">
+      <button class="review-nav-btn" onclick="eventPopupNav(-1)">← 이전</button>
+      <div class="review-nav-dots" id="evPopupDots"></div>
+      <button class="review-nav-btn" onclick="eventPopupNav(1)">다음 →</button>
+    </div>
   </div>
 </div>
 <div id="reviewPopup" class="hidden">
@@ -3147,6 +3153,18 @@ input, textarea, select { font-family: var(--sans); }
         <button class="btn-hero-outline" onclick="showPage('program')">커리큘럼 보기 →</button>
       </div>
 
+      <!-- 홈 탐구현장 미니 마퀴 (버튼 바로 아래) -->
+      <div id="homeGallerySection" style="display:none">
+        <div class="home-gallery-marquee">
+          <div class="home-gallery-inner">
+            <div class="home-gallery-marquee-label">탐구현장</div>
+            <div class="home-gallery-marquee-wrap">
+              <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 기술 뱃지 -->
       <div class="hero-tech-row">
         <div class="hero-tech-badge"><span class="hero-tech-badge-icon">🐍</span>Python</div>
@@ -3184,17 +3202,6 @@ input, textarea, select { font-family: var(--sans); }
       <!-- 모바일 전용 심플 헤더 -->
       <div class="mobile-section-title">수상 실적</div>
       <div class="hero-award-static" id="heroAwardList"></div>
-    </div>
-  </div>
-  <!-- 홈 탐구현장 미니 마퀴 -->
-  <div id="homeGallerySection" style="display:none">
-    <div class="home-gallery-marquee">
-      <div class="home-gallery-inner">
-        <div class="home-gallery-marquee-label">탐구현장</div>
-        <div class="home-gallery-marquee-wrap">
-          <div class="home-gallery-marquee-track" id="homeGalleryTrack"></div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -3831,7 +3838,6 @@ input, textarea, select { font-family: var(--sans); }
     <div class="portal-nav">
       <div class="portal-nav-item active" onclick="switchPortalTab('student','info',this)">내 정보</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">수업결과</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('student','report',this)">탐구보고서</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','footprint',this)">🐾 탐구발자국</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','slam',this)">Q-Grand Slam</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','pdf',this)">포트폴리오 PDF</div>
@@ -3854,12 +3860,10 @@ input, textarea, select { font-family: var(--sans); }
           <textarea class="form-input form-textarea" id="studentDreamInput" placeholder="나의 꿈을 적어보세요..." style="margin-top:8px"></textarea>
           <button class="table-action-btn primary" style="margin-top:8px" onclick="saveDream()">저장</button>
         </div>
-        <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
-          <div>
-            <div class="card-title" style="margin-bottom:4px">내 포트폴리오 아카이브</div>
-            <div style="font-size:0.82rem;color:var(--ink3)">내가 만든 프로그램·발표자료·보고서를 직접 등록하고 관리할 수 있어요.</div>
-          </div>
-          <a id="studentArchiveLink" href="#" target="_blank" rel="noopener" class="table-action-btn primary" style="white-space:nowrap">📁 내 아카이브 바로가기</a>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title" style="margin-bottom:4px">내 포트폴리오 아카이브</div>
+          <div style="font-size:0.82rem;color:var(--ink3);margin-bottom:12px">내가 만든 프로그램·발표자료·보고서를 직접 등록하고 관리할 수 있어요.</div>
+          <a id="studentArchiveLink" href="#" target="_blank" rel="noopener" class="table-action-btn primary" style="white-space:nowrap;display:inline-block">📁 내 아카이브 바로가기</a>
         </div>
       </div>
 
@@ -3868,76 +3872,6 @@ input, textarea, select { font-family: var(--sans); }
         <div style="font-weight:500;font-size:1rem;margin-bottom:16px">수업결과</div>
         <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:16px">강사가 교육일지를 작성하면 자동으로 기록됩니다.</p>
         <div id="studentClassLogs"></div>
-      </div>
-
-      <!-- 탐구보고서 -->
-      <div id="student-tab-report" class="portal-tab">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <div style="font-size:1rem;font-weight:500;color:var(--ink)">나의 탐구보고서</div>
-          <button class="table-action-btn primary" onclick="openReportForm()">+ 새 보고서 작성</button>
-        </div>
-        <div id="reportList"></div>
-
-        <!-- 보고서 작성 폼 -->
-        <div id="reportForm" style="display:none" class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-            <div style="font-weight:500;color:var(--ink)">탐구보고서 작성</div>
-            <button class="table-action-btn" onclick="closeReportForm()">닫기</button>
-          </div>
-          <div class="report-type-select">
-            <button class="report-type-btn active" id="typeBtn1" onclick="selectReportType('simple',this)">초등 저학년용 (간단)</button>
-            <button class="report-type-btn" id="typeBtn2" onclick="selectReportType('full',this)">일반 보고서</button>
-          </div>
-
-          <!-- 간단 보고서 -->
-          <div id="simpleReport">
-            <div class="form-group">
-              <label class="form-label">프로그램 이름</label>
-              <input class="form-input" id="r_simple_title" type="text" placeholder="만든 프로그램 이름">
-            </div>
-            <div class="form-group">
-              <label class="form-label">날짜</label>
-              <input class="form-input" id="r_simple_date" type="date">
-            </div>
-            <div class="form-group">
-              <label class="form-label">🧪 이 프로그램은 어떤 프로그램인가요?</label>
-              <textarea class="form-input form-textarea" id="r_simple_desc" placeholder="어떤 프로그램인지 쉽게 설명해 보세요. (예: 고양이가 마우스를 따라다니는 게임이에요!)"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">💡 어떻게 만들었나요? (사용한 블록이나 코드)</label>
-              <textarea class="form-input form-textarea" id="r_simple_how" placeholder="어떤 블록이나 명령어를 사용했는지 적어보세요."></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">😊 느낀 점</label>
-              <textarea class="form-input form-textarea" id="r_simple_feel" placeholder="만들면서 어떤 점이 재미있었나요? 어려운 점은 무엇이었나요?"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">사진 링크 (선택)</label>
-              <input class="form-input" id="r_simple_photo" type="url" placeholder="이미지 URL">
-            </div>
-          </div>
-
-          <!-- 일반 보고서 -->
-          <div id="fullReport" style="display:none">
-            <div class="form-section-title">1. 기본 정보</div>
-            <div class="form-group"><label class="form-label">프로젝트명</label><input class="form-input" id="r_title" type="text"></div>
-            <div class="form-group"><label class="form-label">날짜</label><input class="form-input" id="r_date" type="date"></div>
-            <div class="form-group"><label class="form-label">사용 언어 및 도구</label><input class="form-input" id="r_tools" type="text" placeholder="예: Python, Arduino"></div>
-            <div class="form-section-title">2. 탐구 동기 및 목적</div>
-            <div class="form-group"><label class="form-label">기획 배경</label><textarea class="form-input form-textarea" id="r_why" placeholder="왜 이 프로그램을 만들게 되었나요?"></textarea></div>
-            <div class="form-group"><label class="form-label">주요 기능</label><textarea class="form-input form-textarea" id="r_feature" placeholder="해결하고자 하는 핵심 문제는?"></textarea></div>
-            <div class="form-section-title">3. 프로그램 설계 및 논리</div>
-            <div class="form-group"><label class="form-label">핵심 알고리즘</label><textarea class="form-input form-textarea" id="r_algo"></textarea></div>
-            <div class="form-group"><label class="form-label">주요 코드 설명</label><textarea class="form-input form-textarea" id="r_code"></textarea></div>
-            <div class="form-section-title">4. 문제 해결 과정</div>
-            <div class="form-group"><label class="form-label">발생한 오류</label><textarea class="form-input form-textarea" id="r_bug"></textarea></div>
-            <div class="form-group"><label class="form-label">해결 방법</label><textarea class="form-input form-textarea" id="r_fix"></textarea></div>
-            <div class="form-section-title">5. 결과 및 시연</div>
-            <div class="form-group"><label class="form-label">코드 링크</label><input class="form-input" id="r_link" type="url"></div>
-            <div class="form-group"><label class="form-label">실행 화면 이미지 링크</label><input class="form-input" id="r_screenshot" type="url"></div>
-          </div>
-          <button class="form-submit" onclick="saveReport()">저장하기</button>
-        </div>
       </div>
 
       <!-- Q-Grand Slam -->
@@ -4987,8 +4921,8 @@ function showPage(name, param){
     'admin':renderAdminDashboard
   };
   if(renders[name]) renders[name]();
-  // 홈 화면으로 올 때마다 이벤트 팝업 표시
-  if(name==='main') setTimeout(initEventPopup, 100);
+  // 홈 화면으로 올 때마다 이벤트 팝업 / 학부모 리뷰 팝업 표시
+  if(name==='main'){ setTimeout(initEventPopup, 100); setTimeout(initReviewPopup, 100); }
 }
 
 /* ═══════════════════════════════════
@@ -7610,16 +7544,18 @@ function previewPortfolio(){
 
   const merged=getMergedFootprint(s);
   const footprintHtml=merged.length
-    ?`<table style="width:100%;border-collapse:collapse;font-size:0.85rem"><thead><tr style="background:#f4f6f2">
+    ?`<table style="width:100%;border-collapse:collapse;font-size:0.85rem;table-layout:fixed">
+      <colgroup><col style="width:12%"><col style="width:22%"><col style="width:44%"><col style="width:22%"></colgroup>
+      <thead><tr style="background:#f4f6f2">
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">날짜</th>
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">분류</th>
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">내용</th>
         <th style="padding:6px 10px;text-align:left;border:1px solid #e0e0d8">상세</th>
       </tr></thead><tbody>${merged.map(r=>`<tr>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r.date||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${fpTypeInfo(r.type).cat}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500">${r._label||''}</td>
-        <td style="padding:6px 10px;border:1px solid #e0e0d8">${r._sub||'-'}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;word-wrap:break-word">${r.date||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;word-wrap:break-word">${fpTypeInfo(r.type).cat}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;font-weight:500;word-wrap:break-word">${r._label||''}</td>
+        <td style="padding:6px 10px;border:1px solid #e0e0d8;word-wrap:break-word">${r._sub||'-'}</td>
       </tr>`).join('')}</tbody></table>`
     :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
 
@@ -9514,6 +9450,9 @@ function getEvents(){ return DB.get('eventPopups',[]); }
 
 let _activeEvent = null;
 
+let _activeEvents = [];
+let _eventIdx = 0;
+
 function initEventPopup(){
   // 포털 탭 안에 있을 때만 차단 (홈 화면에서는 항상 표시)
   const adminPage = document.getElementById('page-admin');
@@ -9525,22 +9464,45 @@ function initEventPopup(){
   if(inPortal) return;
   const today = new Date().toISOString().slice(0,10);
   const events = getEvents();
-  _activeEvent = events.find(e => e.start <= today && today <= e.end) || null;
+  _activeEvents = events.filter(e => e.start <= today && today <= e.end);
+  _eventIdx = 0;
   const wrap = document.getElementById('eventPopupWrap');
   if(!wrap) return;
-  if(!_activeEvent){ wrap.classList.add('hidden'); return; }
-  document.getElementById('evPopupBadge').textContent = _activeEvent.badge || '🎉 이벤트';
-  document.getElementById('evPopupTitle').textContent = _activeEvent.title;
-  document.getElementById('evPopupContent').textContent = _activeEvent.content;
-  // 이미지 — 구글 드라이브 URL로 직접 표시
+  if(!_activeEvents.length){ wrap.classList.add('hidden'); return; }
+  renderEventPopup();
+  wrap.classList.remove('hidden');
+}
+
+function renderEventPopup(){
+  if(!_activeEvents.length) return;
+  const e = _activeEvents[_eventIdx];
+  _activeEvent = e; // goEventNews()에서 사용
+  document.getElementById('evPopupBadge').textContent = e.badge || '🎉 이벤트';
+  document.getElementById('evPopupTitle').textContent = e.title;
+  document.getElementById('evPopupContent').textContent = e.content;
   const imgWrap = document.getElementById('evPopupImgWrap');
   const imgEl   = document.getElementById('evPopupImg');
-  if(_activeEvent.img){ imgEl.src = _activeEvent.img; imgWrap.style.display='block'; }
+  if(e.img){ imgEl.src = e.img; imgWrap.style.display='block'; }
   else { imgWrap.style.display='none'; }
   const goBtn = document.getElementById('evPopupGoBtn');
-  if(_activeEvent.newsTitle){ goBtn.style.display=''; }
+  if(e.newsTitle){ goBtn.style.display=''; goBtn.textContent='자세히 보기 →'; goBtn.onclick=goEventNews; }
   else { goBtn.textContent = '닫기'; goBtn.onclick = closeEventPopup; }
-  wrap.classList.remove('hidden');
+  // 2개 이상일 때만 이전/다음 네비 표시
+  const nav = document.getElementById('evPopupNav');
+  if(nav){
+    nav.style.display = _activeEvents.length > 1 ? 'flex' : 'none';
+    const dots = document.getElementById('evPopupDots');
+    if(dots){
+      dots.innerHTML = _activeEvents.map((_,i) =>
+        `<div class="review-nav-dot${i===_eventIdx?' active':''}"></div>`).join('');
+    }
+  }
+}
+
+function eventPopupNav(dir){
+  if(!_activeEvents.length) return;
+  _eventIdx = (_eventIdx + dir + _activeEvents.length) % _activeEvents.length;
+  renderEventPopup();
 }
 
 function closeEventPopup(){

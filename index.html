@@ -3837,7 +3837,7 @@ input, textarea, select { font-family: var(--sans); }
     </div>
     <div class="portal-nav">
       <div class="portal-nav-item active" onclick="switchPortalTab('student','info',this)">내 정보</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">수업결과</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">탐구결과</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','footprint',this)">🐾 탐구발자국</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','slam',this)">Q-Grand Slam</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','pdf',this)">포트폴리오 PDF</div>
@@ -3867,9 +3867,11 @@ input, textarea, select { font-family: var(--sans); }
         </div>
       </div>
 
-      <!-- 수업결과 -->
+      <!-- 탐구결과 -->
       <div id="student-tab-classlog" class="portal-tab">
-        <div style="font-weight:500;font-size:1rem;margin-bottom:16px">수업결과</div>
+        <div style="font-weight:500;font-size:1rem;margin-bottom:16px">탐구결과</div>
+        <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:8px">내 포트폴리오 아카이브에 등록한 작품이 자동으로 표시됩니다.</p>
+        <div id="studentArchiveWorks" style="margin-bottom:24px"></div>
         <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:16px">강사가 교육일지를 작성하면 자동으로 기록됩니다.</p>
         <div id="studentClassLogs"></div>
       </div>
@@ -4739,7 +4741,7 @@ input, textarea, select { font-family: var(--sans); }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCu3LVdeQbdxSL1mq3NM_DUpuMe9wRv-1Q",
@@ -4778,6 +4780,18 @@ window._fbGetAll = async () => {
 };
 window._fbReady = true;
 window.dispatchEvent(new Event('fbReady'));
+
+// 학생 아카이브(projects 컬렉션)에서 특정 학생의 작품 목록을 가져온다
+window._fbGetArchiveProjects = async (studentId) => {
+  try{
+    const q = query(collection(_db, 'projects'), where('studentId', '==', studentId));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }catch(e){
+    console.warn('archive projects read err:', e);
+    return [];
+  }
+};
 </script>
 
 <script>
@@ -5540,7 +5554,7 @@ function switchPortalTab(portal, tab, el){
   }
   // 학생 탭
   if(portal==='student'){
-    if(tab==='classlog') renderStudentClassLogs();
+    if(tab==='classlog'){ renderStudentClassLogs(); renderStudentArchiveWorks(); }
     if(tab==='footprint') renderStudentFootprint();
     if(tab==='pdf') renderPdfTabBtn();
     // 하위 호환
@@ -5622,6 +5636,7 @@ function renderStudentPortal(){
   renderStudentReports();
   renderStudentSlam();
   renderStudentClassLogs();
+  renderStudentArchiveWorks();
 }
 
 function renderAdminDashboard(){
@@ -5672,7 +5687,7 @@ function renderTeacherTab(tab){
 
 // Firebase 동기화 후 현재 학생 탭 재렌더링용
 function renderStudentTab(tab){
-  if(tab==='classlog') renderStudentClassLogs();
+  if(tab==='classlog'){ renderStudentClassLogs(); renderStudentArchiveWorks(); }
   if(tab==='footprint') renderStudentFootprint();
   if(tab==='awards')   renderStudentFootprint();
   if(tab==='history')  renderStudentFootprint();
@@ -7992,6 +8007,32 @@ function saveEditConsultLog(id){
   renderConsultLogs();
 }
 function deleteConsultLog(id){if(!confirm('삭제?'))return;DB.set('consultlogs',DB.get('consultlogs',[]).filter(l=>l.id!==id));renderConsultLogs();}
+
+/* ═══ 학생 아카이브 작품 목록 (탐구결과 탭 상단) ═══ */
+const TYPE_LABEL_KR = { program:'프로젝트', report:'보고서', presentation:'발표자료', aiProject:'AI프로젝트' };
+async function renderStudentArchiveWorks(){
+  if(!currentUser) return;
+  const el = document.getElementById('studentArchiveWorks');
+  if(!el) return;
+  el.innerHTML = '<div style="color:var(--ink4);font-size:0.82rem">불러오는 중…</div>';
+  const works = window._fbGetArchiveProjects ? await window._fbGetArchiveProjects(currentUser.id) : [];
+  if(!works.length){
+    el.innerHTML = '<div style="color:var(--ink4);padding:1.2rem;text-align:center;border:1px dashed var(--border2);border-radius:8px;font-size:0.85rem">아직 아카이브에 등록된 작품이 없습니다.</div>';
+    return;
+  }
+  const sorted = [...works].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  el.innerHTML = sorted.map(w => `
+    <div class="edu-log-item" style="margin-bottom:8px">
+      <div class="edu-log-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="edu-log-date">${w.date||''}</span>
+          <span class="edu-log-class">${TYPE_LABEL_KR[w.type]||w.type||''}</span>
+        </div>
+      </div>
+      <div style="font-weight:500;margin:4px 0 2px">${(w.title||'').replace(/</g,'&lt;')}</div>
+      <div class="edu-log-content" style="white-space:pre-line">${(w.description||'').replace(/</g,'&lt;')}</div>
+    </div>`).join('');
+}
 
 /* ═══ 학생 수업결과 탭 ═══ */
 function renderStudentClassLogs(){

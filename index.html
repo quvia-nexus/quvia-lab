@@ -3837,7 +3837,7 @@ input, textarea, select { font-family: var(--sans); }
     </div>
     <div class="portal-nav">
       <div class="portal-nav-item active" onclick="switchPortalTab('student','info',this)">내 정보</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">탐구결과</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('student','classlog',this)">탐구 결과물</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','footprint',this)">🐾 탐구발자국</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','slam',this)">Q-Grand Slam</div>
       <div class="portal-nav-item" onclick="switchPortalTab('student','pdf',this)">포트폴리오 PDF</div>
@@ -3867,13 +3867,11 @@ input, textarea, select { font-family: var(--sans); }
         </div>
       </div>
 
-      <!-- 탐구결과 -->
+      <!-- 탐구 결과물 -->
       <div id="student-tab-classlog" class="portal-tab">
-        <div style="font-weight:500;font-size:1rem;margin-bottom:16px">탐구결과</div>
+        <div style="font-weight:500;font-size:1rem;margin-bottom:16px">탐구 결과물</div>
         <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:8px">내 포트폴리오 아카이브에 등록한 작품이 자동으로 표시됩니다.</p>
-        <div id="studentArchiveWorks" style="margin-bottom:24px"></div>
-        <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:16px">강사가 교육일지를 작성하면 자동으로 기록됩니다.</p>
-        <div id="studentClassLogs"></div>
+        <div id="studentArchiveWorks"></div>
       </div>
 
       <!-- Q-Grand Slam -->
@@ -3988,7 +3986,6 @@ input, textarea, select { font-family: var(--sans); }
     </div>
     <div class="portal-nav">
       <div class="portal-nav-item active" onclick="switchPortalTab('teacher','notice',this)">전달사항</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('teacher','edulog',this)">교육일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('teacher','consult',this)">상담일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('teacher','students',this)">학생 현황</div>
       <div class="portal-nav-item" onclick="switchPortalTab('teacher','payslip',this)">💰 급여명세서</div>
@@ -3997,34 +3994,6 @@ input, textarea, select { font-family: var(--sans); }
       <div id="teacher-tab-notice" class="portal-tab active">
         <div class="card-title" style="margin-bottom:12px">원장 전달사항</div>
         <div id="teacherNoticeList"></div>
-      </div>
-      <div id="teacher-tab-edulog" class="portal-tab">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <div style="font-weight:500">교육일지</div>
-          <button class="table-action-btn primary" onclick="openEduLogForm()">+ 새 일지 작성</button>
-        </div>
-        <div id="eduLogForm" style="display:none" class="card" style="margin-bottom:16px">
-          <div class="form-group"><label class="form-label">날짜</label><input class="form-input" id="el_date" type="date"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem">
-            <div class="form-group" style="margin:0">
-              <label class="form-label">클래스 선택</label>
-              <select class="form-input" id="el_class" onchange="loadClassStudents()">
-                <option value="">클래스 선택...</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">학생 선택</label>
-              <div id="el_students_wrap" style="border:1px solid var(--border2);border-radius:6px;padding:8px;max-height:140px;overflow-y:auto;background:white;font-size:0.82rem">
-                <label style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer"><input type="checkbox" id="el_all_students" onchange="toggleAllStudents(this)"> <b>전체 선택</b></label>
-                <div id="el_student_list"></div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">수업 내용</label><textarea class="form-input form-textarea" id="el_content" placeholder="오늘 수업에서 다룬 내용을 입력하세요"></textarea></div>
-          <div class="form-group"><label class="form-label">특이사항</label><textarea class="form-input form-textarea" id="el_note" placeholder="특이사항이나 메모"></textarea></div>
-          <button class="form-submit" onclick="saveEduLog()">저장 (선택 학생 일괄 등록)</button>
-        </div>
-        <div id="eduLogList"></div>
       </div>
       <div id="teacher-tab-consult" class="portal-tab">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -5554,7 +5523,7 @@ function switchPortalTab(portal, tab, el){
   }
   // 학생 탭
   if(portal==='student'){
-    if(tab==='classlog'){ renderStudentClassLogs(); renderStudentArchiveWorks(); }
+    if(tab==='classlog'){ renderStudentArchiveWorks(); }
     if(tab==='footprint') renderStudentFootprint();
     if(tab==='pdf') renderPdfTabBtn();
     // 하위 호환
@@ -5564,7 +5533,7 @@ function switchPortalTab(portal, tab, el){
   // 강사 탭
   if(portal==='teacher'){
     if(tab==='notice')   renderTeacherNotices();
-    if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
+
     if(tab==='consult')  renderConsultLogs();
     if(tab==='students') renderTeacherStudents();
     if(tab==='payslip')  renderTeacherPayslip();
@@ -5635,7 +5604,7 @@ function renderStudentPortal(){
   if(archiveLink) archiveLink.href='https://quvia-nexus.github.io/quvia-student-archive/?sid='+encodeURIComponent(s.id);
   renderStudentReports();
   renderStudentSlam();
-  renderStudentClassLogs();
+
   renderStudentArchiveWorks();
 }
 
@@ -5679,7 +5648,7 @@ function renderAdminTab(tab){
 // Firebase 동기화 후 현재 강사 탭 재렌더링용
 function renderTeacherTab(tab){
   if(tab==='notice')   renderTeacherNotices();
-  if(tab==='edulog')   { populateClassSelect(); renderEduLogs(); }
+
   if(tab==='consult')  renderConsultLogs();
   if(tab==='students') renderTeacherStudents();
   if(tab==='payslip')  renderTeacherPayslip();
@@ -5687,7 +5656,7 @@ function renderTeacherTab(tab){
 
 // Firebase 동기화 후 현재 학생 탭 재렌더링용
 function renderStudentTab(tab){
-  if(tab==='classlog'){ renderStudentClassLogs(); renderStudentArchiveWorks(); }
+  if(tab==='classlog'){ renderStudentArchiveWorks(); }
   if(tab==='footprint') renderStudentFootprint();
   if(tab==='awards')   renderStudentFootprint();
   if(tab==='history')  renderStudentFootprint();
@@ -7535,7 +7504,7 @@ function importData(input){
 }
 
 /* PDF 다운로드 (간단 버전) */
-function previewPortfolio(){
+async function previewPortfolio(){
   if(!currentUser){alert('로그인이 필요합니다.');return;}
   // 미리보기: print 스크립트 없이 새 창에서 확인만
   const s=currentUser;
@@ -7543,19 +7512,18 @@ function previewPortfolio(){
   const slamNotes=s.slamNotes||['','','','',''];
   const labels=['Q1 자격 인증','Q2 대회 수상','Q3 작품 제작','Q4 탐구보고서','Q5 발명/하드웨어'];
   const icons=['📜','🏅','💻','🔬','🛠'];
-  const reports=[...(s.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const stuAwards=[...(s.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const history=[...(s.history||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
-  const reportsHtml=reports.length
-    ?reports.slice().reverse().map(r=>`<div style="border:1px solid #e0e0d8;border-radius:8px;padding:14px 16px;margin-bottom:12px">
-        <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px">${r.title||'무제'} <span style="font-size:0.75rem;color:#9a9a94">${r.date||''}</span></div>
-        ${r.desc?`<div style="font-size:0.85rem;margin-bottom:4px"><b>설명:</b> ${r.desc}</div>`:''}
-        ${r.how?`<div style="font-size:0.85rem;margin-bottom:4px"><b>제작:</b> ${r.how}</div>`:''}
-        ${r.feel?`<div style="font-size:0.85rem;margin-bottom:4px"><b>느낀점:</b> ${r.feel}</div>`:''}
-        ${r.tools?`<div style="font-size:0.82rem;color:#6a6a64">도구: ${r.tools}</div>`:''}
+  const TYPE_LABEL_KR2={program:'프로젝트',report:'보고서',presentation:'발표자료',aiProject:'AI프로젝트'};
+  const archiveWorks = window._fbGetArchiveProjects ? await window._fbGetArchiveProjects(s.id) : [];
+  const sortedWorks = [...archiveWorks].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const archiveWorksHtml = sortedWorks.length
+    ? sortedWorks.map(w=>`<div style="border:1px solid #e0e0d8;border-radius:8px;padding:14px 16px;margin-bottom:12px">
+        <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px">${(w.title||'무제').replace(/</g,'&lt;')} <span style="font-size:0.75rem;color:#9a9a94">${w.date||''} · ${TYPE_LABEL_KR2[w.type]||w.type||''}</span></div>
+        ${w.description?`<div style="font-size:0.85rem;margin-bottom:4px">${w.description.replace(/</g,'&lt;')}</div>`:''}
       </div>`).join('')
-    :'<div style="color:#9a9a94;padding:8px 0">없음</div>';
+    :'<div style="color:#9a9a94;padding:8px 0">아직 등록된 결과물이 없습니다.</div>';
 
   const merged=getMergedFootprint(s);
   const footprintHtml=merged.length
@@ -7586,6 +7554,7 @@ function previewPortfolio(){
       .pending{background:#f4f6f2;color:#9a9a94;border:1px solid #e0e0d8}
       .slam-note{font-size:0.72rem;color:#5a7a5a;margin-top:4px;white-space:pre-wrap}
       .footer{margin-top:40px;border-top:1px solid #e0e0d8;padding-top:10px;font-size:0.75rem;color:#9a9a94;display:flex;justify-content:space-between}
+      .page2{page-break-before:always}
       @media print{.no-print{display:none}}
     </style></head><body>
     <div class="no-print" style="background:#2d4a2d;color:#fff;padding:10px 20px;border-radius:8px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
@@ -7616,8 +7585,8 @@ function previewPortfolio(){
     </div>
     <h2>🐾 탐구발자국 (${merged.length}건)</h2>
     ${footprintHtml}
-    <h2>탐구보고서 (${reports.length}개)</h2>
-    ${reportsHtml}
+    <h2 class="page2">탐구 결과물 (${sortedWorks.length}개)</h2>
+    ${archiveWorksHtml}
     <div class="footer">
       <span>QUVIA LAB 큐비아 탐구학원</span>
       <span>${s.name} 학생 포트폴리오</span>
@@ -7630,35 +7599,30 @@ function previewPortfolio(){
   w.document.close();
 }
 
-function downloadPortfolioPDF(){
+async function downloadPortfolioPDF(){
   if(!currentUser){alert('로그인이 필요합니다.');return;}
   const s=currentUser;
   const slam=s.slam||[false,false,false,false,false];
   const slamNotes=s.slamNotes||['','','','',''];
   const labels=['Q1 자격 인증','Q2 대회 수상','Q3 작품 제작','Q4 탐구보고서','Q5 발명/하드웨어'];
   const icons=['📜','🏅','💻','🔬','🛠'];
-  const reports=[...(s.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const stuAwards=[...(s.studentAwards||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
-  // 보고서 HTML 생성
-  const reportsHtml = reports.length
-    ? reports.map((r,i)=>`
+  // 탐구 결과물 (아카이브) HTML 생성
+  const TYPE_LABEL_KR3={program:'프로젝트',report:'보고서',presentation:'발표자료',aiProject:'AI프로젝트'};
+  const archiveWorksPdf = window._fbGetArchiveProjects ? await window._fbGetArchiveProjects(s.id) : [];
+  const sortedWorksPdf = [...archiveWorksPdf].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const reportsHtml = sortedWorksPdf.length
+    ? sortedWorksPdf.map(w=>`
         <div style="border:1px solid #e0e0d8;border-radius:8px;padding:16px;margin-bottom:12px;page-break-inside:avoid">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-weight:600;font-size:0.95rem">${r.title||'무제'}</div>
-            <div style="font-size:0.75rem;color:#9a9a94">${r.date||''} · ${r.type==='simple'?'초등저학년용':'일반보고서'}</div>
+            <div style="font-weight:600;font-size:0.95rem">${(w.title||'무제').replace(/</g,'&lt;')}</div>
+            <div style="font-size:0.75rem;color:#9a9a94">${w.date||''} · ${TYPE_LABEL_KR3[w.type]||w.type||''}</div>
           </div>
-          ${r.desc?`<div style="font-size:0.85rem;margin-bottom:6px"><span style="color:#2d4a2d;font-weight:500">📋 프로그램 설명</span><br>${r.desc}</div>`:''}
-          ${r.how?`<div style="font-size:0.85rem;margin-bottom:6px"><span style="color:#2d4a2d;font-weight:500">💡 제작 방법</span><br>${r.how}</div>`:''}
-          ${r.feel?`<div style="font-size:0.85rem;margin-bottom:6px"><span style="color:#2d4a2d;font-weight:500">😊 느낀 점</span><br>${r.feel}</div>`:''}
-          ${r.tools?`<div style="font-size:0.82rem;color:#6a6a64">사용 도구: ${r.tools}</div>`:''}
-          ${r.why?`<div style="font-size:0.85rem;margin-bottom:4px"><span style="color:#2d4a2d;font-weight:500">기획 배경</span><br>${r.why}</div>`:''}
-          ${r.feature?`<div style="font-size:0.85rem;margin-bottom:4px"><span style="color:#2d4a2d;font-weight:500">주요 기능</span><br>${r.feature}</div>`:''}
-          ${r.algo?`<div style="font-size:0.85rem;margin-bottom:4px"><span style="color:#2d4a2d;font-weight:500">핵심 알고리즘</span><br>${r.algo}</div>`:''}
-          ${r.bug?`<div style="font-size:0.85rem;margin-bottom:4px"><span style="color:#2d4a2d;font-weight:500">오류 및 해결</span><br>${r.bug} → ${r.fix||''}</div>`:''}
-          ${r.photo?`<img src="${r.photo}" style="max-width:100%;border-radius:6px;margin-top:8px" onerror="this.style.display='none'">`:''}
+          ${w.description?`<div style="font-size:0.85rem;margin-bottom:6px">${w.description.replace(/</g,'&lt;')}</div>`:''}
+          ${w.thumbnailUrl?`<img src="${w.thumbnailUrl}" style="max-width:100%;border-radius:6px;margin-top:8px" onerror="this.style.display='none'">`:''}
         </div>`).join('')
-    : '<div style="color:#9a9a94;padding:12px">작성한 보고서가 없습니다.</div>';
+    : '<div style="color:#9a9a94;padding:12px">아직 등록된 결과물이 없습니다.</div>';
 
   // 🐾 탐구발자국 통합 HTML
   const mergedPdf=getMergedFootprint(s);
@@ -7692,6 +7656,7 @@ function downloadPortfolioPDF(){
       .pending{background:#f4f6f2;color:#9a9a94;border:1px solid #e0e0d8}
       .slam-note{font-size:0.72rem;color:#5a7a5a;margin-top:4px;white-space:pre-wrap}
       .footer{margin-top:40px;border-top:1px solid #e0e0d8;padding-top:10px;font-size:0.75rem;color:#9a9a94;display:flex;justify-content:space-between}
+      .page2{page-break-before:always}
       @media print{button{display:none}h2{page-break-after:avoid}}
     </style></head>
     <body>
@@ -7725,7 +7690,7 @@ function downloadPortfolioPDF(){
     <h2>🐾 탐구발자국 (${mergedPdf.length}건)</h2>
     ${footprintPdfHtml}
 
-    <h2>탐구보고서 (${reports.length}개)</h2>
+    <h2 class="page2">탐구 결과물 (${sortedWorksPdf.length}개)</h2>
     ${reportsHtml}
 
     <div class="footer">

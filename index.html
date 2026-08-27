@@ -7170,7 +7170,7 @@ function renderPortfolioSelect(){
   // 학생이 이미 선택돼있으면 포트폴리오 표시
   if(sel.value) viewStudentPortfolio();
 }
-function viewStudentPortfolio(){
+async function viewStudentPortfolio(){
   const id=document.getElementById('portfolioStudentSelect').value;
   const el=document.getElementById('portfolioView');
   if(!id||!el){if(el)el.innerHTML='';return;}
@@ -7178,6 +7178,17 @@ function viewStudentPortfolio(){
   if(!s){el.innerHTML='학생을 찾을 수 없습니다.';return;}
   const slam=s.slam||[false,false,false,false,false];
   const labels=['Q1 자격','Q2 수상','Q3 제작','Q4 탐구','Q5 발명'];
+
+  el.innerHTML='<div class="card" style="color:var(--ink4);font-size:0.85rem">불러오는 중…</div>';
+  const archiveWorks = window._fbGetArchiveProjects ? await window._fbGetArchiveProjects(s.id) : [];
+  const sortedWorks = [...archiveWorks].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const archiveWorksHtml = sortedWorks.length
+    ? sortedWorks.map(w=>`<div style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px">
+        <div style="font-weight:600">${(w.title||'무제').replace(/</g,'&lt;')}</div>
+        ${w.description?`<div style="font-size:0.83rem;margin-top:4px;color:var(--ink2)">${w.description.replace(/</g,'&lt;')}</div>`:''}
+      </div>`).join('')
+    : '<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">아직 등록된 결과물이 없습니다.</div>';
+
   el.innerHTML=`
     <div class="card">
       <div style="font-size:1.1rem;font-weight:500;margin-bottom:4px">${s.name}</div>
@@ -7204,33 +7215,8 @@ function viewStudentPortfolio(){
       ${getMergedFootprint(s).length?`<table class="admin-table" style="margin-bottom:16px"><thead><tr><th>날짜</th><th>분류</th><th>내용</th><th>상세</th></tr></thead><tbody>
         ${getMergedFootprint(s).map(r=>`<tr><td>${r.date||''}</td><td>${fpTypeInfo(r.type).cat}</td><td>${r._label||''}</td><td>${r._sub||'-'}</td></tr>`).join('')}
       </tbody></table>`:'<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'}
-      <div class="card-title" style="margin-top:16px">탐구보고서 (${(s.reports||[]).length}개)</div>
-      ${(s.reports||[]).length===0
-        ? '<div style="color:var(--ink4);font-size:0.82rem;margin-bottom:16px">없음</div>'
-        : [...(s.reports||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map((r)=>{
-            const origIdx=(s.reports||[]).indexOf(r);
-            return `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:10px" id="admin_report_${s.id}_${origIdx}">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                <div>
-                  <span style="font-weight:600">${r.title||'무제'}</span>
-                  <span style="font-size:0.75rem;color:var(--ink4);margin-left:8px">${r.date||''}</span>
-                  <span style="font-size:0.72rem;padding:2px 8px;border-radius:10px;background:var(--g5);color:var(--g2);margin-left:6px">${r.type==='simple'?'저학년용':'일반'}</span>
-                </div>
-                <button class="table-action-btn" onclick="adminEditReport('${s.id}',${origIdx})">편집</button>
-              </div>
-              <div id="admin_report_body_${s.id}_${origIdx}">
-                ${r.desc?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)">🧪 <b>설명:</b> ${r.desc}</div>`:''}
-                ${r.how?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)">💡 <b>제작:</b> ${r.how}</div>`:''}
-                ${r.feel?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)">😊 <b>느낀점:</b> ${r.feel}</div>`:''}
-                ${r.tools?`<div style="font-size:0.8rem;color:var(--ink4)">🔧 도구: ${r.tools}</div>`:''}
-                ${r.why?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>기획:</b> ${r.why}</div>`:''}
-                ${r.feature?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>기능:</b> ${r.feature}</div>`:''}
-                ${r.algo?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>알고리즘:</b> ${r.algo}</div>`:''}
-                ${r.bug?`<div style="font-size:0.83rem;margin-bottom:4px;color:var(--ink2)"><b>오류→해결:</b> ${r.bug}${r.fix?' → '+r.fix:''}</div>`:''}
-              </div>
-            </div>`;
-          }).join('')
-      }
+      <div class="card-title" style="margin-top:16px">탐구 결과물 (${sortedWorks.length}개)</div>
+      ${archiveWorksHtml}
     </div>`;
 }
 function updateStudentSlam(id,idx,val){
@@ -7520,7 +7506,7 @@ async function previewPortfolio(){
   const sortedWorks = [...archiveWorks].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const archiveWorksHtml = sortedWorks.length
     ? sortedWorks.map(w=>`<div style="border:1px solid #e0e0d8;border-radius:8px;padding:14px 16px;margin-bottom:12px">
-        <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px">${(w.title||'무제').replace(/</g,'&lt;')} <span style="font-size:0.75rem;color:#9a9a94">${w.date||''} · ${TYPE_LABEL_KR2[w.type]||w.type||''}</span></div>
+        <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px">${(w.title||'무제').replace(/</g,'&lt;')}</div>
         ${w.description?`<div style="font-size:0.85rem;margin-bottom:4px">${w.description.replace(/</g,'&lt;')}</div>`:''}
       </div>`).join('')
     :'<div style="color:#9a9a94;padding:8px 0">아직 등록된 결과물이 없습니다.</div>';

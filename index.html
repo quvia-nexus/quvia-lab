@@ -4096,6 +4096,7 @@ input, textarea, select { font-family: var(--sans); }
             <input type="file" accept=".xlsx,.csv" style="display:none" onchange="importStudentsExcel(this)">
           </label>
           <button class="table-action-btn" onclick="downloadStudentTemplate()" title="엑셀 작성 양식을 내려받습니다">📥 등록 양식 다운로드</button>
+          <button class="table-action-btn" onclick="downloadAllStudentsCSV()" title="현재 등록된 학생 전체 정보를 내려받습니다">📥 전체 학생정보 다운로드</button>
           <button class="year-up-btn" onclick="yearUpAll()">전체 학년 올리기 (+1학년)</button>
         </div>
         <div style="overflow-x:auto">
@@ -5708,14 +5709,39 @@ function deleteStudent(i){
   DB.set('students',students);
   renderAdminStudents();
 }
+function nextQuviaId(students){
+  let maxNum = -1, width = 3;
+  students.forEach(s=>{
+    const m = String(s.id||'').match(/^quvia(\d+)$/i);
+    if(m){
+      const num = parseInt(m[1],10);
+      if(num > maxNum){ maxNum = num; width = m[1].length; }
+    }
+  });
+  if(maxNum === -1) return 'quvia100';
+  return 'quvia' + String(maxNum+1).padStart(width,'0');
+}
 function addStudentRow(){
   const students=DB.get('students',[]);
-  students.unshift({id:'',pw:'1234',name:'',school:'',grade:'',birth:'',cls:'',level:'LV.1 Sense',slam:[false,false,false,false,false],reports:[],dream:''});
+  const newId=nextQuviaId(students);
+  students.unshift({id:newId,pw:'1234',name:'',school:'',grade:'',birth:'',cls:'',level:'LV.1 Sense',slam:[false,false,false,false,false],reports:[],dream:''});
   DB.set('students',students);
   renderAdminStudents();
   // 맨 위 행으로 스크롤
   const tb=document.getElementById('studentsBody');
   if(tb&&tb.firstElementChild) tb.firstElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function downloadAllStudentsCSV(){
+  const students=DB.get('students',[]);
+  const bom='\uFEFF';
+  const header='아이디,비밀번호,이름,학교,학년,생년월일,클래스,레벨\n';
+  const rows=students.map(s=>[s.id,s.pw,s.name,s.school,s.grade,s.birth,s.cls,s.level]
+    .map(v=>String(v||'').replace(/,/g,'/')).join(',')).join('\n');
+  const blob=new Blob([bom+header+rows],{type:'text/csv;charset=utf-8'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='학생전체정보_'+new Date().toISOString().slice(0,10)+'.csv';
+  link.click();
 }
 function yearUpAll(){
   if(!confirm('모든 학생을 1학년씩 올리겠습니까?')) return;

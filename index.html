@@ -5419,15 +5419,30 @@ function doAdminLogin(){
 ═══════════════════════════════════ */
 // renderStudentPortal → 하단 정의 버전 사용 (renderStudentClassLogs 포함)
 
-function saveDream(){
+async function saveDream(){
   if(!currentUser) return;
   const val=document.getElementById('studentDreamInput').value;
-  currentUser.dream=val;
-  const students=DB.get('students',[]);
-  const idx=students.findIndex(s=>s.id===currentUser.id);
-  if(idx>=0){students[idx].dream=val;DB.set('students',students);}
-  document.getElementById('studentDreamDisplay').textContent=val;
-  alert('저장되었습니다!');
+  const btn=document.querySelector('#student-tab-info .table-action-btn.primary');
+  if(btn){ btn.disabled=true; btn.textContent='저장 중…'; }
+  try{
+    // 저장 직전에 클라우드 최신 데이터로 한 번 더 동기화 (동시 수정 시 데이터 덮어쓰임 방지)
+    if(window._fbGetAll) await window._fbGetAll();
+    const students=DB.get('students',[]);
+    const idx=students.findIndex(s=>s.id===currentUser.id);
+    if(idx<0){ alert('학생 정보를 찾을 수 없습니다. 새로고침 후 다시 시도해주세요.'); return; }
+    students[idx].dream=val;
+    currentUser=students[idx];
+    localStorage.setItem('qv_students', JSON.stringify(students));
+    if(!window._fbSetDoc) throw new Error('Firebase 연결 준비가 안 되었습니다.');
+    await window._fbSetDoc('students', students);
+    document.getElementById('studentDreamDisplay').textContent=val;
+    alert('저장되었습니다!');
+  }catch(err){
+    console.error('saveDream error:', err);
+    alert('저장에 실패했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.\n('+err.message+')');
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent='저장'; }
+  }
 }
 
 let reportType='simple';

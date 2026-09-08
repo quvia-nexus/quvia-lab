@@ -357,6 +357,54 @@ input, textarea, select { font-family: var(--sans); }
   min-height: 100vh;
 }
 
+/* Q 워터마크 + 반짝이는 별 */
+.hero-q-watermark{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-55%);
+  width:640px; height:640px;
+  max-width:90vw; max-height:90vw;
+  pointer-events:none;
+  z-index:0;
+}
+.hero-q-letter{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'EB Garamond', 'Times New Roman', serif;
+  font-weight:700; font-size:580px; line-height:1;
+  color:rgba(255,255,255,0.05);
+  user-select:none;
+}
+.hero-q-ring{
+  position:absolute; inset:0;
+  border:1px dashed rgba(255,255,255,0.08);
+  border-radius:50%;
+}
+.hero-q-star{
+  position:absolute; top:0; left:0;
+  width:10px; height:10px;
+  color:#D9A441;
+  font-size:20px;
+  line-height:1;
+  offset-path: circle(46% at 50% 50%);
+  animation: hero-q-star-move 11s linear infinite;
+  text-shadow:0 0 8px rgba(217,164,65,0.9), 0 0 18px rgba(217,164,65,0.55);
+}
+.hero-q-star.star2{
+  font-size:11px;
+  animation-duration: 11s;
+  animation-delay: -5.5s;
+  opacity:0.7;
+}
+@keyframes hero-q-star-move{
+  0%{ offset-distance:0%; opacity:0.35; }
+  50%{ opacity:1; }
+  100%{ offset-distance:100%; opacity:0.35; }
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-q-star{ animation:none; offset-distance:0%; }
+}
+
 /* 상단 태그라인 */
 .hero-top-badge {
   display: inline-flex;
@@ -3029,6 +3077,7 @@ input, textarea, select { font-family: var(--sans); }
       <button class="nav-logout" onclick="doLogout()">로그아웃</button>
     </div>
     <div id="navPortalBtns">
+      <button class="nav-portal-btn" onclick="openLauncherGate()">🚀 탐구공간</button>
       <button class="nav-portal-btn" onclick="showPage('student-login')">학생 포털</button>
       <button class="nav-portal-btn" onclick="showPage('teacher-login')">강사 포털</button>
       <button class="nav-portal-btn primary" onclick="showPage('admin-login')">관리자</button>
@@ -3122,6 +3171,14 @@ input, textarea, select { font-family: var(--sans); }
     <!-- 딥그린 오버레이 -->
     <!-- 콘텐츠 -->
     <div class="hero-top-full">
+      <!-- Q 워터마크 + 반짝이는 별 -->
+      <div class="hero-q-watermark" aria-hidden="true">
+        <span class="hero-q-letter">Q</span>
+        <span class="hero-q-ring"></span>
+        <span class="hero-q-star">✦</span>
+        <span class="hero-q-star star2">✦</span>
+      </div>
+
       <!-- 상태 배지 -->
       <div class="hero-top-badge">
         <div class="hero-top-badge-dot"></div>
@@ -4065,6 +4122,7 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-nav-item" onclick="switchPortalTab('admin','footprint',this)">🐾 탐구발자국</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','logs',this)">교육/상담일지</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','payroll',this)">💰 급여명세서</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','passwords',this)">🔐 비밀번호 관리</div>
     </div>
     <div class="portal-content">
 
@@ -4555,6 +4613,31 @@ input, textarea, select { font-family: var(--sans); }
         <div id="adminPayrollList"></div>
       </div>
 
+      <!-- 🔐 비밀번호 관리 -->
+      <div id="admin-tab-passwords" class="portal-tab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:600;font-size:1rem">🔐 비밀번호 관리</div>
+          <button class="table-action-btn primary" onclick="openPasswordForm()">+ 새 항목 추가</button>
+        </div>
+        <p style="font-size:0.82rem;color:var(--ink3);margin-bottom:16px">
+          여기 저장된 내용은 관리자(원장)님만 볼 수 있는 화면에만 표시되며, 홈페이지 어디에도 공개되지 않습니다.
+        </p>
+
+        <!-- 등록/수정 폼 -->
+        <div id="passwordForm" style="display:none" class="card" style="margin-bottom:16px">
+          <div class="form-group"><label class="form-label">항목명 (예: 도메인, 학원 이메일, 와이파이 등)</label><input class="form-input" id="pw_label" type="text"></div>
+          <div class="form-group"><label class="form-label">아이디 / 계정</label><input class="form-input" id="pw_account" type="text"></div>
+          <div class="form-group"><label class="form-label">비밀번호</label><input class="form-input" id="pw_value" type="text"></div>
+          <div class="form-group"><label class="form-label">메모 (선택)</label><textarea class="form-input form-textarea" id="pw_memo" placeholder="추가로 기억해둘 내용"></textarea></div>
+          <div style="display:flex;gap:8px">
+            <button class="form-submit" onclick="savePasswordEntry()" style="flex:1">저장</button>
+            <button class="table-action-btn" onclick="closePasswordForm()">취소</button>
+          </div>
+        </div>
+
+        <div id="adminPasswordList"></div>
+      </div>
+
       <!-- 교육/상담일지 -->
       <!-- 🌐 홈페이지 콘텐츠 (수상실적 관리) -->
       <div id="admin-tab-content" class="portal-tab">
@@ -4734,7 +4817,7 @@ window._fbGetAll = async () => {
     'awards','news','works','gallery',
     'notices','edulogs','consultlogs',
     'reviews','reviewPopupOn',
-    'eventPopups','histories'
+    'eventPopups','histories','passwords'
   ];
   let synced = 0;
   for(const k of keys){
@@ -4862,6 +4945,17 @@ function updateNavUserUI(){
     info.classList.remove('visible');
     btns.style.display='flex';
   }
+}
+
+// 탐구공간(런처) 입장 비밀번호 게이트
+function openLauncherGate(){
+  const pw = prompt('탐구공간 비밀번호를 입력해주세요');
+  if(pw === null) return;
+  if(pw !== 'q1234!'){
+    alert('비밀번호가 올바르지 않습니다.');
+    return;
+  }
+  window.open('https://quvia-nexus.github.io/launcher/', '_blank');
 }
 
 function doLogout(){
@@ -5405,9 +5499,10 @@ function doAdminLogin(){
     const rb=document.getElementById('adminReturnBtn');
     if(rb) rb.style.display='block';
     showPage('admin');
-    // 로그인 시 Firebase 최신 데이터 동기화 후 관리자 화면 갱신
+    // 로그인 시 Firebase 최신 데이터 동기화 후 세부 커리큘럼 탭부터 보여줌
     DB.syncFromCloud().then(function(){
-      if(typeof renderAdminDashboard==='function') renderAdminDashboard();
+      const navEl=document.querySelector('#page-admin .portal-nav-item[onclick*="curriculum"]');
+      switchPortalTab('admin','curriculum',navEl);
     }).catch(function(){});
   } else {
     document.getElementById('adminLoginErr').classList.add('show');
@@ -5638,6 +5733,83 @@ function renderAdminDashboard(){
   renderAdminStudents();
 }
 
+let editingPasswordId=null;
+function openPasswordForm(){
+  editingPasswordId=null;
+  document.getElementById('pw_label').value='';
+  document.getElementById('pw_account').value='';
+  document.getElementById('pw_value').value='';
+  document.getElementById('pw_memo').value='';
+  document.getElementById('passwordForm').style.display='block';
+}
+function closePasswordForm(){
+  document.getElementById('passwordForm').style.display='none';
+  editingPasswordId=null;
+}
+function savePasswordEntry(){
+  const label=document.getElementById('pw_label').value.trim();
+  const account=document.getElementById('pw_account').value.trim();
+  const value=document.getElementById('pw_value').value.trim();
+  const memo=document.getElementById('pw_memo').value.trim();
+  if(!label||!value){ alert('항목명과 비밀번호는 필수입니다.'); return; }
+  const list=DB.get('passwords',[]);
+  if(editingPasswordId){
+    const idx=list.findIndex(p=>p.id===editingPasswordId);
+    if(idx>=0) list[idx]={...list[idx],label,account,value,memo};
+  } else {
+    list.push({id:'pw_'+Date.now(),label,account,value,memo});
+  }
+  DB.set('passwords',list);
+  closePasswordForm();
+  renderAdminPasswordList();
+}
+function editPasswordEntry(id){
+  const list=DB.get('passwords',[]);
+  const p=list.find(x=>x.id===id);
+  if(!p) return;
+  editingPasswordId=id;
+  document.getElementById('pw_label').value=p.label||'';
+  document.getElementById('pw_account').value=p.account||'';
+  document.getElementById('pw_value').value=p.value||'';
+  document.getElementById('pw_memo').value=p.memo||'';
+  document.getElementById('passwordForm').style.display='block';
+}
+function deletePasswordEntry(id){
+  if(!confirm('이 항목을 삭제할까요?')) return;
+  const list=DB.get('passwords',[]).filter(p=>p.id!==id);
+  DB.set('passwords',list);
+  renderAdminPasswordList();
+}
+function togglePasswordVisible(id){
+  const el=document.getElementById('pwval_'+id);
+  if(!el) return;
+  el.dataset.visible = el.dataset.visible==='1' ? '0' : '1';
+  el.textContent = el.dataset.visible==='1' ? el.dataset.real : '••••••••';
+}
+function renderAdminPasswordList(){
+  const box=document.getElementById('adminPasswordList');
+  if(!box) return;
+  const list=DB.get('passwords',[]);
+  if(!list.length){ box.innerHTML='<div style="color:var(--ink4);font-size:0.85rem">등록된 항목이 없습니다.</div>'; return; }
+  box.innerHTML = list.map(p=>`
+    <div class="card" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:600;margin-bottom:4px">${(p.label||'').replace(/</g,'&lt;')}</div>
+        ${p.account?`<div style="font-size:0.82rem;color:var(--ink3)">아이디: ${p.account.replace(/</g,'&lt;')}</div>`:''}
+        <div style="font-size:0.82rem;color:var(--ink3);display:flex;align-items:center;gap:6px">
+          비밀번호:
+          <span id="pwval_${p.id}" data-visible="0" data-real="${(p.value||'').replace(/"/g,'&quot;')}" style="font-family:monospace">••••••••</span>
+          <button class="table-action-btn" style="padding:2px 8px;font-size:0.72rem" onclick="togglePasswordVisible('${p.id}')">보기</button>
+        </div>
+        ${p.memo?`<div style="font-size:0.78rem;color:var(--ink4);margin-top:4px">${p.memo.replace(/</g,'&lt;')}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex:none">
+        <button class="table-action-btn" onclick="editPasswordEntry('${p.id}')">수정</button>
+        <button class="table-action-btn" onclick="deletePasswordEntry('${p.id}')">삭제</button>
+      </div>
+    </div>`).join('');
+}
+
 function renderAdminTab(tab){
   const renders={
     students:renderAdminStudents,
@@ -5656,7 +5828,8 @@ function renderAdminTab(tab){
     logs:renderAdminLogs,
     dashboard:renderAdminDashboard,
     payroll:initPayrollAdminTab,
-    events:renderAdminEvents
+    events:renderAdminEvents,
+    passwords:renderAdminPasswordList
   };
   if(renders[tab]) renders[tab]();
 }
@@ -7474,7 +7647,7 @@ async function uploadAllToFirebase(){
     'students','teachers','classes','payrolls',
     'awards','news','works','gallery',
     'notices','edulogs','consultlogs',
-    'reviews','reviewPopupOn','eventPopups','histories'
+    'reviews','reviewPopupOn','eventPopups','histories','passwords'
   ];
   const statusEl = document.getElementById('firebaseUploadStatus');
   if(statusEl) statusEl.innerHTML = '⏳ Firebase에 업로드 중...';

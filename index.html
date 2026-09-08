@@ -4108,13 +4108,13 @@ input, textarea, select { font-family: var(--sans); }
       <div class="portal-header-user">원장</div>
     </div>
     <div class="portal-nav" style="flex-wrap:wrap">
-      <div class="portal-nav-item active" onclick="switchPortalTab('admin','dashboard',this)">대시보드</div>
+      <div class="portal-nav-item" onclick="switchPortalTab('admin','dashboard',this)">대시보드</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','students',this)">학생 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','teachers',this)">강사 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','classes',this)">클래스 관리</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','notice',this)">전달사항</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','news',this)">📢 공지/소식</div>
-      <div class="portal-nav-item" onclick="switchPortalTab('admin','curriculum',this)">📋 세부 커리큘럼</div>
+      <div class="portal-nav-item active" onclick="switchPortalTab('admin','curriculum',this)">📋 세부 커리큘럼</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','content',this)">🏆 수상실적</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','reviews',this)">⭐ 학부모 리뷰</div>
       <div class="portal-nav-item" onclick="switchPortalTab('admin','events',this)">📣 이벤트 팝업</div>
@@ -4127,7 +4127,7 @@ input, textarea, select { font-family: var(--sans); }
     <div class="portal-content">
 
       <!-- 대시보드 -->
-      <div id="admin-tab-dashboard" class="portal-tab active">
+      <div id="admin-tab-dashboard" class="portal-tab">
         <div class="admin-grid">
           <div class="admin-stat"><div class="admin-stat-label">등록 학생</div><div class="admin-stat-value" id="statStudents">0</div></div>
           <div class="admin-stat"><div class="admin-stat-label">강사</div><div class="admin-stat-value" id="statTeachers">0</div></div>
@@ -4700,7 +4700,7 @@ input, textarea, select { font-family: var(--sans); }
       </div>
 
       <!-- 📋 세부 커리큘럼 -->
-      <div id="admin-tab-curriculum" class="portal-tab">
+      <div id="admin-tab-curriculum" class="portal-tab active">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
           <div style="font-weight:600;font-size:1rem">📋 큐비아 랩 세부 커리큘럼</div>
           <div style="display:flex;gap:8px">
@@ -4858,6 +4858,11 @@ const DB = {
     if(window._fbSetDoc) window._fbSetDoc(k,v);
     else window.addEventListener('fbReady',()=>window._fbSetDoc(k,v),{once:true});
   },
+  // 화면에 보여줄 임시 기본값만 채울 때 사용 (Firebase에는 절대 올리지 않음)
+  // → 동기화가 일시적으로 실패했을 때 기본값이 실제 데이터를 덮어쓰는 사고를 방지
+  setLocalOnly:(k,v)=>{
+    try{localStorage.setItem('qv_'+k,JSON.stringify(v));}catch(e){console.error(e);}
+  },
   syncFromCloud: async ()=>{
     if(window._fbGetAll) return await window._fbGetAll();
     return new Promise(res=>window.addEventListener('fbReady',async()=>res(await window._fbGetAll()),{once:true}));
@@ -4870,7 +4875,7 @@ const DB = {
 function initData(){
   // 수상실적: Firebase/구글시트 데이터 우선, 없을 때만 기본값 사용
   if(!DB.get('awards',null)){
-    DB.set('awards',[
+    DB.setLocalOnly('awards',[
       {icon:'🥇',name:'2025년 과학기술정보통신부 장관상_AI융합',cat:'SW'},
       {icon:'🏅',name:'2025 과학,정보 영재교육원 합격_DGIST, 경북대,대구교대, 교육청',cat:'과학'},
       {icon:'🥉',name:'제 7회 전국학생 코딩 경진대회_동상2, 장려상5',cat:'SW'},
@@ -4914,17 +4919,17 @@ function initData(){
   // (Firebase 동기화 전 localStorage가 비어있어도 덮어쓰지 않음)
   // 공지
   if(!DB.get('news',null)){
-    DB.set('news',[
+    DB.setLocalOnly('news',[
       {date:'2025.04.10',tag:'공지',title:'2025년 여름방학 특강 신청 안내',content:'여름방학 특강 신청을 받습니다.'},
       {date:'2025.03.28',tag:'소식',title:'2025 과학기술정보통신부 장관상 수상',content:'큐비아 탐구학원 학생이 장관상을 수상했습니다.'},
       {date:'2025.03.01',tag:'공지',title:'큐비아 탐구학원으로 새롭게 시작합니다',content:'코딩하루 학원 경산점이 큐비아 탐구학원으로 새롭게 시작합니다.'}
     ]);
   }
-  if(!DB.get('works',null)) DB.set('works',[]);
-  if(!DB.get('gallery',null)) DB.set('gallery',[]);
-  if(!DB.get('notices',null)) DB.set('notices',[]);
-  if(!DB.get('edulogs',null)) DB.set('edulogs',[]);
-  if(!DB.get('consultlogs',null)) DB.set('consultlogs',[]);
+  if(!DB.get('works',null)) DB.setLocalOnly('works',[]);
+  if(!DB.get('gallery',null)) DB.setLocalOnly('gallery',[]);
+  if(!DB.get('notices',null)) DB.setLocalOnly('notices',[]);
+  if(!DB.get('edulogs',null)) DB.setLocalOnly('edulogs',[]);
+  if(!DB.get('consultlogs',null)) DB.setLocalOnly('consultlogs',[]);
 }
 
 /* ═══════════════════════════════════
@@ -4949,6 +4954,7 @@ function updateNavUserUI(){
 
 // 탐구공간(런처) 입장 비밀번호 게이트
 function openLauncherGate(){
+  alert('⚠️ 큐비아 회원이 아닌 경우 접근을 차단합니다.');
   const pw = prompt('탐구공간 비밀번호를 입력해주세요');
   if(pw === null) return;
   if(pw !== 'q1234!'){
@@ -9421,7 +9427,7 @@ function loadFromSheets() {
       if (awards && awards.length) {
         var iconMap = {'SW':'💻','과학':'🔬','AI':'🤖','수학':'📐','발명':'💡','로봇':'🦾','코딩':'⌨️','탐구':'🧪','예술':'🎨','융합':'🌐','기타':'🏆','SW사고력':'🧠'};
         awards.forEach(function(a) { if (!a.icon) a.icon = iconMap[a.cat] || '🏆'; });
-        DB.set('awards', awards);
+        DB.setLocalOnly('awards', awards); // 구글시트 데이터는 화면 표시용으로만 사용, Firebase에는 올리지 않음
         renderAwardRoll();
         renderAwards();
       }

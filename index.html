@@ -4863,6 +4863,15 @@ const DB = {
   setLocalOnly:(k,v)=>{
     try{localStorage.setItem('qv_'+k,JSON.stringify(v));}catch(e){console.error(e);}
   },
+  // 저장이 실제로 클라우드까지 끝난 뒤에 결과를 알려줘야 하는 중요한 저장(급여명세서 등)에 사용
+  // → 저장 직후 창을 닫거나 통신이 잠깐 끊겨도 조용히 유실되지 않도록 완료를 기다림
+  setAwait: async (k,v)=>{
+    try{localStorage.setItem('qv_'+k,JSON.stringify(v));}catch(e){console.error(e);}
+    if(!window._fbSetDoc){
+      await new Promise(res=>window.addEventListener('fbReady',res,{once:true}));
+    }
+    await window._fbSetDoc(k,v);
+  },
   syncFromCloud: async ()=>{
     if(window._fbGetAll) return await window._fbGetAll();
     return new Promise(res=>window.addEventListener('fbReady',async()=>res(await window._fbGetAll()),{once:true}));
@@ -9060,7 +9069,7 @@ function calcPayroll(){
   if(fnEl) fnEl.textContent = fmtMoney(subtotal-deductTotal)+' 원';
 }
 
-function savePayroll(){
+async function savePayroll(){
   var teacherId=document.getElementById('pr_teacher').value;
   var month=document.getElementById('pr_month').value;
   if(!teacherId){ alert('강사를 선택해주세요.'); return; }
@@ -9089,22 +9098,33 @@ function savePayroll(){
   var finalAmount=subtotal-deductTotal;
   var memo=document.getElementById('pr_memo').value;
   var editId=document.getElementById('payrollFormWrap').dataset.editId;
-  var payrolls=DB.get('payrolls',[]);
-  if(editId){
-    var idx=payrolls.findIndex(function(p){return p.id===editId;});
-    if(idx>=0){
-      // 편집 시 status는 유지하되, 내용이 변경됐으면 sent→draft_modified(수정됨)로 표시
-      var prevStatus = payrolls[idx].status || 'draft';
-      var nextStatus = prevStatus === 'sent' ? 'sent_modified' : prevStatus;
-      payrolls[idx]=Object.assign({},payrolls[idx],{teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:nextStatus,updatedAt:new Date().toISOString()});
+
+  var saveBtn=document.querySelector('#payrollFormWrap .form-submit');
+  if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent='저장 중…'; }
+  try{
+    // 저장 직전 클라우드 최신 데이터로 맞춰서, 다른 곳에서 저장된 명세서를 덮어쓰지 않도록 함
+    if(window._fbGetAll) await window._fbGetAll();
+    var payrolls=DB.get('payrolls',[]);
+    if(editId){
+      var idx=payrolls.findIndex(function(p){return p.id===editId;});
+      if(idx>=0){
+        var prevStatus = payrolls[idx].status || 'draft';
+        var nextStatus = prevStatus === 'sent' ? 'sent_modified' : prevStatus;
+        payrolls[idx]=Object.assign({},payrolls[idx],{teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:nextStatus,updatedAt:new Date().toISOString()});
+      }
+    } else {
+      payrolls.push({id:'pr_'+Date.now(),teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'draft',createdAt:new Date().toISOString()});
     }
-  } else {
-    payrolls.push({id:'pr_'+Date.now(),teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'draft',createdAt:new Date().toISOString()});
+    await DB.setAwait('payrolls',payrolls);
+    alert('저장되었습니다.\n강사 포털에 공개하려면 목록에서 [전송] 버튼을 눌러주세요.');
+    closePayrollForm();
+    renderAdminPayrollList();
+  }catch(err){
+    console.error('savePayroll error:', err);
+    alert('저장에 실패했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.\n('+err.message+')');
+  }finally{
+    if(saveBtn){ saveBtn.disabled=false; saveBtn.textContent='저장'; }
   }
-  DB.set('payrolls',payrolls);
-  alert('임시저장 되었습니다.\n강사 포털에 공개하려면 목록에서 [전송] 버튼을 눌러주세요.');
-  closePayrollForm();
-  renderAdminPayrollList();
 }
 
 function renderAdminPayrollList(){
@@ -9163,7 +9183,7 @@ function renderAdminPayrollList(){
 }
 
 // 저장 + 바로 전송 (한 번에)
-function saveAndSendPayroll(){
+async function saveAndSendPayroll(){
   // savePayroll 내부 alert를 우회해서 조용히 저장 후 전송
   var teacherId=document.getElementById('pr_teacher').value;
   var month=document.getElementById('pr_month').value;
@@ -9193,51 +9213,80 @@ function saveAndSendPayroll(){
   var finalAmount=subtotal-deductTotal;
   var memo=document.getElementById('pr_memo').value;
   var editId=document.getElementById('payrollFormWrap').dataset.editId;
-  var payrolls=DB.get('payrolls',[]);
-  var now=new Date().toISOString();
-  if(editId){
-    var idx=payrolls.findIndex(function(p){return p.id===editId;});
-    if(idx>=0){
-      payrolls[idx]=Object.assign({},payrolls[idx],{teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'sent',sentAt:now,updatedAt:now});
+
+  var sendBtn=document.querySelector('#payrollFormWrap .form-submit-alt');
+  if(sendBtn){ sendBtn.disabled=true; }
+  try{
+    if(window._fbGetAll) await window._fbGetAll();
+    var payrolls=DB.get('payrolls',[]);
+    var now=new Date().toISOString();
+    if(editId){
+      var idx=payrolls.findIndex(function(p){return p.id===editId;});
+      if(idx>=0){
+        payrolls[idx]=Object.assign({},payrolls[idx],{teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'sent',sentAt:now,updatedAt:now});
+      }
+    } else {
+      payrolls.push({id:'pr_'+Date.now(),teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'sent',sentAt:now,createdAt:now});
     }
-  } else {
-    payrolls.push({id:'pr_'+Date.now(),teacherId:teacherId,teacherName:teacher?teacher.name:teacherId,month:month,rows:rows,deducts:deducts,subtotal:subtotal,deductTotal:deductTotal,finalAmount:finalAmount,memo:memo,status:'sent',sentAt:now,createdAt:now});
+    await DB.setAwait('payrolls',payrolls);
+    closePayrollForm();
+    renderAdminPayrollList();
+    alert('강사 포털에 급여명세서를 전송했습니다.');
+  }catch(err){
+    console.error('saveAndSendPayroll error:', err);
+    alert('전송에 실패했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.\n('+err.message+')');
+  }finally{
+    if(sendBtn){ sendBtn.disabled=false; }
   }
-  DB.set('payrolls',payrolls);
-  closePayrollForm();
-  renderAdminPayrollList();
-  alert('강사 포털에 급여명세서를 전송했습니다.');
 }
 
 // 전송: status를 'sent'로 변경 → 강사 포털에서 확인 가능
-function sendPayroll(id){
-  var payrolls=DB.get('payrolls',[]);
-  var idx=payrolls.findIndex(function(p){return p.id===id;});
-  if(idx<0) return;
-  payrolls[idx].status='sent';
-  payrolls[idx].sentAt=new Date().toISOString();
-  DB.set('payrolls',payrolls);
-  alert('강사 포털에 급여명세서를 전송했습니다.');
-  renderAdminPayrollList();
+async function sendPayroll(id){
+  try{
+    if(window._fbGetAll) await window._fbGetAll();
+    var payrolls=DB.get('payrolls',[]);
+    var idx=payrolls.findIndex(function(p){return p.id===id;});
+    if(idx<0) return;
+    payrolls[idx].status='sent';
+    payrolls[idx].sentAt=new Date().toISOString();
+    await DB.setAwait('payrolls',payrolls);
+    alert('강사 포털에 급여명세서를 전송했습니다.');
+    renderAdminPayrollList();
+  }catch(err){
+    console.error('sendPayroll error:', err);
+    alert('전송에 실패했습니다. 다시 시도해주세요.\n('+err.message+')');
+  }
 }
 
 // 전송 취소: status를 'draft'로 되돌림 → 강사 포털에서 숨김
-function unsendPayroll(id){
+async function unsendPayroll(id){
   if(!confirm('전송을 취소하면 강사 포털에서 해당 명세서가 숨겨집니다.\n계속하시겠습니까?')) return;
-  var payrolls=DB.get('payrolls',[]);
-  var idx=payrolls.findIndex(function(p){return p.id===id;});
-  if(idx<0) return;
-  payrolls[idx].status='draft';
-  delete payrolls[idx].sentAt;
-  DB.set('payrolls',payrolls);
-  alert('전송이 취소되었습니다.');
-  renderAdminPayrollList();
+  try{
+    if(window._fbGetAll) await window._fbGetAll();
+    var payrolls=DB.get('payrolls',[]);
+    var idx=payrolls.findIndex(function(p){return p.id===id;});
+    if(idx<0) return;
+    payrolls[idx].status='draft';
+    delete payrolls[idx].sentAt;
+    await DB.setAwait('payrolls',payrolls);
+    alert('전송이 취소되었습니다.');
+    renderAdminPayrollList();
+  }catch(err){
+    console.error('unsendPayroll error:', err);
+    alert('처리에 실패했습니다. 다시 시도해주세요.\n('+err.message+')');
+  }
 }
 
-function deletePayroll(id){
+async function deletePayroll(id){
   if(!confirm('삭제하시겠습니까?')) return;
-  DB.set('payrolls', DB.get('payrolls',[]).filter(function(p){return p.id!==id;}));
-  renderAdminPayrollList();
+  try{
+    if(window._fbGetAll) await window._fbGetAll();
+    await DB.setAwait('payrolls', DB.get('payrolls',[]).filter(function(p){return p.id!==id;}));
+    renderAdminPayrollList();
+  }catch(err){
+    console.error('deletePayroll error:', err);
+    alert('삭제에 실패했습니다. 다시 시도해주세요.\n('+err.message+')');
+  }
 }
 
 function viewPayrollDetail(id){
